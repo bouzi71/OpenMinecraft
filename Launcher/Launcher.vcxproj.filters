@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="render">
+      <UniqueIdentifier>{3b243b11-73be-4c85-8fe2-742aca54aa3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{723aed5c-fe9a-404f-902a-d2af152af3c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{1ba31732-addf-4855-9608-f2b290afd0f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\imgui">
+      <UniqueIdentifier>{33935e94-ca03-4db4-bf84-3de285592cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\volumes">
+      <UniqueIdentifier>{e12e38b5-05f3-4179-b503-da5d21691561}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{f70c3088-ec3b-40c7-aca5-5a7883831dd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\zip">
+      <UniqueIdentifier>{71b8d141-688c-4208-9b93-8c3296e7d4aa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lib\imgui\imconfig.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imgui.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imgui_impl_glfw.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imgui_impl_opengl3.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imgui_internal.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imstb_rectpack.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imstb_textedit.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imstb_truetype.h">
+      <Filter>lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ChunkMesh.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\ChunkMeshGenerator.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Shader.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Plane.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\TypeUtil.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\volumes\Frustum.h">
+      <Filter>math\volumes</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\AssetCache.h">
+      <Filter>assets</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\AssetLoader.h">
+      <Filter>assets</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\stb_image.h">
+      <Filter>assets</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\TextureArray.h">
+      <Filter>assets</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\zip\miniz.h">
+      <Filter>assets\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\zip\ZipArchive.h">
+      <Filter>assets\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="ChatWindow.h" />
+    <ClInclude Include="Collision.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameWindow.h" />
+    <ClInclude Include="PriorityQueue.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lib\imgui\imgui.cpp">
+      <Filter>lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\imgui\imgui_draw.cpp">
+      <Filter>lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\imgui\imgui_impl_glfw.cpp">
+      <Filter>lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\imgui\imgui_impl_opengl3.cpp">
+      <Filter>lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\imgui\imgui_widgets.cpp">
+      <Filter>lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ChunkMesh.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\ChunkMeshGenerator.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Shader.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Plane.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\volumes\Frustum.cpp">
+      <Filter>math\volumes</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\AssetCache.cpp">
+      <Filter>assets</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\AssetLoader.cpp">
+      <Filter>assets</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\TextureArray.cpp">
+      <Filter>assets</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\zip\miniz.cpp">
+      <Filter>assets\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\zip\ZipArchive.cpp">
+      <Filter>assets\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ChatWindow.cpp" />
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameWindow.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+</Project>
