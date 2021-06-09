@@ -6,17 +6,17 @@
 #include <utility>
 
 
-#include <mclib/common/Vector.h>
-#include <mclib/world/World.h>
+#include <common/Vector.h>
+#include <world/World.h>
 
-#include <glm/glm.hpp>
+#include <glm/glm/glm.hpp>
 
 #include "../PriorityQueue.h"
 
-#include <mclib/assets/blocks/BlockFace.h>
-#include <mclib/assets/blocks/BlockElement.h>
-#include <mclib/assets/blocks/BlockModel.h>
-#include <mclib/assets/blocks/BlockVariant.h>
+#include <assets/blocks/BlockFace.h>
+#include <assets/blocks/BlockElement.h>
+#include <assets/blocks/BlockModel.h>
+#include <assets/blocks/BlockVariant.h>
 
 #include <mutex>
 #include <thread>

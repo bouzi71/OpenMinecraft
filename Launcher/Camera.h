@@ -2,7 +2,7 @@
 #define TERRACOTTA_CAMERA_H_
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
+#include <glm/glm/glm.hpp>
 #include "math/volumes/Frustum.h"
 
 #undef near

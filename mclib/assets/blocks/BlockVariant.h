@@ -7,7 +7,7 @@
 
 #include <block/Block.h>
 #include <assets/blocks/BlockModel.h>
-#include <glm/glm.hpp>
+#include <glm/glm/glm.hpp>
 
 
 class BlockVariant

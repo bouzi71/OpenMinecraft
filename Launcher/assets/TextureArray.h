@@ -1,7 +1,7 @@
 #ifndef TERRACOTTA_ASSETS_TEXTUREARRAY_H_
 #define TERRACOTTA_ASSETS_TEXTUREARRAY_H_
 
-#include <mclib/assets/blocks/BlockElement.h>
+#include <assets/blocks/BlockElement.h>
 
 #include <cstddef>
 #include <cstdint>

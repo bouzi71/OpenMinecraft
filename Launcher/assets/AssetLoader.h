@@ -4,15 +4,15 @@
 #define TERRACOTTA_ASSETS_ASSETLOADER_H_
 
 
-#include <mclib/common/JsonFwd.h>
-#include <glm/glm.hpp>
+#include <common/JsonFwd.h>
+#include <glm/glm/glm.hpp>
 
 #include "TextureArray.h"
 
-#include <mclib/assets/blocks/BlockFace.h>
-#include <mclib/assets/blocks/BlockElement.h>
-#include <mclib/assets/blocks/BlockModel.h>
-#include <mclib/assets/blocks/BlockVariant.h>
+#include <assets/blocks/BlockFace.h>
+#include <assets/blocks/BlockElement.h>
+#include <assets/blocks/BlockModel.h>
+#include <assets/blocks/BlockVariant.h>
 
 namespace terra
 {

@@ -7,8 +7,9 @@
 
 #include <GL/glew.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/quaternion.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -16,8 +17,6 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-
-#include <glm/gtc/quaternion.hpp>
 
 namespace terra
 {

@@ -3,8 +3,8 @@
 #ifndef TERRACOTTA_TRANSFORM_H_
 #define TERRACOTTA_TRANSFORM_H_
 
-#include <mclib/common/Vector.h>
-#include <mclib/common/AABB.h>
+#include <common/Vector.h>
+#include <common/AABB.h>
 
 namespace terra
 {

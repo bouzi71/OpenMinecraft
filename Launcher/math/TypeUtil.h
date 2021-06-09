@@ -1,8 +1,8 @@
 #ifndef TERRACOTTA_MATH_TYPEUTIL_H_
 #define TERRACOTTA_MATH_TYPEUTIL_H_
 
-#include <glm/glm.hpp>
-#include <mclib/common/Vector.h>
+#include <glm/glm/glm.hpp>
+#include <common/Vector.h>
 
 namespace terra {
 namespace math {

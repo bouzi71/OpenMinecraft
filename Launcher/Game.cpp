@@ -3,14 +3,17 @@
 #include "Game.h"
 
 #include <GLFW/glfw3.h>
-#include <mclib/util/Utility.h>
-#include <mclib/util/Utility.h>
-#include <mclib/world/World.h>
-#include <mclib/common/AABB.h>
-#include <mclib/inventory/Inventory.h>
-#include <mclib/protocol/packets/Packet.h>
+
+#include <util/Utility.h>
+#include <util/Utility.h>
+#include <world/World.h>
+#include <common/AABB.h>
+#include <inventory/Inventory.h>
+#include <protocol/packets/Packet.h>
+
 #include "math/Plane.h"
 #include "math/TypeUtil.h"
+
 #include <iostream>
 #include <limits>
 

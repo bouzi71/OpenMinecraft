@@ -1,8 +1,8 @@
 #ifndef TERRACOTTA_CHAT_WINDOW_H_
 #define TERRACOTTA_CHAT_WINDOW_H_
 
-#include <mclib/protocol/PacketDispatcher.h>
-#include <mclib/protocol/PacketHandler.h>
+#include <protocol/PacketDispatcher.h>
+#include <protocol/PacketHandler.h>
 
 
 #include <deque>

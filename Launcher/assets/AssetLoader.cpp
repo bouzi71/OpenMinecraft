@@ -3,7 +3,7 @@
 #include "AssetLoader.h"
 #include "AssetCache.h"
 
-#include <mclib/common/Json.h>
+#include <common/Json.h>
 #include "zip/ZipArchive.h"
 
 #include "stb_image.h"
@@ -13,8 +13,8 @@
 #include <iostream>
 #include <fstream>
 
-#include <mclib/block/Block.h>
-#include <mclib/block/BlockRegistry.h>
+#include <block/Block.h>
+#include <block/BlockRegistry.h>
 
 namespace terra
 {

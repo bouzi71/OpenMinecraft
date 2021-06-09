@@ -4,7 +4,7 @@
 #define TERRACOTTA_COLLISION_H_
 
 #include "Transform.h"
-#include <mclib/world/World.h>
+#include <world/World.h>
 
 namespace terra
 {

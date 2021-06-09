@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
 #include <cmath>
 
 namespace terra

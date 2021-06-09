@@ -3,11 +3,11 @@
 
 #include "TextureArray.h"
 
-#include <mclib/assets/blocks/BlockState.h>
-#include <mclib/assets/blocks/BlockModel.h>
-#include <mclib/assets/blocks/BlockVariant.h>
+#include <assets/blocks/BlockState.h>
+#include <assets/blocks/BlockModel.h>
+#include <assets/blocks/BlockVariant.h>
 
-#include <mclib/block/Block.h>
+#include <block/Block.h>
 
 namespace terra
 {

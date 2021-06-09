@@ -5,12 +5,12 @@
 #include <iterator>
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
+#include <glm/glm/glm.hpp>
 #include <fstream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <mclib/core/Client.h>
-#include <mclib/util/Utility.h>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
+#include <core/Client.h>
+#include <util/Utility.h>
 #include "render/Shader.h"
 #include "Camera.h"
 #include "Game.h"
@@ -31,11 +31,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "assets/stb_image.h"
 
-#ifdef _DEBUG
-#pragma comment(lib, "../Debug/mclibd.lib")
-#else
-#pragma comment(lib, "../Release/mclib.lib")
-#endif
+#pragma comment(lib, "mclib.lib")
 
 GLuint CreateBlockVAO();
 GLFWwindow* InitializeWindow();

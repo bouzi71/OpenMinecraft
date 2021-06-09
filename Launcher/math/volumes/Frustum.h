@@ -1,8 +1,8 @@
 #ifndef TERRACOTTA_MATH_VOLUMES_FRUSTUM_H_
 #define TERRACOTTA_MATH_VOLUMES_FRUSTUM_H_
 
-#include <glm/glm.hpp>
-#include <mclib/common/AABB.h>
+#include <glm/glm/glm.hpp>
+#include <common/AABB.h>
 #include "../Plane.h"
 
 namespace terra

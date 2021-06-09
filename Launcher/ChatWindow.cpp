@@ -3,9 +3,8 @@
 #include "ChatWindow.h"
 
 #include "lib/imgui/imgui.h"
-#include "stdafx.h"
 
-#include <mclib/util/Utility.h>
+#include <util/Utility.h>
 #include <cstring>
 
 

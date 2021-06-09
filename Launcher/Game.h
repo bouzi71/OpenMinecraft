@@ -1,16 +1,16 @@
 #ifndef TERRACOTTA_GAME_H_
 #define TERRACOTTA_GAME_H_
 
-#include <mclib/core/Client.h>
+#include <core/Client.h>
 
 #include "Camera.h"
 #include "GameWindow.h"
 #include "Transform.h"
 #include "Collision.h"
 
-#include <mclib/protocol/packets/Packet.h>
-#include <mclib/protocol/PacketHandler.h>
-#include <mclib/world/World.h>
+#include <protocol/packets/Packet.h>
+#include <protocol/PacketHandler.h>
+#include <world/World.h>
 
 
 

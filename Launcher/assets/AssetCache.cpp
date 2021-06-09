@@ -4,8 +4,8 @@
 
 #include "zip/ZipArchive.h"
 
-#include <mclib/common/Json.h>
-#include <mclib/block/Block.h>
+#include <common/Json.h>
+#include <block/Block.h>
 
 #include <fstream>
 #include <iostream>
