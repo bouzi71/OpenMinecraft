@@ -624,7 +624,7 @@ private:
 };
 
 
-enum class SoundCategory { Master, Music, Record, Weather, Block, Hostile, Neutral, Player, Ambient, Voice };
+enum class SoundCategory { Master, Music, Record, Weather, CMinecraftBlock, Hostile, Neutral, Player, Ambient, Voice };
 
 
 class NamedSoundEffectPacket : public CMinecraftInboundPacket

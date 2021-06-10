@@ -1,7 +1,7 @@
 #ifndef MCLIB_ENTITY_ENTITY_MANAGER_H_
 #define MCLIB_ENTITY_ENTITY_MANAGER_H_
 
-#include <mclib.h>
+
 #include <entity/Entity.h>
 #include <entity/Player.h>
 #include <protocol/packets/Packet.h>

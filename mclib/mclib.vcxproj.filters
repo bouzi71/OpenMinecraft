@@ -1,192 +1,540 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Header Files\protocol\packets">
-      <UniqueIdentifier>{3eadd529-fea7-4fae-a160-e3cd3a9eb0f2}</UniqueIdentifier>
+    <Filter Include="assets">
+      <UniqueIdentifier>{cc96c1cf-b0d6-4bff-a77d-13819da852c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\protocol\packets">
-      <UniqueIdentifier>{8f76fc07-63e6-48cf-8c31-3a7ea44040b5}</UniqueIdentifier>
+    <Filter Include="assets\blocks">
+      <UniqueIdentifier>{517872fe-e873-4db5-8ae1-0b75e0e70eb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="block">
+      <UniqueIdentifier>{d7804bea-ef6d-4b8c-9d2e-60b34f905034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="block\specific">
+      <UniqueIdentifier>{ff5a0a17-1905-4bae-bb5a-d5fd295ffc0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{ae3df99c-9ef7-4707-abc3-6f44164b51d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{c046487d-3115-4caf-9422-f6ff0391a0a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="entity">
+      <UniqueIdentifier>{78d3fc50-b16a-481b-933e-545fc6954220}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inventory">
+      <UniqueIdentifier>{41dcc315-c843-4a4a-8745-14bcee8fbf26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nbt">
+      <UniqueIdentifier>{eece4e03-68a9-465e-805e-1148afbaba99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network">
+      <UniqueIdentifier>{09a19fdf-25fe-47bb-a98d-a06aed5af52d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="protocol">
+      <UniqueIdentifier>{a06d81c7-8f3a-440c-bef1-8326edd72c87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="world">
+      <UniqueIdentifier>{d55f8564-7b09-409d-8d25-8c86df3ec993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{876223f0-1675-4858-b332-7abf05c1aeb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="protocol\packets">
+      <UniqueIdentifier>{ce3356b2-1d9f-4861-869f-c921e936ec17}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="protocol\packets\Packet.h">
-      <Filter>Header Files\protocol\packets</Filter>
+    <ClInclude Include="block\Block.h">
+      <Filter>block</Filter>
+    </ClInclude>
+    <ClInclude Include="block\BlockRegistry.h">
+      <Filter>block</Filter>
+    </ClInclude>
+    <ClInclude Include="block\BlockEntity.h">
+      <Filter>block</Filter>
+    </ClInclude>
+    <ClInclude Include="block\InventoryBlock.h">
+      <Filter>block</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Banner.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Beacon.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Bed.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Chest.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Dispenser.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Dropper.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\EnchantmentTable.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\EndGateway.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\FlowerPot.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Furnace.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Hopper.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Jukebox.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\MonsterSpawner.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\NoteBlock.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Piston.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\RedstoneComparator.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\ShulkerBox.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Sign.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\Skull.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="common\AABB.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Common.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\DataBuffer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\DyeColor.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Json.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\JsonFwd.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\MCString.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Nameable.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Position.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Types.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\UUID.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\VarInt.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Vector.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="core\AuthToken.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Client.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ClientSettings.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Compression.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Connection.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Encryption.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\PlayerManager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Attribute.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Creeper.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Entity.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\EntityFactory.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\EntityManager.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\LivingEntity.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Metadata.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Monster.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Painting.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Player.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\XPOrb.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="inventory\Hotbar.h">
+      <Filter>inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="inventory\Inventory.h">
+      <Filter>inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="inventory\Slot.h">
+      <Filter>inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="nbt\NBT.h">
+      <Filter>nbt</Filter>
+    </ClInclude>
+    <ClInclude Include="nbt\Tag.h">
+      <Filter>nbt</Filter>
+    </ClInclude>
+    <ClInclude Include="network\IPAddress.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\Network.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\Socket.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\TCPSocket.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\UDPSocket.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="world\Chunk.h">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\World.h">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Forge.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Hash.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\HTTPClient.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\ObserverSubject.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Tokenizer.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Utility.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\VersionFetcher.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Yggdrasil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockElement.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockFace.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockModel.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockState.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockVariant.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="block\specific\BrewingStand.h">
+      <Filter>block\specific</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\ProtocolState.h">
+      <Filter>protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\Protocol.h">
+      <Filter>protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\packets\PacketsLogin.h">
+      <Filter>protocol\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\packets\PacketsPlayInbound.h">
+      <Filter>protocol\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\packets\PacketsPlayOutbound.h">
+      <Filter>protocol\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol\packets\PacketsStatus.h">
+      <Filter>protocol\packets</Filter>
     </ClInclude>
     <ClInclude Include="protocol\PacketHandler.h">
-      <Filter>Header Files\protocol\packets</Filter>
+      <Filter>protocol</Filter>
     </ClInclude>
     <ClInclude Include="protocol\PacketFactory.h">
-      <Filter>Header Files\protocol\packets</Filter>
+      <Filter>protocol</Filter>
     </ClInclude>
     <ClInclude Include="protocol\PacketDispatcher.h">
-      <Filter>Header Files\protocol\packets</Filter>
+      <Filter>protocol</Filter>
     </ClInclude>
-    <ClInclude Include="assets\blocks\BlockElement.h" />
-    <ClInclude Include="assets\blocks\BlockFace.h" />
-    <ClInclude Include="assets\blocks\BlockModel.h" />
-    <ClInclude Include="assets\blocks\BlockState.h" />
-    <ClInclude Include="assets\blocks\BlockVariant.h" />
-    <ClInclude Include="block\BlockRegistry.h" />
-    <ClInclude Include="block\specific\Banner.h" />
-    <ClInclude Include="block\specific\Beacon.h" />
-    <ClInclude Include="block\specific\Bed.h" />
-    <ClInclude Include="block\Block.h" />
-    <ClInclude Include="block\BlockEntity.h" />
-    <ClInclude Include="block\specific\BrewingStand.h" />
-    <ClInclude Include="block\specific\Chest.h" />
-    <ClInclude Include="block\specific\Dispenser.h" />
-    <ClInclude Include="block\specific\Dropper.h" />
-    <ClInclude Include="block\specific\EnchantmentTable.h" />
-    <ClInclude Include="block\specific\EndGateway.h" />
-    <ClInclude Include="block\specific\FlowerPot.h" />
-    <ClInclude Include="block\specific\Furnace.h" />
-    <ClInclude Include="block\specific\Hopper.h" />
-    <ClInclude Include="block\InventoryBlock.h" />
-    <ClInclude Include="block\specific\Jukebox.h" />
-    <ClInclude Include="block\specific\MonsterSpawner.h" />
-    <ClInclude Include="block\specific\NoteBlock.h" />
-    <ClInclude Include="block\specific\Piston.h" />
-    <ClInclude Include="block\specific\RedstoneComparator.h" />
-    <ClInclude Include="block\specific\ShulkerBox.h" />
-    <ClInclude Include="block\specific\Sign.h" />
-    <ClInclude Include="block\specific\Skull.h" />
-    <ClInclude Include="common\AABB.h" />
-    <ClInclude Include="common\Common.h" />
-    <ClInclude Include="common\DataBuffer.h" />
-    <ClInclude Include="common\DyeColor.h" />
-    <ClInclude Include="common\Json.h" />
-    <ClInclude Include="common\JsonFwd.h" />
-    <ClInclude Include="common\MCString.h" />
-    <ClInclude Include="common\Nameable.h" />
-    <ClInclude Include="common\Position.h" />
-    <ClInclude Include="common\Types.h" />
-    <ClInclude Include="common\UUID.h" />
-    <ClInclude Include="common\VarInt.h" />
-    <ClInclude Include="common\Vector.h" />
-    <ClInclude Include="core\AuthToken.h" />
-    <ClInclude Include="core\Client.h" />
-    <ClInclude Include="core\ClientSettings.h" />
-    <ClInclude Include="core\Compression.h" />
-    <ClInclude Include="core\Connection.h" />
-    <ClInclude Include="core\Encryption.h" />
-    <ClInclude Include="core\PlayerManager.h" />
-    <ClInclude Include="entity\Attribute.h" />
-    <ClInclude Include="entity\Creeper.h" />
-    <ClInclude Include="entity\Entity.h" />
-    <ClInclude Include="entity\EntityFactory.h" />
-    <ClInclude Include="entity\EntityManager.h" />
-    <ClInclude Include="entity\LivingEntity.h" />
-    <ClInclude Include="entity\Metadata.h" />
-    <ClInclude Include="entity\Monster.h" />
-    <ClInclude Include="entity\Painting.h" />
-    <ClInclude Include="entity\Player.h" />
-    <ClInclude Include="entity\XPOrb.h" />
-    <ClInclude Include="inventory\Hotbar.h" />
-    <ClInclude Include="inventory\Inventory.h" />
-    <ClInclude Include="inventory\Slot.h" />
-    <ClInclude Include="nbt\NBT.h" />
-    <ClInclude Include="nbt\Tag.h" />
-    <ClInclude Include="network\IPAddress.h" />
-    <ClInclude Include="network\Network.h" />
-    <ClInclude Include="network\Socket.h" />
-    <ClInclude Include="network\TCPSocket.h" />
-    <ClInclude Include="network\UDPSocket.h" />
-    <ClInclude Include="protocol\packets\PacketsLogin.h" />
-    <ClInclude Include="protocol\packets\PacketsPlayInbound.h" />
-    <ClInclude Include="protocol\packets\PacketsPlayOutbound.h" />
-    <ClInclude Include="protocol\packets\PacketsStatus.h" />
-    <ClInclude Include="protocol\Protocol.h" />
-    <ClInclude Include="protocol\ProtocolState.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="util\Forge.h" />
-    <ClInclude Include="util\Hash.h" />
-    <ClInclude Include="util\HTTPClient.h" />
-    <ClInclude Include="util\ObserverSubject.h" />
-    <ClInclude Include="util\Tokenizer.h" />
-    <ClInclude Include="util\Utility.h" />
-    <ClInclude Include="util\VersionFetcher.h" />
-    <ClInclude Include="util\Yggdrasil.h" />
-    <ClInclude Include="world\Chunk.h" />
-    <ClInclude Include="world\World.h" />
+    <ClInclude Include="protocol\packets\Packet.h">
+      <Filter>protocol\packets</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="mclib.h">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="protocol\packets\Packet.cpp">
-      <Filter>Source Files\protocol\packets</Filter>
+    <ClCompile Include="block\Block.cpp">
+      <Filter>block</Filter>
+    </ClCompile>
+    <ClCompile Include="block\BlockRegistry.cpp">
+      <Filter>block</Filter>
+    </ClCompile>
+    <ClCompile Include="block\BlockEntity.cpp">
+      <Filter>block</Filter>
+    </ClCompile>
+    <ClCompile Include="block\InventoryBlock.cpp">
+      <Filter>block</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Banner.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Beacon.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Bed.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Chest.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Dispenser.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Dropper.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\EnchantmentTable.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\EndGateway.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\FlowerPot.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Furnace.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Hopper.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Jukebox.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\MonsterSpawner.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\NoteBlock.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Piston.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\RedstoneComparator.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\ShulkerBox.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Sign.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\Skull.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="common\DataBuffer.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\DyeColor.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\MCString.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\Position.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\UUID.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\VarInt.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="core\AuthToken.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Client.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ClientSettings.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Compression.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Connection.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Encryption.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\PlayerManager.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\EntityManager.cpp">
+      <Filter>entity</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\Metadata.cpp">
+      <Filter>entity</Filter>
+    </ClCompile>
+    <ClCompile Include="inventory\Hotbar.cpp">
+      <Filter>inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="inventory\Inventory.cpp">
+      <Filter>inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="inventory\Slot.cpp">
+      <Filter>inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="nbt\NBT.cpp">
+      <Filter>nbt</Filter>
+    </ClCompile>
+    <ClCompile Include="nbt\Tag.cpp">
+      <Filter>nbt</Filter>
+    </ClCompile>
+    <ClCompile Include="network\IPAddress.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\Network.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\Socket.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\TCPSocket.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\UDPSocket.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="world\Chunk.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="world\World.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Forge.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Hash.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\HTTPClient.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Utility.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\VersionFetcher.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Yggdrasil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\blocks\BlockFace.cpp">
+      <Filter>assets\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\blocks\BlockModel.cpp">
+      <Filter>assets\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\blocks\BlockState.cpp">
+      <Filter>assets\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="block\specific\BrewingStand.cpp">
+      <Filter>block\specific</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol\Protocol.cpp">
+      <Filter>protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol\packets\PacketsLogin.cpp">
+      <Filter>protocol\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol\packets\PacketsPlayInbound.cpp">
+      <Filter>protocol\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol\packets\PacketsPlayOutbound.cpp">
+      <Filter>protocol\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol\packets\PacketsStatus.cpp">
+      <Filter>protocol\packets</Filter>
     </ClCompile>
     <ClCompile Include="protocol\PacketHandler.cpp">
-      <Filter>Source Files\protocol\packets</Filter>
+      <Filter>protocol</Filter>
     </ClCompile>
     <ClCompile Include="protocol\PacketFactory.cpp">
-      <Filter>Source Files\protocol\packets</Filter>
+      <Filter>protocol</Filter>
     </ClCompile>
     <ClCompile Include="protocol\PacketDispatcher.cpp">
-      <Filter>Source Files\protocol\packets</Filter>
+      <Filter>protocol</Filter>
     </ClCompile>
-    <ClCompile Include="assets\blocks\BlockFace.cpp" />
-    <ClCompile Include="assets\blocks\BlockModel.cpp" />
-    <ClCompile Include="assets\blocks\BlockState.cpp" />
-    <ClCompile Include="block\BlockRegistry.cpp" />
-    <ClCompile Include="block\specific\Banner.cpp" />
-    <ClCompile Include="block\specific\Beacon.cpp" />
-    <ClCompile Include="block\specific\Bed.cpp" />
-    <ClCompile Include="block\Block.cpp" />
-    <ClCompile Include="block\BlockEntity.cpp" />
-    <ClCompile Include="block\specific\BrewingStand.cpp" />
-    <ClCompile Include="block\specific\Chest.cpp" />
-    <ClCompile Include="block\specific\Dispenser.cpp" />
-    <ClCompile Include="block\specific\Dropper.cpp" />
-    <ClCompile Include="block\specific\EnchantmentTable.cpp" />
-    <ClCompile Include="block\specific\EndGateway.cpp" />
-    <ClCompile Include="block\specific\FlowerPot.cpp" />
-    <ClCompile Include="block\specific\Furnace.cpp" />
-    <ClCompile Include="block\specific\Hopper.cpp" />
-    <ClCompile Include="block\InventoryBlock.cpp" />
-    <ClCompile Include="block\specific\Jukebox.cpp" />
-    <ClCompile Include="block\specific\MonsterSpawner.cpp" />
-    <ClCompile Include="block\specific\NoteBlock.cpp" />
-    <ClCompile Include="block\specific\Piston.cpp" />
-    <ClCompile Include="block\specific\RedstoneComparator.cpp" />
-    <ClCompile Include="block\specific\ShulkerBox.cpp" />
-    <ClCompile Include="block\specific\Sign.cpp" />
-    <ClCompile Include="block\specific\Skull.cpp" />
-    <ClCompile Include="common\DataBuffer.cpp" />
-    <ClCompile Include="common\DyeColor.cpp" />
-    <ClCompile Include="common\MCString.cpp" />
-    <ClCompile Include="common\Position.cpp" />
-    <ClCompile Include="common\UUID.cpp" />
-    <ClCompile Include="common\VarInt.cpp" />
-    <ClCompile Include="core\AuthToken.cpp" />
-    <ClCompile Include="core\Client.cpp" />
-    <ClCompile Include="core\ClientSettings.cpp" />
-    <ClCompile Include="core\Compression.cpp" />
-    <ClCompile Include="core\Connection.cpp" />
-    <ClCompile Include="core\Encryption.cpp" />
-    <ClCompile Include="core\PlayerManager.cpp" />
-    <ClCompile Include="entity\EntityManager.cpp" />
-    <ClCompile Include="entity\Metadata.cpp" />
-    <ClCompile Include="inventory\Hotbar.cpp" />
-    <ClCompile Include="inventory\Inventory.cpp" />
-    <ClCompile Include="inventory\Slot.cpp" />
-    <ClCompile Include="nbt\NBT.cpp" />
-    <ClCompile Include="nbt\Tag.cpp" />
-    <ClCompile Include="network\IPAddress.cpp" />
-    <ClCompile Include="network\Network.cpp" />
-    <ClCompile Include="network\Socket.cpp" />
-    <ClCompile Include="network\TCPSocket.cpp" />
-    <ClCompile Include="network\UDPSocket.cpp" />
-    <ClCompile Include="protocol\packets\PacketsLogin.cpp" />
-    <ClCompile Include="protocol\packets\PacketsPlayInbound.cpp" />
-    <ClCompile Include="protocol\packets\PacketsStatus.cpp" />
-    <ClCompile Include="protocol\packets\PacketsPlayOutbound.cpp" />
-    <ClCompile Include="protocol\Protocol.cpp" />
-    <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="util\Forge.cpp" />
-    <ClCompile Include="util\Hash.cpp" />
-    <ClCompile Include="util\HTTPClient.cpp" />
-    <ClCompile Include="util\Utility.cpp" />
-    <ClCompile Include="util\VersionFetcher.cpp" />
-    <ClCompile Include="util\Yggdrasil.cpp" />
-    <ClCompile Include="world\Chunk.cpp" />
-    <ClCompile Include="world\World.cpp" />
+    <ClCompile Include="protocol\packets\Packet.cpp">
+      <Filter>protocol\packets</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 #ifndef MCLIB_CORE_CLIENTSETTINGS_H
 #define MCLIB_CORE_CLIENTSETTINGS_H
 
-#include <mclib.h>
+
 #include <common/Types.h>
 
 

@@ -1,7 +1,7 @@
 #ifndef MCLIB_CORE_CLIENT_H
 #define MCLIB_CORE_CLIENT_H
 
-#include <mclib.h>
+
 #include <core/AuthToken.h>
 #include <core/Connection.h>
 #include <core/PlayerManager.h>
@@ -27,7 +27,7 @@ public:
 
 enum class UpdateMethod
 {
-	Block,
+	CMinecraftBlock,
 	Threaded,
 	Manual
 };
@@ -49,9 +49,9 @@ public:
 	void MCLIB_API OnSocketStateChange(Socket::Status newState);
 	void MCLIB_API UpdateThread();
 	void MCLIB_API Update();
-	bool MCLIB_API Login(const std::string& host, unsigned short port, const std::string& user, const std::string& password, UpdateMethod method = UpdateMethod::Block);
-	bool MCLIB_API Login(const std::string& host, unsigned short port, const std::string& user, AuthToken token, UpdateMethod method = UpdateMethod::Block);
-	void MCLIB_API Ping(const std::string& host, unsigned short port, UpdateMethod method = UpdateMethod::Block);
+	bool MCLIB_API Login(const std::string& host, unsigned short port, const std::string& user, const std::string& password, UpdateMethod method = UpdateMethod::CMinecraftBlock);
+	bool MCLIB_API Login(const std::string& host, unsigned short port, const std::string& user, AuthToken token, UpdateMethod method = UpdateMethod::CMinecraftBlock);
+	void MCLIB_API Ping(const std::string& host, unsigned short port, UpdateMethod method = UpdateMethod::CMinecraftBlock);
 
 	PacketDispatcher* GetDispatcher() { return m_Dispatcher; }
 	Connection* GetConnection() { return &m_Connection; }

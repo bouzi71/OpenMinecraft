@@ -58,7 +58,7 @@ Version VersionFetcher::GetVersion()
 	m_Connection = m_Client.GetConnection();
 
 	m_Client.GetConnection()->RegisterListener(this);
-	m_Client.Ping(m_Host, m_Port, UpdateMethod::Block);
+	m_Client.Ping(m_Host, m_Port, UpdateMethod::CMinecraftBlock);
 	m_Client.GetConnection()->UnregisterListener(this);
 
 	return m_Version;

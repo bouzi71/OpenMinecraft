@@ -203,7 +203,7 @@ int main(int argc, char* argvp[])
 
 				Vector3d min = ToVector3d(chunk_base);
 				Vector3d max = ToVector3d(chunk_base) + Vector3d(16, 16, 16);
-				AABB chunk_bounds(min, max);
+				CMinecraftAABB chunk_bounds(min, max);
 
 				if (false == frustum.Intersects(chunk_bounds)) 
 					continue;

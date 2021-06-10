@@ -54,7 +54,7 @@ ChunkMeshGenerator::~ChunkMeshGenerator()
 	m_World->UnregisterListener(this);
 }
 
-void ChunkMeshGenerator::OnBlockChange(Vector3i position, const Block * newBlock, const Block * oldBlock)
+void ChunkMeshGenerator::OnBlockChange(Vector3i position, const CMinecraftBlock * newBlock, const CMinecraftBlock * oldBlock)
 {
 	std::shared_ptr<ChunkColumn> column = m_World->GetChunk(position);
 
@@ -179,7 +179,7 @@ void ChunkMeshGenerator::ProcessChunks()
 				for (s64 x = 0; x < 18; ++x)
 				{
 					Vector3i offset(x - 1, y - 1, z - 1);
-					const Block* block = nullptr;
+					const CMinecraftBlock* block = nullptr;
 
 					std::size_t x_index = (s64)std::floor(offset.x / 16.0) + 1;
 					std::size_t z_index = (s64)std::floor(offset.z / 16.0) + 1;
@@ -307,7 +307,7 @@ int ChunkMeshGenerator::GetAmbientOcclusion(ChunkMeshBuildContext& context, cons
 	return 3 - (value1 + value2 + value_corner);
 }
 
-bool ChunkMeshGenerator::IsOccluding(BlockVariant* from_variant, BlockFace face, const Block* test_block)
+bool ChunkMeshGenerator::IsOccluding(BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block)
 {
 	if (test_block == nullptr) 
 		return false;
@@ -449,7 +449,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 			{
 				Vector3i mc_pos = context.world_position + Vector3i(x, y, z);
 
-				const Block* currentBlock = context.GetBlock(mc_pos);
+				const CMinecraftBlock* currentBlock = context.GetBlock(mc_pos);
 				if (currentBlock == nullptr)
 					continue;
 
@@ -466,7 +466,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 				const glm::vec3 base = terra::math::VecToGLM(mc_pos);
 
-				const Block* above = context.GetBlock(mc_pos + Vector3i(0, 1, 0));
+				const CMinecraftBlock* above = context.GetBlock(mc_pos + Vector3i(0, 1, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::Up, above))
 				{
 					// Render the top face of the current block.
@@ -527,7 +527,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const Block* below = context.GetBlock(mc_pos + Vector3i(0, -1, 0));
+				const CMinecraftBlock* below = context.GetBlock(mc_pos + Vector3i(0, -1, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::Down, below))
 				{
 					// Render the bottom face of the current block.
@@ -591,7 +591,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const Block* north = context.GetBlock(mc_pos + Vector3i(0, 0, -1));
+				const CMinecraftBlock* north = context.GetBlock(mc_pos + Vector3i(0, 0, -1));
 				if (false == IsOccluding(currentVariant, BlockFace::North, north))
 				{
 					// Render the north face of the current block.
@@ -653,7 +653,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const Block* south = context.GetBlock(mc_pos + Vector3i(0, 0, 1));
+				const CMinecraftBlock* south = context.GetBlock(mc_pos + Vector3i(0, 0, 1));
 				if (false == IsOccluding(currentVariant, BlockFace::South, south))
 				{
 					// Render the south face of the current block.
@@ -715,7 +715,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const Block* east = context.GetBlock(mc_pos + Vector3i(1, 0, 0));
+				const CMinecraftBlock* east = context.GetBlock(mc_pos + Vector3i(1, 0, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::East, east))
 				{
 					// Render the east face of the current block.
@@ -777,7 +777,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const Block* west = context.GetBlock(mc_pos + Vector3i(-1, 0, 0));
+				const CMinecraftBlock* west = context.GetBlock(mc_pos + Vector3i(-1, 0, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::West, west))
 				{
 					// Render the west face of the current block.
@@ -861,7 +861,7 @@ void ChunkMeshGenerator::GenerateMesh(s64 chunk_x, s64 chunk_y, s64 chunk_z)
 			for (int x = 0; x < 18; ++x)
 			{
 				Vector3i offset(x - 1, y - 1, z - 1);
-				const Block* block = m_World->GetBlock(ctx.world_position + offset);
+				const CMinecraftBlock* block = m_World->GetBlock(ctx.world_position + offset);
 
 				ctx.chunk_data[(y * 18 * 18) + (z * 18) + x] = block;
 			}

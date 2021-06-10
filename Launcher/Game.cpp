@@ -33,7 +33,7 @@ namespace terra
 
 	Player::Player(World* world) : m_CollisionDetector(world), m_OnGround(false), m_Sneaking(false), m_Transform({})
 	{
-		m_Transform.bounding_box = AABB(Vector3d(-0.3, 0, -0.3), Vector3d(0.3, 1.8, 0.3));
+		m_Transform.bounding_box = CMinecraftAABB(Vector3d(-0.3, 0, -0.3), Vector3d(0.3, 1.8, 0.3));
 		m_Transform.max_speed = 14.3f;
 	}
 
@@ -303,7 +303,7 @@ namespace terra
 	}
 
 	// TODO: Temporary fun code
-	std::pair<Vector3d, Face> GetClosestNormal(const Vector3d& pos, AABB bounds)
+	std::pair<Vector3d, Face> GetClosestNormal(const Vector3d& pos, CMinecraftAABB bounds)
 	{
 		Vector3d center = bounds.min + (bounds.max - bounds.min) / 2;
 		Vector3d dim = bounds.max - bounds.min;
@@ -365,11 +365,11 @@ namespace terra
 			Vector3d(-1, -1, 0), Vector3d(-1, -1, 1), Vector3d(-1, -1, -1)
 		};
 
-		Ray ray(from, direction);
+		CMinecraftRay ray(from, direction);
 
 		double closest_distance = std::numeric_limits<double>::max();
 		Vector3d closest_pos;
-		AABB closest_aabb;
+		CMinecraftAABB closest_aabb;
 		bool collided = false;
 
 		for (double i = 0; i < range + 1; ++i)
@@ -379,11 +379,11 @@ namespace terra
 			for (Vector3d checkDirection : directions)
 			{
 				Vector3d checkPos = position + checkDirection;
-				const Block* block = world.GetBlock(checkPos);
+				const CMinecraftBlock* block = world.GetBlock(checkPos);
 
 				if (block && block->IsOpaque())
 				{
-					AABB bounds = block->GetBoundingBox(checkPos);
+					CMinecraftAABB bounds = block->GetBoundingBox(checkPos);
 					double distance;
 
 					if (bounds.Intersects(ray, &distance))

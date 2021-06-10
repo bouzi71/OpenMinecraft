@@ -45,10 +45,10 @@ bool World::SetBlock(Vector3i position, u32 blockData)
 		(*chunk)[index] = section;
 	}
 
-	const Block* block = BlockRegistry::GetInstance()->GetBlock(blockData);
+	const CMinecraftBlock* block = BlockRegistry::GetInstance()->GetBlock(blockData);
 	//if (block == nullptr)
 	//{
-	//	printf("World::SetBlock: Block ID not found '%d'.\r\n", blockData);
+	//	printf("World::SetBlock: CMinecraftBlock ID not found '%d'.\r\n", blockData);
 	//	return false;
 	//}
 
@@ -64,12 +64,12 @@ void World::HandlePacket(in::ExplosionPacket* packet)
 	{
 		Vector3d absolute = position + ToVector3d(offset);
 
-		const Block* oldBlock = GetBlock(absolute);
+		const CMinecraftBlock* oldBlock = GetBlock(absolute);
 
 		// Set all affected blocks to air
 		SetBlock(ToVector3i(absolute), 0);
 
-		const Block* newBlock = BlockRegistry::GetInstance()->GetBlock(0);
+		const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock(0);
 		NotifyListeners(&WorldListener::OnBlockChange, ToVector3i(absolute), newBlock, oldBlock);
 	}
 }
@@ -134,7 +134,7 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 		chunk->RemoveBlockEntity(chunkStart + relative);
 
 		std::size_t index = change.y / 16;
-		const Block* oldBlock = BlockRegistry::GetInstance()->GetBlock(0);
+		const CMinecraftBlock* oldBlock = BlockRegistry::GetInstance()->GetBlock(0);
 		if ((*chunk)[index] == nullptr)
 		{
 			(*chunk)[index] = std::make_shared<Chunk>();
@@ -144,9 +144,9 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 			oldBlock = chunk->GetBlock(relative);
 		}
 
-		const Block* newBlock = BlockRegistry::GetInstance()->GetBlock(change.blockData);
+		const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock(change.blockData);
 		if (newBlock == nullptr)
-			printf("World::MultiBlockChangePacket: Block ID not found '%d'.\r\n", change.blockData);
+			printf("World::MultiBlockChangePacket: CMinecraftBlock ID not found '%d'.\r\n", change.blockData);
 
 		Vector3i blockChangePos = chunkStart + relative;
 		relative.y %= 16;
@@ -158,8 +158,8 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 
 void World::HandlePacket(in::BlockChangePacket* packet)
 {
-	const Block* newBlock = BlockRegistry::GetInstance()->GetBlock((u16)packet->GetBlockId());
-	const Block* oldBlock = GetBlock(packet->GetPosition());
+	const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock((u16)packet->GetBlockId());
+	const CMinecraftBlock* oldBlock = GetBlock(packet->GetPosition());
 
 	SetBlock(packet->GetPosition(), packet->GetBlockId());
 
@@ -227,17 +227,17 @@ std::shared_ptr<ChunkColumn> World::GetChunk(Vector3i pos) const
 	return iter->second;
 }
 
-const Block* World::GetBlock(Vector3f pos) const
+const CMinecraftBlock* World::GetBlock(Vector3f pos) const
 {
 	return GetBlock(Vector3i((s64)std::floor(pos.x), (s64)std::floor(pos.y), (s64)std::floor(pos.z)));
 }
 
-const Block* World::GetBlock(Vector3d pos) const
+const CMinecraftBlock* World::GetBlock(Vector3d pos) const
 {
 	return GetBlock(Vector3i((s64)std::floor(pos.x), (s64)std::floor(pos.y), (s64)std::floor(pos.z)));
 }
 
-const Block* World::GetBlock(Vector3i pos) const
+const CMinecraftBlock* World::GetBlock(Vector3i pos) const
 {
 	std::shared_ptr<ChunkColumn> col = GetChunk(pos);
 	if (!col) 

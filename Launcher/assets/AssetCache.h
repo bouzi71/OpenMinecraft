@@ -24,7 +24,7 @@ public:
 	TextureHandle AddTexture(const std::string& path, const std::string& data);
 
 	void AddVariantModel(std::unique_ptr<BlockVariant> variant);
-	BlockVariant* GetVariant(const Block* block);
+	BlockVariant* GetVariant(const CMinecraftBlock* block);
 
 	std::vector<BlockModel*> GetBlockModels(const std::string& find);
 	BlockModel* GetBlockModel(const std::string& path);

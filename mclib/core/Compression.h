@@ -1,7 +1,7 @@
 #ifndef MCLIB_CORE_COMPRESSION_H_
 #define MCLIB_CORE_COMPRESSION_H_
 
-#include <mclib.h>
+
 #include <common/Types.h>
 
 class DataBuffer;

@@ -1,7 +1,7 @@
 #ifndef MCLIB_COMMON_VAR_INT_H_
 #define MCLIB_COMMON_VAR_INT_H_
 
-#include <mclib.h>
+
 #include <common/Types.h>
 
 #include <iosfwd>

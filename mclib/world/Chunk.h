@@ -43,12 +43,12 @@ public:
 	/**
 	 * Position is relative to this chunk position
 	 */
-	MCLIB_API const Block* GetBlock(Vector3i chunkPosition) const;
+	MCLIB_API const CMinecraftBlock* GetBlock(Vector3i chunkPosition) const;
 
 	/**
 	* Position is relative to this chunk position
 	*/
-	MCLIB_API void SetBlock(Vector3i chunkPosition, const Block* block);
+	MCLIB_API void SetBlock(Vector3i chunkPosition, const CMinecraftBlock* block);
 
 	/**
 	 * chunkIndex is the index (0-16) of this chunk in the ChunkColumn
@@ -128,7 +128,7 @@ public:
 	/**
 	 * Position is relative to this ChunkColumn position.
 	 */
-	MCLIB_API const Block* GetBlock(Vector3i position);
+	MCLIB_API const CMinecraftBlock* GetBlock(Vector3i position);
 	MCLIB_API const ChunkColumnMetadata& GetMetadata() const { return m_Metadata; }
 
 	MCLIB_API BlockEntityPtr GetBlockEntity(Vector3i worldPos);

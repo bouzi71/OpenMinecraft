@@ -1,7 +1,7 @@
 #ifndef MCLIB_CORE_AUTHTOKEN_H_
 #define MCLIB_CORE_AUTHTOKEN_H_
 
-#include <mclib.h>
+
 
 
 

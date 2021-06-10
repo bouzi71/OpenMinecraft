@@ -1,7 +1,7 @@
 #ifndef MCLIB_COMMON_UUID_H_
 #define MCLIB_COMMON_UUID_H_
 
-#include <mclib.h>
+
 #include <common/Types.h>
 
 #include <iosfwd>

@@ -59,10 +59,10 @@ private:
 	std::unique_ptr<BlockModel> LoadBlockModel(terra::ZipArchive& archive, const std::string& path, TextureMap& texture_map, std::vector<IntermediateElement>& intermediates);
 	BlockModel* LoadBlockModel(terra::ZipArchive& archive, const std::string& ModelPath);
 
-	std::unique_ptr<BlockVariant> LoadDefaultVariantBlock(terra::ZipArchive& archive, const Block * Block);
+	std::unique_ptr<BlockVariant> LoadDefaultVariantBlock(terra::ZipArchive& archive, const CMinecraftBlock * Block);
 
-	std::unique_ptr<BlockVariant> LoadBlockVariant(terra::ZipArchive& archive, const Block * Block, json VariantJSONObject);
-	void LoadBlockVariants(terra::ZipArchive& archive, const Block* ForBlock);
+	std::unique_ptr<BlockVariant> LoadBlockVariant(terra::ZipArchive& archive, const CMinecraftBlock * Block, json VariantJSONObject);
+	void LoadBlockVariants(terra::ZipArchive& archive, const CMinecraftBlock* ForBlock);
 	void LoadBlockVariants(terra::ZipArchive& archive);
 
 private:

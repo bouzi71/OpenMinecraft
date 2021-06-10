@@ -1,9 +1,13 @@
 #pragma once
 
-#include <memory>
+#include "Interfaces/__Interfaces.h"
 
-#include <string>
-#include <vector>
-#include <unordered_map>
+#include <znCore.h>
+#pragma comment(lib, "znCore.lib")
+
+#include <znEngine.h>
+#pragma comment(lib, "znEngine.lib")
+
+#include "mclib.h"
+
 #include <array>
-#include <map>

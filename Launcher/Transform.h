@@ -20,7 +20,7 @@ struct Transform
 	float orientation;
 	float rotation;
 
-	AABB bounding_box;
+	CMinecraftAABB bounding_box;
 };
 
 } // namespace terra

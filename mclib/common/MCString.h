@@ -1,7 +1,7 @@
 #ifndef MCLIB_COMMON_MC_STRING_H_
 #define MCLIB_COMMON_MC_STRING_H_
 
-#include <mclib.h>
+
 #include <common/Types.h>
 
 

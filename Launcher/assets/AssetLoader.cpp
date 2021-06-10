@@ -329,7 +329,7 @@ BlockModel* AssetLoader::LoadBlockModel(terra::ZipArchive& archive, const std::s
 
 
 
-std::unique_ptr<BlockVariant> AssetLoader::LoadDefaultVariantBlock(terra::ZipArchive & archive, const Block * Block)
+std::unique_ptr<BlockVariant> AssetLoader::LoadDefaultVariantBlock(terra::ZipArchive & archive, const CMinecraftBlock * Block)
 {
 	BlockModel* model = m_Cache.GetBlockModel("block/bedrock.json");
 	if (model == nullptr)
@@ -346,7 +346,7 @@ std::unique_ptr<BlockVariant> AssetLoader::LoadDefaultVariantBlock(terra::ZipArc
 	return std::move(variant);
 }
 
-std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(terra::ZipArchive& archive, const Block * Block, json VariantJSONObject)
+std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(terra::ZipArchive& archive, const CMinecraftBlock * Block, json VariantJSONObject)
 {
 	json usedVariant;
 
@@ -389,14 +389,14 @@ std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(terra::ZipArchive& a
 	float x = usedVariant.value("x", 0.0f);
 	float y = usedVariant.value("y", 0.0f);
 	float z = usedVariant.value("z", 0.0f);
-	variant->SetRotation(glm::vec3(x, y, z));
+	//variant->SetRotation(glm::vec3(x, y, z));
 
 	//printf("Has rotation = %d. Rotation [%f, %f, %f].\r\n", variant->HasRotation(), variant->GetRotations().x, variant->GetRotations().y, variant->GetRotations().z);
 
 	return std::move(variant);
 }
 
-void AssetLoader::LoadBlockVariants(terra::ZipArchive& archive, const Block * ForBlock)
+void AssetLoader::LoadBlockVariants(terra::ZipArchive& archive, const CMinecraftBlock * ForBlock)
 {
 	std::string blockStateFileFullName = "assets/minecraft/blockstates/" + ForBlock->GetName() + ".json";
 

@@ -13,7 +13,7 @@
 class BlockVariant
 {
 public:
-	BlockVariant(BlockModel* model, const Block* block) 
+	BlockVariant(BlockModel* model, const CMinecraftBlock* block) 
 		: m_Model(model)
 		, m_Block(block)
 		, m_Rotations(0.0f, 0.0f, 0.0f)
@@ -22,7 +22,7 @@ public:
 	{}
 
 	BlockModel* GetModel() const { return m_Model; }
-	const Block* GetBlock() const { return m_Block; }
+	const CMinecraftBlock* GetBlock() const { return m_Block; }
 
 	const glm::vec3& GetRotations() const 
 	{ 
@@ -41,7 +41,7 @@ public:
 
 private:
 	BlockModel* m_Model;
-	const Block* m_Block;
+	const CMinecraftBlock* m_Block;
 	glm::vec3 m_Rotations;
 	bool m_LockUV;
 	bool m_HasRotation;

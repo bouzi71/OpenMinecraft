@@ -67,7 +67,7 @@ void AssetCache::AddVariantModel(std::unique_ptr<BlockVariant> variant)
 	m_BlockVariants[variant->GetBlock()->GetID()] = std::move(variant);
 }
 
-BlockVariant* AssetCache::GetVariant(const Block* block)
+BlockVariant* AssetCache::GetVariant(const CMinecraftBlock* block)
 {
 	//const auto& variantCacheIt = m_VariantCache.find(block->GetID());
 	//if (variantCacheIt == m_VariantCache.end())

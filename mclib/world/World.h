@@ -15,7 +15,7 @@ public:
 	// yIndex is the chunk section index of the column, 0 means bottom chunk, 15 means top
 	virtual void OnChunkLoad(ChunkPtr chunk, const ChunkColumnMetadata& meta, u16 yIndex) {}
 	virtual void OnChunkUnload(std::shared_ptr<ChunkColumn> chunk) {}
-	virtual void OnBlockChange(Vector3i position, const Block * newBlock, const Block * oldBlock) {}
+	virtual void OnBlockChange(Vector3i position, const CMinecraftBlock * newBlock, const CMinecraftBlock * oldBlock) {}
 };
 
 
@@ -52,9 +52,9 @@ public:
 	 */
 	std::shared_ptr<ChunkColumn> MCLIB_API GetChunk(Vector3i pos) const;
 
-	MCLIB_API const Block* GetBlock(Vector3d pos) const;
-	MCLIB_API const Block* GetBlock(Vector3f pos) const;
-	MCLIB_API const Block* GetBlock(Vector3i pos) const;
+	MCLIB_API const CMinecraftBlock* GetBlock(Vector3d pos) const;
+	MCLIB_API const CMinecraftBlock* GetBlock(Vector3f pos) const;
+	MCLIB_API const CMinecraftBlock* GetBlock(Vector3i pos) const;
 
 	MCLIB_API BlockEntityPtr GetBlockEntity(Vector3i pos) const;
 	// Gets all of the known block entities in loaded chunks

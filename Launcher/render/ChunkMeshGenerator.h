@@ -65,10 +65,10 @@ struct Vertex
 
 struct ChunkMeshBuildContext
 {
-	const Block* chunk_data[18 * 18 * 18];
+	const CMinecraftBlock* chunk_data[18 * 18 * 18];
 	Vector3i world_position;
 
-	const Block* GetBlock(const Vector3i& world_pos)
+	const CMinecraftBlock* GetBlock(const Vector3i& world_pos)
 	{
 		Vector3i::value_type x = world_pos.x - world_position.x + 1;
 		Vector3i::value_type y = world_pos.y - world_position.y + 1;
@@ -88,7 +88,7 @@ public:
 	~ChunkMeshGenerator();
 
 	// WorldListener
-	void OnBlockChange(Vector3i position, const Block* newBlock, const Block* oldBlock) override;
+	void OnBlockChange(Vector3i position, const CMinecraftBlock* newBlock, const CMinecraftBlock* oldBlock) override;
 	void OnChunkLoad(ChunkPtr chunk, const ChunkColumnMetadata& meta, u16 index_y) override;
 	void OnChunkUnload(std::shared_ptr<ChunkColumn> chunk) override;
 
@@ -134,7 +134,7 @@ private:
 	};
 
 	int GetAmbientOcclusion(ChunkMeshBuildContext& context, const Vector3i& side1, const Vector3i& side2, const Vector3i& corner);
-	bool IsOccluding(BlockVariant* from_variant, BlockFace face, const Block* test_block);
+	bool IsOccluding(BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block);
 	void WorkerUpdate();
 	void EnqueueBuildWork(long chunk_x, int chunk_y, long chunk_z);
 

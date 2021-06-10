@@ -1,7 +1,7 @@
 #ifndef MCLIB_NBT_NBT_H_
 #define MCLIB_NBT_NBT_H_
 
-#include <mclib.h>
+
 #include <common/Types.h>
 #include <nbt/Tag.h>
 

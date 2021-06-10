@@ -17,7 +17,7 @@ namespace terra
 			public:
 				Frustum(glm::vec3 position, glm::vec3 forward, float near, float far, float fov, float ratio, glm::vec3 up, glm::vec3 right);
 
-				bool Intersects(const AABB& aabb) const;
+				bool Intersects(const CMinecraftAABB& aabb) const;
 				bool Intersects(glm::vec3 v) const;
 				bool Intersects(Vector3i v) const;
 				bool Intersects(Vector3d v) const;

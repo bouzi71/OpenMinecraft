@@ -28,7 +28,7 @@ namespace terra
 	private:
 		World* m_World;
 
-		std::vector<Vector3i> GetSurroundingLocations(AABB bounds);
+		std::vector<Vector3i> GetSurroundingLocations(CMinecraftAABB bounds);
 
 	public:
 		CollisionDetector(World* world) noexcept : m_World(world) {}

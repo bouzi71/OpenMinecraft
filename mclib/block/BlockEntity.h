@@ -1,7 +1,7 @@
 #ifndef MCLIB_BLOCK_BLOCK_ENTITY_H_
 #define MCLIB_BLOCK_BLOCK_ENTITY_H_
 
-#include <mclib.h>
+
 #include <common/Vector.h>
 #include <nbt/NBT.h>
 #include <inventory/Slot.h>

@@ -99,7 +99,7 @@ bool CMinecraftClient::Login(const std::string& host, unsigned short port, const
 	{
 		m_UpdateThread = std::thread(&CMinecraftClient::UpdateThread, this);
 	}
-	else if (method == UpdateMethod::Block)
+	else if (method == UpdateMethod::CMinecraftBlock)
 	{
 		UpdateThread();
 	}
@@ -126,7 +126,7 @@ bool CMinecraftClient::Login(const std::string& host, unsigned short port, const
 	{
 		m_UpdateThread = std::thread(&CMinecraftClient::UpdateThread, this);
 	}
-	else if (method == UpdateMethod::Block)
+	else if (method == UpdateMethod::CMinecraftBlock)
 	{
 		UpdateThread();
 	}
@@ -150,7 +150,7 @@ void CMinecraftClient::Ping(const std::string& host, unsigned short port, Update
 	{
 		m_UpdateThread = std::thread(&CMinecraftClient::UpdateThread, this);
 	}
-	else if (method == UpdateMethod::Block)
+	else if (method == UpdateMethod::CMinecraftBlock)
 	{
 		UpdateThread();
 	}

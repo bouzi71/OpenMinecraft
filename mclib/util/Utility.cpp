@@ -346,7 +346,7 @@ PlayerController::~PlayerController()
 	m_PlayerManager.UnregisterListener(this);
 }
 
-AABB PlayerController::GetBoundingBox() const
+CMinecraftAABB PlayerController::GetBoundingBox() const
 {
 	return m_BoundingBox + m_Position;
 }
@@ -368,15 +368,15 @@ bool PlayerController::ClearPath(Vector3d target)
 	auto check = [&](Vector3d start, Vector3d delta) {
 		Vector3d checkAbove = start + delta + Vector3d(0, 1, 0);
 		Vector3d checkBelow = start + delta + Vector3d(0, 0, 0);
-		const Block* aboveBlock = m_World.GetBlock(checkAbove);
-		const Block* belowBlock = m_World.GetBlock(checkBelow);
+		const CMinecraftBlock* aboveBlock = m_World.GetBlock(checkAbove);
+		const CMinecraftBlock* belowBlock = m_World.GetBlock(checkBelow);
 
 		if (aboveBlock && aboveBlock->IsSolid())
 			return false;
 
 		if (belowBlock && belowBlock->IsSolid())
 		{
-			const Block* twoAboveBlock = m_World.GetBlock(checkAbove + Vector3d(0, 1, 0));
+			const CMinecraftBlock* twoAboveBlock = m_World.GetBlock(checkAbove + Vector3d(0, 1, 0));
 			// Bad path if there isn't a two high gap in it
 			if (twoAboveBlock && twoAboveBlock->IsSolid())
 				return false;
@@ -396,10 +396,10 @@ bool PlayerController::ClearPath(Vector3d target)
 		if (!check(position - side * CheckWidth, delta)) return false;
 
 		Vector3d checkFloor = position + delta + Vector3d(0, -1, 0);
-		const Block* floorBlock = m_World.GetBlock(checkFloor);
+		const CMinecraftBlock* floorBlock = m_World.GetBlock(checkFloor);
 		if (floorBlock && !floorBlock->IsSolid())
 		{
-			const Block* belowFloorBlock = m_World.GetBlock(checkFloor - Vector3d(0, 1, 0));
+			const CMinecraftBlock* belowFloorBlock = m_World.GetBlock(checkFloor - Vector3d(0, 1, 0));
 
 			// Fail if there is a two block drop
 			if (belowFloorBlock && !belowFloorBlock->IsSolid())
@@ -464,9 +464,9 @@ void PlayerController::UpdateDigging()
 
 }
 
-std::vector<std::pair<const Block*, Vector3i>> PlayerController::GetNearbyBlocks(const s32 radius)
+std::vector<std::pair<const CMinecraftBlock*, Vector3i>> PlayerController::GetNearbyBlocks(const s32 radius)
 {
-	using BlockPos = std::pair<const Block*, Vector3i>;
+	using BlockPos = std::pair<const CMinecraftBlock*, Vector3i>;
 
 	std::vector<BlockPos> nearbyBlocks;
 
@@ -497,7 +497,7 @@ std::vector<std::pair<const Block*, Vector3i>> PlayerController::GetNearbyBlocks
 
 bool PlayerController::HandleJump()
 {
-	AABB playerBounds = m_BoundingBox + m_Position;
+	CMinecraftAABB playerBounds = m_BoundingBox + m_Position;
 
 	for (const auto& state : GetNearbyBlocks(2))
 	{
@@ -518,12 +518,12 @@ bool PlayerController::HandleJump()
 bool PlayerController::HandleFall()
 {
 	double bestDist = FallSpeed;
-	Block* bestBlock = nullptr;
+	CMinecraftBlock* bestBlock = nullptr;
 
 	if (!InLoadedChunk())
 		return false;
 
-	AABB playerBounds = m_BoundingBox + (m_Position - Vector3d(0, FallSpeed, 0));
+	CMinecraftAABB playerBounds = m_BoundingBox + (m_Position - Vector3d(0, FallSpeed, 0));
 
 	for (const auto& state : GetNearbyBlocks(2))
 	{
@@ -532,7 +532,7 @@ bool PlayerController::HandleFall()
 		auto boundingBoxes = checkBlock->GetBoundingBoxes();
 		for (auto blockBounds : boundingBoxes)
 		{
-			AABB checkBounds = blockBounds + state.second;
+			CMinecraftAABB checkBounds = blockBounds + state.second;
 
 			if (checkBounds.Intersects(playerBounds))
 			{
@@ -623,7 +623,7 @@ void PlayerController::Update()
 			{
 				Vector3d checkPos = m_Position + Vector3RotateAboutY(Vector3d(0, 0, CheckWidth), angle) - Vector3d(0, 1, 0);
 
-				const Block* checkBlock = m_World.GetBlock(checkPos);
+				const CMinecraftBlock* checkBlock = m_World.GetBlock(checkPos);
 				if (checkBlock && checkBlock->IsSolid())
 				{
 					onGround = true;

@@ -41,7 +41,7 @@ private:
 	Vector3d m_Position;
 	float m_Yaw;
 	float m_Pitch;
-	AABB m_BoundingBox;
+	CMinecraftAABB m_BoundingBox;
 	EntityId m_EntityId;
 	u64 m_LastUpdate;
 	Vector3d m_TargetPos;
@@ -56,7 +56,7 @@ private:
 	// todo: gravity
 	const float FallSpeed = 8.3f * (50.0f / 1000.0f);
 
-	std::vector<std::pair<const Block*, Vector3i>> GetNearbyBlocks(const s32 radius);
+	std::vector<std::pair<const CMinecraftBlock*, Vector3i>> GetNearbyBlocks(const s32 radius);
 
 public:
 	MCLIB_API PlayerController(Connection* connection, World& world, PlayerManager& playerManager);
@@ -80,7 +80,7 @@ public:
 	Vector3d MCLIB_API GetHeading() const;
 	float MCLIB_API GetYaw() const;
 	float MCLIB_API GetPitch() const;
-	AABB MCLIB_API GetBoundingBox() const;
+	CMinecraftAABB MCLIB_API GetBoundingBox() const;
 
 	void MCLIB_API SetYaw(float yaw);
 	void MCLIB_API SetPitch(float pitch);

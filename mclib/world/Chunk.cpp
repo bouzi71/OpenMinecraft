@@ -54,7 +54,7 @@ void Chunk::Load(DataBuffer& in, ChunkColumnMetadata* meta, s32 chunkIndex)
 
 	static const s64 lightSize = 16 * 16 * 16 / 2;
 
-	// Block light data
+	// CMinecraftBlock light data
 	in.SetReadOffset(in.GetReadOffset() + lightSize);
 
 	// Sky Light
@@ -64,7 +64,7 @@ void Chunk::Load(DataBuffer& in, ChunkColumnMetadata* meta, s32 chunkIndex)
 	}
 }
 
-const Block* Chunk::GetBlock(Vector3i chunkPosition) const
+const CMinecraftBlock* Chunk::GetBlock(Vector3i chunkPosition) const
 {
 	if (chunkPosition.x < 0 || chunkPosition.x > 15 || chunkPosition.y < 0 || chunkPosition.y > 15 || chunkPosition.z < 0 || chunkPosition.z > 15)
 	{
@@ -93,14 +93,14 @@ const Block* Chunk::GetBlock(Vector3i chunkPosition) const
 
 	const u16 blockType = m_BitsPerBlock < 9 ? m_Palette[value] : value;
 
-	const Block* block = BlockRegistry::GetInstance()->GetBlock(blockType);
+	const CMinecraftBlock* block = BlockRegistry::GetInstance()->GetBlock(blockType);
 	//if (block == nullptr)
-	//	printf("World::GetBlock: Block ID not found '%d'.\r\n", blockType);
+	//	printf("World::GetBlock: CMinecraftBlock ID not found '%d'.\r\n", blockType);
 
 	return block;
 }
 
-void Chunk::SetBlock(Vector3i chunkPosition, const Block* block)
+void Chunk::SetBlock(Vector3i chunkPosition, const CMinecraftBlock* block)
 {
 	std::size_t index = (std::size_t)(chunkPosition.y * 16 * 16 + chunkPosition.z * 16 + chunkPosition.x);
 	s32 bitIndex = index * m_BitsPerBlock;
@@ -153,7 +153,7 @@ ChunkColumn::ChunkColumn(ChunkColumnMetadata metadata)
 		m_Chunks[i] = nullptr;
 }
 
-const Block* ChunkColumn::GetBlock(Vector3i position)
+const CMinecraftBlock* ChunkColumn::GetBlock(Vector3i position)
 {
 	s32 chunkIndex = (s32)(position.y / 16);
 	Vector3i relativePosition(position.x, position.y % 16, position.z);

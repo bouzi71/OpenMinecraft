@@ -1,7 +1,7 @@
 #ifndef MCLIB_INVENTORY_SLOT_H_
 #define MCLIB_INVENTORY_SLOT_H_
 
-#include <mclib.h>
+
 #include <common/Types.h>
 #include <nbt/NBT.h>
 #include <protocol/ProtocolState.h>

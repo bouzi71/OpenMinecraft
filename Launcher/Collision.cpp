@@ -19,7 +19,7 @@ namespace terra
 		return axes[basisIndex];
 	}
 
-	Vector3d GetClosestFaceNormal(const Vector3d& pos, AABB bounds)
+	Vector3d GetClosestFaceNormal(const Vector3d& pos, CMinecraftAABB bounds)
 	{
 		Vector3d center = bounds.min + (bounds.max - bounds.min) / 2;
 		Vector3d dim = bounds.max - bounds.min;
@@ -51,7 +51,7 @@ namespace terra
 		Vector3d direction = Vector3Normalize(rayVector);
 		double length = rayVector.Length();
 
-		Ray ray(from, direction);
+		CMinecraftRay ray(from, direction);
 
 		if (collision)
 			* collision = Collision();
@@ -64,11 +64,11 @@ namespace terra
 			for (Vector3d checkDirection : directions)
 			{
 				Vector3d checkPos = position + checkDirection;
-				const Block* block = m_World->GetBlock(ToVector3i(checkPos));
+				const CMinecraftBlock* block = m_World->GetBlock(ToVector3i(checkPos));
 
 				if (block && block->IsSolid())
 				{
-					AABB bounds = block->GetBoundingBox(checkPos);
+					CMinecraftAABB bounds = block->GetBoundingBox(checkPos);
 					double distance;
 
 					if (bounds.Intersects(ray, &distance))
@@ -90,7 +90,7 @@ namespace terra
 		return false;
 	}
 
-	std::vector<Vector3i> CollisionDetector::GetSurroundingLocations(AABB bounds)
+	std::vector<Vector3i> CollisionDetector::GetSurroundingLocations(CMinecraftAABB bounds)
 	{
 		std::vector<Vector3i> locs;
 
@@ -125,7 +125,7 @@ namespace terra
 
 			for (std::size_t i = 0; i < 3; ++i)
 			{
-				AABB playerBounds = transform->bounding_box;
+				CMinecraftAABB playerBounds = transform->bounding_box;
 
 				if (iteration == 0)
 					position[i] += velocity[i] * dt + input_velocity[i] * dt;
@@ -137,11 +137,11 @@ namespace terra
 
 				for (Vector3i checkPos : surrounding)
 				{
-					const Block* block = m_World->GetBlock(checkPos);
+					const CMinecraftBlock* block = m_World->GetBlock(checkPos);
 
 					if (block && block->IsSolid())
 					{
-						AABB blockBounds = block->GetBoundingBox(checkPos);
+						CMinecraftAABB blockBounds = block->GetBoundingBox(checkPos);
 
 						if (playerBounds.Intersects(blockBounds))
 						{

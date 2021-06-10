@@ -82,7 +82,7 @@ namespace terra
 				return true;
 			}
 
-			glm::vec3 GetVertex(const AABB& aabb, int index)
+			glm::vec3 GetVertex(const CMinecraftAABB& aabb, int index)
 			{
 				Vector3d v;
 				Vector3d diff = aabb.max - aabb.min;
@@ -123,7 +123,7 @@ namespace terra
 				return VecToGLM(v);
 			}
 
-			bool Frustum::Intersects(const AABB& aabb) const
+			bool Frustum::Intersects(const CMinecraftAABB& aabb) const
 			{
 				for (int i = 0; i < 6; ++i)
 				{

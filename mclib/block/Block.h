@@ -5,11 +5,20 @@
 #include <common/Types.h>
 #include <protocol/ProtocolState.h>
 
-class Block
+class CMinecraftBlock
 {
 	friend class BlockRegistry;
 public:
-	explicit Block(const std::string& name, u32 Type, u32 Meta, bool IsTransperent = false, bool IsSolid = true)
+	explicit CMinecraftBlock(const std::string& name, u32 ID, bool IsTransperent, bool IsSolid)
+		: m_Name(name)
+		, m_ID(ID)
+		, m_IsTransperent(IsTransperent)
+		, m_Solid(IsSolid)
+	{
+		//_ASSERT(false == name.empty());
+	}
+
+	explicit CMinecraftBlock(const std::string& name, u32 Type, u32 Meta, bool IsTransperent, bool IsSolid)
 		: m_Name(name)
 		, m_ID(Type << 4 | (Meta & 15))
 		, m_IsTransperent(IsTransperent)
@@ -18,7 +27,7 @@ public:
 		//_ASSERT(false == name.empty());
 	}
 
-	explicit Block(const std::string& name, u32 ID, bool IsTransperent, bool IsSolid, const AABB& bounds)
+	explicit CMinecraftBlock(const std::string& name, u32 ID, bool IsTransperent, bool IsSolid, const CMinecraftAABB& bounds)
 		: m_Name(name)
 		, m_ID(ID)
 		, m_IsTransperent(IsTransperent)
@@ -28,15 +37,15 @@ public:
 		//_ASSERT(false == name.empty());
 	}
 
-	virtual ~Block() 
+	virtual ~CMinecraftBlock() 
 	{}
 
-	Block(const Block& other) = delete;
-	Block& operator=(const Block& rhs) = delete;
-	Block(Block&& other) = delete;
-	Block& operator=(Block&& rhs) = delete;
+	CMinecraftBlock(const CMinecraftBlock& other) = delete;
+	CMinecraftBlock& operator=(const CMinecraftBlock& rhs) = delete;
+	CMinecraftBlock(CMinecraftBlock&& other) = delete;
+	CMinecraftBlock& operator=(CMinecraftBlock&& rhs) = delete;
 
-	bool operator==(const Block& other) noexcept
+	bool operator==(const CMinecraftBlock& other) noexcept
 	{
 		return m_ID == other.m_ID;
 	}
@@ -76,37 +85,37 @@ public:
 		return m_BoundingBox.min != Vector3d(0, 0, 0) || m_BoundingBox.max != Vector3d(0, 0, 0);
 	}
 
-	virtual AABB GetBoundingBox() const noexcept
+	virtual CMinecraftAABB GetBoundingBox() const noexcept
 	{
 		return m_BoundingBox;
 	}
 
-	virtual AABB GetBoundingBox(Vector3i at) const // at is the world position of this block. Used to get the world bounding box
+	virtual CMinecraftAABB GetBoundingBox(Vector3i at) const // at is the world position of this block. Used to get the world bounding box
 	{
 		Vector3d atd = ToVector3d(at);
-		AABB bounds = m_BoundingBox;
+		CMinecraftAABB bounds = m_BoundingBox;
 		bounds.min += atd;
 		bounds.max += atd;
 		return bounds;
 	}
 
-	virtual AABB GetBoundingBox(Vector3d at) const
+	virtual CMinecraftAABB GetBoundingBox(Vector3d at) const
 	{
 		return GetBoundingBox(ToVector3i(at));
 	}
 
-	virtual std::pair<bool, AABB> CollidesWith(Vector3i at, const AABB& other) const
+	virtual std::pair<bool, CMinecraftAABB> CollidesWith(Vector3i at, const CMinecraftAABB& other) const
 	{
-		AABB boundingBox = GetBoundingBox() + at;
+		CMinecraftAABB boundingBox = GetBoundingBox() + at;
 		return std::make_pair(boundingBox.Intersects(other), boundingBox);
 	}
 
-	virtual std::vector<AABB> GetBoundingBoxes() const // Returns the raw unmodified-by-position bounding boxes.
+	virtual std::vector<CMinecraftAABB> GetBoundingBoxes() const // Returns the raw unmodified-by-position bounding boxes.
 	{
-		return std::vector<AABB>(1, m_BoundingBox);
+		return std::vector<CMinecraftAABB>(1, m_BoundingBox);
 	}
 
-	void SetBoundingBox(const AABB& bound) noexcept
+	void SetBoundingBox(const CMinecraftAABB& bound) noexcept
 	{
 		m_BoundingBox = bound;
 	}
@@ -147,12 +156,12 @@ public:
 	//
 	// Blockmetas
 	//
-	const std::map<u32, const Block*>& GetBlockmetas() const noexcept
+	const std::map<u32, const CMinecraftBlock*>& GetBlockmetas() const noexcept
 	{
 		return m_Blockmetas;
 	}
 
-	const Block* GetBlockmeta(u32 Meta) const noexcept
+	const CMinecraftBlock* GetBlockmeta(u32 Meta) const noexcept
 	{
 		const auto& blockmetasIt = m_Blockmetas.find(Meta);
 		if (blockmetasIt == m_Blockmetas.end())
@@ -160,7 +169,7 @@ public:
 		return (blockmetasIt->second);
 	}
 
-	void AddBlockmeta(const Block* Blockmeta) noexcept
+	void AddBlockmeta(const CMinecraftBlock* Blockmeta) noexcept
 	{
 		m_Blockmetas[Blockmeta->GetMeta()] = Blockmeta;
 	}
@@ -170,9 +179,9 @@ protected:
 	u32 m_ID;
 	bool m_IsTransperent;
 	bool m_Solid;
-	AABB m_BoundingBox;
+	CMinecraftAABB m_BoundingBox;
 	std::vector<std::string> m_Variables;
-	std::map<u32, const Block*> m_Blockmetas;
+	std::map<u32, const CMinecraftBlock*> m_Blockmetas;
 };
 
 
