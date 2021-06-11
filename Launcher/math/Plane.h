@@ -1,7 +1,6 @@
 #ifndef TERRACOTTA_MATH_PLANE_H_
 #define TERRACOTTA_MATH_PLANE_H_
 
-#include <glm/glm/glm.hpp>
 #include <common/Vector.h>
 
 namespace terra

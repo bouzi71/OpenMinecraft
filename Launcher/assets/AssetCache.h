@@ -17,8 +17,8 @@ class ZipArchive;
 class AssetCache
 {
 public:
-	AssetCache() {}
-	virtual ~AssetCache() {}
+	AssetCache(const IBaseManager& BaseManager);
+	virtual ~AssetCache();
 
 	TextureArray& GetTextures() { return m_TextureArray; }
 	TextureHandle AddTexture(const std::string& path, const std::string& data);

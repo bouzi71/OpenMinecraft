@@ -1,41 +1,24 @@
 #ifndef TERRACOTTA_GAME_H_
 #define TERRACOTTA_GAME_H_
 
+#if 0
+
 #include <core/Client.h>
 
 #include "Camera.h"
-#include "GameWindow.h"
 #include "Transform.h"
 #include "Collision.h"
 
 #include <protocol/packets/Packet.h>
 #include <protocol/PacketHandler.h>
+
 #include <world/World.h>
 
 
 
 namespace terra
 {
-	class Player
-	{
-	public:
-		Player(World* world);
 
-		void Update(float dt);
-
-		Transform& GetTransform() noexcept { return m_Transform; }
-
-		bool OnGround();
-		bool IsSneaking() const { return m_Sneaking; }
-		void SetSneaking(bool sneaking) { m_Sneaking = sneaking; }
-
-		CollisionDetector& GetCollisionDetector() { return m_CollisionDetector; }
-	private:
-		bool m_OnGround;
-		bool m_Sneaking;
-		Transform m_Transform;
-		CollisionDetector m_CollisionDetector;
-	};
 
 
 	class Game 
@@ -43,7 +26,7 @@ namespace terra
 		, public PlayerListener
 	{
 	public:
-		Game(PacketDispatcher* dispatcher, GameWindow& window, const Camera& camera);
+		Game(PacketDispatcher* dispatcher, const std::shared_ptr<ICameraComponent3D>& camera);
 
 		void OnMouseChange(double x, double y);
 		void OnMouseScroll(double offset_x, double offset_y);
@@ -62,15 +45,14 @@ namespace terra
 
 		void CreatePlayer(World* world);
 
-		Camera& GetCamera() { return m_Camera; }
+		std::shared_ptr<ICameraComponent3D> GetCamera() { return m_Camera; }
 		Vector3d GetPosition();
 		CMinecraftClient& GetNetworkClient() { return m_NetworkClient; }
 
 	private:
 		CMinecraftClient m_NetworkClient;
-		GameWindow& m_Window;
 		std::unique_ptr<Player> m_Player;
-		Camera m_Camera;
+		std::shared_ptr<ICameraComponent3D> m_Camera;
 		float m_DeltaTime;
 		float m_LastFrame;
 		float m_LastPositionTime;
@@ -78,5 +60,7 @@ namespace terra
 	};
 
 } // ns terra
+
+#endif
 
 #endif

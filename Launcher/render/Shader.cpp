@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#if 0
+
 #include "Shader.h"
 
 
@@ -125,3 +127,5 @@ void Shader::Stop()
 
 } // ns render
 } // ns terra
+
+#endif

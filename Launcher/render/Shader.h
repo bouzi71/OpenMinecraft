@@ -1,6 +1,8 @@
 #ifndef TERRACOTTA_RENDER_SHADER_H_
 #define TERRACOTTA_RENDER_SHADER_H_
 
+#if 0
+
 #include <GL/glew.h>
 
 namespace terra
@@ -30,5 +32,7 @@ private:
 
 } // ns render
 } // ns terra
+
+#endif
 
 #endif

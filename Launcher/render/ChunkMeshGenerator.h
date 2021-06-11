@@ -9,8 +9,6 @@
 #include <common/Vector.h>
 #include <world/World.h>
 
-#include <glm/glm/glm.hpp>
-
 #include "../PriorityQueue.h"
 
 #include <assets/blocks/BlockFace.h>
@@ -42,6 +40,7 @@ struct hash<Vector3i>
 
 namespace terra
 {
+
 namespace block
 {
 class BlockModel;
@@ -54,12 +53,16 @@ struct Vertex
 {
 	glm::vec3 position;
 	glm::vec2 uv;
-	u32 texture_index;
+	uint32 texture_index;
 	glm::vec3 tint;
-	unsigned char ambient_occlusion;
+	uint32 ambient_occlusion;
 
-	Vertex(glm::vec3 pos, glm::vec2 uv, u32 tex_index, glm::vec3 tint, int ambient_occlusion)
-		: position(pos), uv(uv), texture_index(tex_index), tint(tint), ambient_occlusion(static_cast<unsigned char>(ambient_occlusion))
+	Vertex(glm::vec3 pos, glm::vec2 uv, uint32 tex_index, glm::vec3 tint, int ambient_occlusion)
+		: position(pos)
+		, uv(uv)
+		, texture_index(tex_index)
+		, tint(tint)
+		, ambient_occlusion(static_cast<uint32>(ambient_occlusion))
 	{}
 };
 
@@ -84,8 +87,8 @@ class ChunkMeshGenerator
 public:
 	using iterator = std::unordered_map<Vector3i, std::unique_ptr<terra::render::ChunkMesh>>::iterator;
 
-	ChunkMeshGenerator(World* world, const glm::vec3& camera_position);
-	~ChunkMeshGenerator();
+	ChunkMeshGenerator(IRenderDevice& RenderDevice, World* world, const glm::vec3& camera_position);
+	virtual ~ChunkMeshGenerator();
 
 	// WorldListener
 	void OnBlockChange(Vector3i position, const CMinecraftBlock* newBlock, const CMinecraftBlock* oldBlock) override;
@@ -139,6 +142,8 @@ private:
 	void EnqueueBuildWork(long chunk_x, int chunk_y, long chunk_z);
 
 private:
+	IRenderDevice& m_RenderDevice;
+
 	std::mutex m_QueueMutex;
 	PriorityQueue<std::shared_ptr<ChunkMeshBuildContext>, ChunkMeshBuildComparator> m_ChunkBuildQueue;
 	std::deque<Vector3i> m_ChunkPushQueue;

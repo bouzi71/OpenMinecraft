@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "Game.h"
+#if 0
 
-#include <GLFW/glfw3.h>
+#include "Game.h"
 
 #include <util/Utility.h>
 #include <util/Utility.h>
@@ -31,70 +31,21 @@ namespace terra
 		return value;
 	}
 
-	Player::Player(World* world) : m_CollisionDetector(world), m_OnGround(false), m_Sneaking(false), m_Transform({})
-	{
-		m_Transform.bounding_box = CMinecraftAABB(Vector3d(-0.3, 0, -0.3), Vector3d(0.3, 1.8, 0.3));
-		m_Transform.max_speed = 14.3f;
-	}
+	
 
-	bool Player::OnGround()
-	{
-		return m_OnGround;
-	}
-
-	void Player::Update(float dt)
-	{
-		const float kMaxAcceleration = 100.0f;
-		const double kEpsilon = 0.0001;
-
-		using vec3 = Vector3d;
-
-		vec3 horizontal_acceleration = m_Transform.acceleration;
-		horizontal_acceleration.y = 0;
-
-		horizontal_acceleration.Truncate(kMaxAcceleration);
-
-		vec3 acceleration(horizontal_acceleration.x, -38 + m_Transform.acceleration.y, horizontal_acceleration.z);
-
-		m_OnGround = false;
-
-		m_CollisionDetector.ResolveCollisions(&m_Transform, dt, &m_OnGround);
-
-		m_Transform.velocity += acceleration * dt;
-		m_Transform.input_velocity += m_Transform.input_acceleration * dt;
-		m_Transform.orientation += m_Transform.rotation * dt;
-
-		if (m_Transform.velocity.LengthSq() < kEpsilon) m_Transform.velocity = vec3(0, 0, 0);
-		if (m_Transform.input_velocity.LengthSq() < kEpsilon) m_Transform.input_velocity = vec3(0, 0, 0);
-
-		float drag = 0.98 - (int)m_OnGround * 0.13;
-		m_Transform.velocity *= drag;
-		m_Transform.input_velocity *= drag;
-
-		m_Transform.orientation = clamp(m_Transform.orientation, -M_TAU, M_TAU);
-
-		vec3 horizontal_velocity = m_Transform.input_velocity;
-		horizontal_velocity.y = 0;
-		horizontal_velocity.Truncate(m_Transform.max_speed);
-
-		m_Transform.input_velocity = horizontal_velocity + vec3(0, m_Transform.input_velocity.y, 0);
-
-		m_Transform.acceleration = vec3();
-		m_Transform.input_acceleration = vec3();
-		m_Transform.rotation = 0.0f;
-	}
-
-	Game::Game(PacketDispatcher* dispatcher, GameWindow& window, const Camera& camera)
+	Game::Game(PacketDispatcher* dispatcher, const std::shared_ptr<ICameraComponent3D>& camera)
 		: PacketHandler(dispatcher),
 		m_NetworkClient(dispatcher, Version::Minecraft_1_12_2),
-		m_Window(window),
 		m_Camera(camera),
 		m_Sprinting(false),
 		m_LastPositionTime(0)
 	{
-		window.RegisterMouseChange(std::bind(&Game::OnMouseChange, this, std::placeholders::_1, std::placeholders::_2));
-		window.RegisterMouseScroll(std::bind(&Game::OnMouseScroll, this, std::placeholders::_1, std::placeholders::_2));
-		window.RegisterMouseButton(std::bind(&Game::OnMousePress, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+		/*if (window)
+		{
+			window->RegisterMouseChange(std::bind(&Game::OnMouseChange, this, std::placeholders::_1, std::placeholders::_2));
+			window->RegisterMouseScroll(std::bind(&Game::OnMouseScroll, this, std::placeholders::_1, std::placeholders::_2));
+			window->RegisterMouseButton(std::bind(&Game::OnMousePress, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+		}*/
 
 		m_NetworkClient.GetPlayerController()->SetHandleFall(true);
 		m_NetworkClient.GetConnection()->GetSettings().SetMainHand(MainHand::Right).SetViewDistance(4);
@@ -123,7 +74,7 @@ namespace terra
 		if (GetNetworkClient().GetConnection()->GetProtocolState() != State::Play)
 			return;
 
-		float current_frame = (float)glfwGetTime();
+		float current_frame = /*(float)glfwGetTime()*/1231;
 		if (current_frame - m_LastFrame < 1.0f / 60.0f)
 			return;
 
@@ -131,42 +82,46 @@ namespace terra
 		m_LastFrame = current_frame;
 
 		Vector3d front(
-			std::cos(m_Camera.GetYaw()) * std::cos(0),
+			std::cos(m_Camera->GetYaw()) * std::cos(0),
 			std::sin(0),
-			std::sin(m_Camera.GetYaw()) * std::cos(0)
+			std::sin(m_Camera->GetYaw()) * std::cos(0)
 		);
 
 		Vector3d direction;
 
-		if (m_Window.IsKeyDown(GLFW_KEY_W))
+		/*if (m_Window)
 		{
-			direction += front;
 
-			if (m_Window.IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+			if (m_Window->IsKeyDown(GLFW_KEY_W))
 			{
-				m_Sprinting = true;
+				direction += front;
+
+				if (m_Window->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+				{
+					m_Sprinting = true;
+				}
 			}
-		}
 
-		if (m_Window.IsKeyDown(GLFW_KEY_S))
-		{
-			direction -= front;
-			m_Sprinting = false;
-		}
+			if (m_Window->IsKeyDown(GLFW_KEY_S))
+			{
+				direction -= front;
+				m_Sprinting = false;
+			}
 
-		if (m_Window.IsKeyDown(GLFW_KEY_A))
-		{
-			Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+			if (m_Window->IsKeyDown(GLFW_KEY_A))
+			{
+				Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
 
-			direction -= right;
-		}
+				direction -= right;
+			}
 
-		if (m_Window.IsKeyDown(GLFW_KEY_D))
-		{
-			Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+			if (m_Window->IsKeyDown(GLFW_KEY_D))
+			{
+				Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
 
-			direction += right;
-		}
+				direction += right;
+			}
+		}*/
 
 		if (!m_Player->OnGround())
 		{
@@ -183,17 +138,22 @@ namespace terra
 			{
 				direction *= 1.3f;
 			}
-			m_Camera.SetFov(glm::radians(90.0f));
+			// TODO BOUZI FOV
+			//m_Camera.SetFov(glm::radians(90.0f));
 		}
 		else
 		{
-			m_Camera.SetFov(glm::radians(80.0f));
+			// TODO BOUZI FOV
+			//m_Camera.SetFov(glm::radians(80.0f));
 		}
 
-		if (m_Window.IsKeyDown(GLFW_KEY_SPACE) && m_Player->OnGround())
+		/*if (m_Window)
 		{
-			m_Player->GetTransform().input_acceleration += Vector3d(0, 6 / m_DeltaTime, 0);
-		}
+			if (m_Window->IsKeyDown(GLFW_KEY_SPACE) && m_Player->OnGround())
+			{
+				m_Player->GetTransform().input_acceleration += Vector3d(0, 6 / m_DeltaTime, 0);
+			}
+		}*/
 
 		m_Player->GetTransform().max_speed = 4.3f + (int)m_Sprinting * 1.3f;
 		m_Player->GetTransform().input_acceleration += direction * 85.0f;
@@ -201,34 +161,34 @@ namespace terra
 		m_Player->Update(m_DeltaTime);
 
 		glm::vec3 eye = math::VecToGLM(m_Player->GetTransform().position) + glm::vec3(0, 1.6, 0);
-		m_Camera.SetPosition(eye);
+		m_Camera->SetPosition(eye);
 
 		constexpr float kTickTime = 1000.0f / 20.0f / 1000.0f;
 
 		if (current_frame > m_LastPositionTime + kTickTime && m_NetworkClient.GetConnection()->GetProtocolState() == State::Play)
 		{
-			float yaw = m_Camera.GetYaw() - glm::radians(90.0f);
-			float pitch = -m_Camera.GetPitch();
+			float yaw = glm::radians(m_Camera->GetYaw()) - glm::radians(90.0f);
+			float pitch = -(m_Camera->GetPitch());
 
 			out::PlayerPositionAndLookPacket response(m_Player->GetTransform().position, yaw * 180.0f / 3.14159f, pitch * 180.0f / 3.14159f, m_Player->OnGround());
 			m_NetworkClient.GetConnection()->SendPacket(&response);
 
 			m_LastPositionTime = current_frame;
 
-			if (m_Player->IsSneaking() && !m_Window.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+			/*if (m_Player->IsSneaking() && m_Window && !m_Window->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
 			{
 				out::EntityActionPacket packet(0, out::EntityActionPacket::Action::StopSneak);
 				m_NetworkClient.GetConnection()->SendPacket(&packet);
 
 				m_Player->SetSneaking(false);
 			}
-			else if (!m_Player->IsSneaking() && m_Window.IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+			else if (!m_Player->IsSneaking() && m_Window && m_Window->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
 			{
 				out::EntityActionPacket packet(0, out::EntityActionPacket::Action::StartSneak);
 				m_NetworkClient.GetConnection()->SendPacket(&packet);
 
 				m_Player->SetSneaking(true);
-			}
+			}*/
 		}
 	}
 
@@ -246,12 +206,12 @@ namespace terra
 
 	void Game::OnMouseChange(double offset_x, double offset_y)
 	{
-		m_Camera.ProcessRotation((float)offset_x, (float)offset_y);
+		//m_Camera.ProcessRotation((float)offset_x, (float)offset_y);
 	}
 
 	void Game::OnMouseScroll(double offset_x, double offset_y)
 	{
-		m_Camera.ProcessZoom((float)offset_y);
+		//m_Camera.ProcessZoom((float)offset_y);
 	}
 
 	void Game::OnClientSpawn(PlayerPtr player)
@@ -415,7 +375,7 @@ namespace terra
 	// TODO: Temporary fun code
 	void Game::OnMousePress(int button, int action, int mods)
 	{
-		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
+		/*if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
 		{
 			using namespace out;
 
@@ -480,7 +440,9 @@ namespace terra
 				out::PlayerBlockPlacementPacket packet(target, face, Hand::Main, Vector3f(1.0f, 0.0f, 0.0f));
 				m_NetworkClient.GetConnection()->SendPacket(&packet);
 			}
-		}
+		}*/
 	}
 
 } // ns terra
+
+#endif

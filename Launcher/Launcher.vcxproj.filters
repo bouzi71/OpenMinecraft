@@ -22,6 +22,9 @@
     <Filter Include="assets\zip">
       <UniqueIdentifier>{71b8d141-688c-4208-9b93-8c3296e7d4aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Passes">
+      <UniqueIdentifier>{fcdea860-c3ba-4638-9ad5-2b299b708ea4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\imgui\imconfig.h">
@@ -88,10 +91,16 @@
     <ClInclude Include="ChatWindow.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameWindow.h" />
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Passes\MinecraftCubePass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\MinecraftMaterial.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneMinecraft.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\imgui\imgui.cpp">
@@ -143,8 +152,15 @@
     <ClCompile Include="ChatWindow.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="main2.cpp" />
+    <ClCompile Include="Passes\MinecraftCubePass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\MinecraftMaterial.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneMinecraft.cpp" />
   </ItemGroup>
 </Project>

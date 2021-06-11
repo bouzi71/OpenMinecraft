@@ -1,16 +1,18 @@
 #include "stdafx.h"
 
+#if 0
+
 #include <iostream>
 
 #include <iterator>
 
 #include <GL/glew.h>
-#include <glm/glm/glm.hpp>
+
 #include <fstream>
-#include <glm/glm/gtc/matrix_transform.hpp>
-#include <glm/glm/gtc/type_ptr.hpp>
+
 #include <core/Client.h>
 #include <util/Utility.h>
+
 #include "render/Shader.h"
 #include "Camera.h"
 #include "Game.h"
@@ -21,6 +23,7 @@
 #include "render/ChunkMeshGenerator.h"
 #include "assets/AssetCache.h"
 #include "assets/AssetLoader.h"
+
 #include "lib/imgui/imgui.h"
 #include "lib/imgui/imgui_impl_glfw.h"
 #include "lib/imgui/imgui_impl_opengl3.h"
@@ -31,12 +34,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "assets/stb_image.h"
 
-#pragma comment(lib, "mclib.lib")
-
 GLuint CreateBlockVAO();
 GLFWwindow* InitializeWindow();
 
-std::unique_ptr<terra::GameWindow> g_GameWindow;
 std::unique_ptr<terra::AssetCache> g_AssetCache;
 
 struct CubeVertex
@@ -47,10 +47,16 @@ struct CubeVertex
 	u32 texture_index;
 	glm::vec3 tint;
 
-	CubeVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, u32 tex_index, glm::vec3 tint) : position(pos), normal(normal), uv(uv), texture_index(tex_index), tint(tint) {}
+	CubeVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, u32 tex_index, glm::vec3 tint) 
+		: position(pos)
+		, normal(normal)
+		, uv(uv)
+		, texture_index(tex_index)
+		, tint(tint) 
+	{}
 };
 
-int main(int argc, char* argvp[])
+int main2(int argc, char* argvp[])
 {
 	BlockRegistry::GetInstance()->RegisterVanillaBlocks();
 
@@ -97,7 +103,7 @@ int main(int argc, char* argvp[])
 	glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &max_layers);
 	std::cout << "Layers: " << max_layers << std::endl;
 
-	g_AssetCache = std::make_unique<terra::AssetCache>();
+	g_AssetCache = nullptr; // std::make_unique<terra::AssetCache>();
 
 	terra::AssetLoader asset_loader(*g_AssetCache);
 
@@ -145,7 +151,7 @@ int main(int argc, char* argvp[])
 
 	PacketDispatcher dispatcher;
 	terra::Camera camera(glm::vec3(0.0f, 0.0f, 9.0f), fov, aspect_ratio, 0.1f, view_distance);
-	terra::Game game(&dispatcher, *g_GameWindow, camera);
+	terra::Game game(&dispatcher, g_GameWindow.get(), camera);
 
 	World world(/*game.GetNetworkClient().GetConnection(), */game.GetNetworkClient().GetDispatcher());
 
@@ -445,3 +451,5 @@ GLFWwindow* InitializeWindow()
 
 	return window;
 }
+
+#endif

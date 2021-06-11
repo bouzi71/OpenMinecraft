@@ -11,11 +11,11 @@ namespace terra
 		namespace volumes
 		{
 
-			Frustum::Frustum(glm::vec3 position, glm::vec3 forward, float near, float far, float fov, float ratio, glm::vec3 up, glm::vec3 right)
+			Frustum::Frustum(glm::vec3 position, glm::vec3 forward, float Near, float Far, float fov, float ratio, glm::vec3 up, glm::vec3 right)
 				: m_Position(position)
 				, m_Forward(forward)
-				, m_Near(near)
-				, m_Far(far)
+				, m_Near(Near)
+				, m_Far(Far)
 			{
 				m_NearHeight = 2 * std::tan(fov / 2.0f) * m_Near;
 				m_NearWidth = m_NearHeight * ratio;
@@ -23,8 +23,8 @@ namespace terra
 				m_FarHeight = 2 * std::tan(fov / 2.0f) * m_Far;
 				m_FarWidth = m_FarHeight * ratio;
 
-				glm::vec3 nc = position + forward * near;
-				glm::vec3 fc = position + forward * far;
+				glm::vec3 nc = position + forward * Near;
+				glm::vec3 fc = position + forward * Far;
 
 				float hnh = m_NearHeight / 2.0f;
 				float hnw = m_NearWidth / 2.0f;

@@ -41,6 +41,13 @@ std::vector<BlockModel*> AssetCache::GetBlockModels(const std::string& find)
 	return result;
 }
 
+AssetCache::AssetCache(const IBaseManager & BaseManager)
+	: m_TextureArray(BaseManager)
+{}
+
+AssetCache::~AssetCache()
+{}
+
 TextureHandle AssetCache::AddTexture(const std::string& path, const std::string& data)
 {
 	return m_TextureArray.Append(path, data);

@@ -6,9 +6,6 @@
 #include <common/Vector.h>
 #include <common/AABB.h>
 
-namespace terra
-{
-
 struct Transform
 {
 	Vector3d position;
@@ -22,7 +19,5 @@ struct Transform
 
 	CMinecraftAABB bounding_box;
 };
-
-} // namespace terra
 
 #endif

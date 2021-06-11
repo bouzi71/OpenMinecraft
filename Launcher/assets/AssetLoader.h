@@ -5,7 +5,6 @@
 
 
 #include <common/JsonFwd.h>
-#include <glm/glm/glm.hpp>
 
 #include "TextureArray.h"
 

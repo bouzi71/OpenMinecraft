@@ -1,8 +1,8 @@
 #ifndef TERRACOTTA_CAMERA_H_
 #define TERRACOTTA_CAMERA_H_
 
-#include <GL/glew.h>
-#include <glm/glm/glm.hpp>
+#if 0
+
 #include "math/volumes/Frustum.h"
 
 #undef near
@@ -69,5 +69,7 @@ private:
 };
 
 } // ns terra
+
+#endif
 
 #endif

@@ -3,19 +3,19 @@
 
 #include <assets/blocks/BlockElement.h>
 
-#include <cstddef>
-#include <cstdint>
 
 namespace terra
 {
 
-
 class TextureArray
 {
 public:
-	TextureArray();
+	TextureArray(const IBaseManager& BaseManager);
 
 	TextureHandle Append(const std::string& filename, const std::string& texture);
+
+
+	std::shared_ptr<ITexture> GetTexture();
 
 	bool GetTexture(const std::string& filename, TextureHandle* handle);
 	bool IsTransparent(TextureHandle handle) const;
@@ -24,9 +24,10 @@ public:
 	void Bind();
 
 private:
-	unsigned int m_TextureId;
+	const IBaseManager& m_BaseManager;
+	std::shared_ptr<ITexture> m_TextureId;
 
-	std::vector<unsigned char> m_TextureData;
+	std::map<TextureHandle, std::vector<unsigned char>> m_TextureData;
 	std::unordered_map<std::string, TextureHandle> m_Textures;
 
 	bool m_Transparency[2048];

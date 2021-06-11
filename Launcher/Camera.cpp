@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
+#if 0
+
 #include "Camera.h"
 
-#include <glm/glm/gtc/matrix_transform.hpp>
 #include <cmath>
 
 namespace terra
@@ -106,3 +107,5 @@ void Camera::UpdateVectors()
 }
 
 } // ns terra
+
+#endif

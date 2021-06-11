@@ -1,7 +1,6 @@
 #ifndef TERRACOTTA_MATH_VOLUMES_FRUSTUM_H_
 #define TERRACOTTA_MATH_VOLUMES_FRUSTUM_H_
 
-#include <glm/glm/glm.hpp>
 #include <common/AABB.h>
 #include "../Plane.h"
 

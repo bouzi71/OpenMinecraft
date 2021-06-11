@@ -5,12 +5,6 @@
 #include "../assets/AssetCache.h"
 #include "../math/TypeUtil.h"
 
-#include <GL/glew.h>
-
-#include <glm/glm/glm.hpp>
-#include <glm/glm/gtc/matrix_transform.hpp>
-#include <glm/glm/gtc/quaternion.hpp>
-
 #include <iostream>
 #include <algorithm>
 #include <thread>
@@ -23,8 +17,9 @@ namespace terra
 namespace render
 {
 
-ChunkMeshGenerator::ChunkMeshGenerator(World* world, const glm::vec3& camera_position) 
-	: m_World(world)
+ChunkMeshGenerator::ChunkMeshGenerator(IRenderDevice& RenderDevice, World* world, const glm::vec3& camera_position)
+	: m_RenderDevice(RenderDevice)
+	, m_World(world)
 	, m_ChunkBuildQueue(ChunkMeshBuildComparator(camera_position))
 {
 	world->RegisterListener(this);
@@ -244,7 +239,7 @@ void ChunkMeshGenerator::ProcessChunks()
 		if (vertices->empty()) 
 			continue;
 
-		GLuint vao = 0;
+		/*GLuint vao = 0;
 
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
@@ -274,15 +269,17 @@ void ChunkMeshGenerator::ProcessChunks()
 
 		// Ambient occlusion
 		glVertexAttribIPointer(4, 1, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, ambient_occlusion));
-		glEnableVertexAttribArray(4);
+		glEnableVertexAttribArray(4);*/
 
-		GLenum error;
-		while ((error = glGetError()) != GL_NO_ERROR)
-		{
-			std::cout << "OpenGL error when creating mesh: " << error << std::endl;
-		}
+		//GLenum error;
+		//while ((error = glGetError()) != GL_NO_ERROR)
+		//{
+		//	std::cout << "OpenGL error when creating mesh: " << error << std::endl;
+		//}
 
-		std::unique_ptr<terra::render::ChunkMesh> mesh = std::make_unique<terra::render::ChunkMesh>(vao, vbo, vertices->size());
+		std::shared_ptr<IBuffer> verticesB = m_RenderDevice.GetObjectsFactory().CreateVertexBuffer(*vertices);
+
+		std::unique_ptr<terra::render::ChunkMesh> mesh = std::make_unique<terra::render::ChunkMesh>(m_RenderDevice, verticesB, vertices->size());
 		m_ChunkMeshes[push->pos] = std::move(mesh);
 	}
 }
@@ -464,7 +461,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 				if (currentVariantModel->GetElements().empty())
 					continue;
 
-				const glm::vec3 base = terra::math::VecToGLM(mc_pos);
+				const glm::vec3 base = VecToGLM(mc_pos);
 
 				const CMinecraftBlock* above = context.GetBlock(mc_pos + Vector3i(0, 1, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::Up, above))
