@@ -49,9 +49,9 @@ private:
 	DataBuffer m_HandleBuffer;
 	Protocol& m_Protocol;
 	State m_ProtocolState;
-	u16 m_Port;
+	uint16 m_Port;
 	bool m_SentSettings;
-	s32 m_Dimension;
+	int32 m_Dimension;
 
 	void AuthenticateClient(const std::wstring& serverId, const std::string& sharedSecret, const std::string& pubkey);
 	CMinecraftPacket* CreatePacket(DataBuffer& buffer);
@@ -69,7 +69,7 @@ public:
 	Yggdrasil* GetYggdrasil() { return m_Yggdrasil.get(); }
 	Socket::Status MCLIB_API GetSocketState() const;
 	ClientSettings& GetSettings() noexcept { return m_ClientSettings; }
-	s32 GetDimension() const noexcept { return m_Dimension; }
+	int32 GetDimension() const noexcept { return m_Dimension; }
 	State GetProtocolState() const { return m_ProtocolState; }
 
 	void SendSettings() noexcept { m_SentSettings = false; }
@@ -87,7 +87,7 @@ public:
 	void MCLIB_API HandlePacket(in::UpdateHealthPacket* packet);
 	void MCLIB_API HandlePacket(status::in::ResponsePacket* packet);
 
-	bool MCLIB_API Connect(const std::string& server, u16 port);
+	bool MCLIB_API Connect(const std::string& server, uint16 port);
 	void MCLIB_API Disconnect();
 	void MCLIB_API CreatePacket();
 
@@ -98,7 +98,7 @@ public:
 	template <typename T>
 	void SendPacket(T&& packet)
 	{
-		s32 id = m_Protocol.GetPacketId(packet);
+		int32 id = m_Protocol.GetPacketId(packet);
 
 		packet.SetId(id);
 		packet.SetProtocolVersion(m_Protocol.GetVersion());

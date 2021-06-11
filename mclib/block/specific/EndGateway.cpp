@@ -22,7 +22,7 @@ bool EndGateway::ImportNBT(NBT* nbt)
 		if (!xTag || !yTag || !zTag) 
 			return true;
 
-		m_Exit = Vector3i(xTag->GetValue(), yTag->GetValue(), zTag->GetValue());
+		m_Exit = glm::ivec3(xTag->GetValue(), yTag->GetValue(), zTag->GetValue());
 	}
 
 	return true;

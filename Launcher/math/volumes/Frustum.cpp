@@ -60,7 +60,7 @@ namespace terra
 				return true;
 			}
 
-			bool Frustum::Intersects(Vector3i v) const
+			bool Frustum::Intersects(glm::ivec3 v) const
 			{
 				for (int i = 0; i < 6; ++i)
 				{
@@ -71,7 +71,7 @@ namespace terra
 				return true;
 			}
 
-			bool Frustum::Intersects(Vector3d v) const
+			bool Frustum::Intersects(glm::dvec3 v) const
 			{
 				for (int i = 0; i < 6; ++i)
 				{
@@ -84,8 +84,8 @@ namespace terra
 
 			glm::vec3 GetVertex(const CMinecraftAABB& aabb, int index)
 			{
-				Vector3d v;
-				Vector3d diff = aabb.max - aabb.min;
+				glm::dvec3 v;
+				glm::dvec3 diff = aabb.max - aabb.min;
 
 				if (index == 0)
 				{
@@ -93,27 +93,27 @@ namespace terra
 				}
 				else if (index == 1)
 				{
-					v = aabb.min + Vector3d(diff.x, 0, 0);
+					v = aabb.min + glm::dvec3(diff.x, 0, 0);
 				}
 				else if (index == 2)
 				{
-					v = aabb.min + Vector3d(diff.x, diff.y, 0);
+					v = aabb.min + glm::dvec3(diff.x, diff.y, 0);
 				}
 				else if (index == 3)
 				{
-					v = aabb.min + Vector3d(0, diff.y, 0);
+					v = aabb.min + glm::dvec3(0, diff.y, 0);
 				}
 				else if (index == 4)
 				{
-					v = aabb.min + Vector3d(0, diff.y, diff.z);
+					v = aabb.min + glm::dvec3(0, diff.y, diff.z);
 				}
 				else if (index == 5)
 				{
-					v = aabb.min + Vector3d(0, 0, diff.z);
+					v = aabb.min + glm::dvec3(0, 0, diff.z);
 				}
 				else if (index == 6)
 				{
-					v = aabb.min + Vector3d(diff.x, 0, diff.z);
+					v = aabb.min + glm::dvec3(diff.x, 0, diff.z);
 				}
 				else if (index == 7)
 				{

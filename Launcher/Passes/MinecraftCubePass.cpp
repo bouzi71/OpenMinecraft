@@ -79,5 +79,8 @@ std::shared_ptr<IRenderPassPipelined> CMinecraftCubePass::ConfigurePipeline(std:
 	GetPipeline().GetRasterizerState()->SetCullMode(IRasterizerState::CullMode::Back);
 	GetPipeline().GetRasterizerState()->SetFillMode(IRasterizerState::FillMode::Solid, IRasterizerState::FillMode::Solid);
 	
+	GetPipeline().GetSampler(0)->SetFilter(ISamplerState::MinFilter::MinLinear, ISamplerState::MagFilter::MagNearest, ISamplerState::MipFilter::MipNearest);
+	GetPipeline().GetSampler(1)->SetFilter(ISamplerState::MinFilter::MinLinear, ISamplerState::MagFilter::MagNearest, ISamplerState::MipFilter::MipNearest);
+
 	return shared_from_this();
 }

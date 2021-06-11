@@ -2,7 +2,7 @@
 
 #include <core/ClientSettings.h>
 
-constexpr auto FullSkin = (u8)((u8)SkinPart::Cape | (u8)SkinPart::Jacket | (u8)SkinPart::LeftSleeve | (u8)SkinPart::RightSleeve | (u8)SkinPart::LeftPants | (u8)SkinPart::RightPants | (u8)SkinPart::Hat);
+constexpr auto FullSkin = (uint8)((uint8)SkinPart::Cape | (uint8)SkinPart::Jacket | (uint8)SkinPart::LeftSleeve | (uint8)SkinPart::RightSleeve | (uint8)SkinPart::LeftPants | (uint8)SkinPart::RightPants | (uint8)SkinPart::Hat);
 
 ClientSettings::ClientSettings()
 	: m_Locale(L"en_GB"),
@@ -33,19 +33,19 @@ ClientSettings& ClientSettings::SetMainHand(MainHand main) noexcept
 	return *this;
 }
 
-ClientSettings& ClientSettings::SetViewDistance(u8 distance) noexcept
+ClientSettings& ClientSettings::SetViewDistance(uint8 distance) noexcept
 {
 	m_ViewDistance = distance;
 	return *this;
 }
 
-ClientSettings& ClientSettings::SetViewDistance(s32 distance) noexcept
+ClientSettings& ClientSettings::SetViewDistance(int32 distance) noexcept
 {
-	this->SetViewDistance((u8)distance);
+	this->SetViewDistance((uint8)distance);
 	return *this;
 }
 
-ClientSettings& ClientSettings::SetSkinParts(u8 parts) noexcept
+ClientSettings& ClientSettings::SetSkinParts(uint8 parts) noexcept
 {
 	m_SkinParts = parts;
 	return *this;
@@ -60,11 +60,11 @@ ClientSettings& ClientSettings::SetSkinPart(SkinPart part, bool display) noexcep
 {
 	if (display)
 	{
-		m_SkinParts |= (u8)part;
+		m_SkinParts |= (uint8)part;
 	}
 	else
 	{
-		m_SkinParts &= ~(u8)part;
+		m_SkinParts &= ~(uint8)part;
 	}
 	return *this;
 }

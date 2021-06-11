@@ -26,7 +26,7 @@ bool SpawnObjectPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 	data >> x >> y >> z;
 
-	m_Position = Vector3f((float)x, (float)y, (float)z);
+	m_Position = glm::vec3((float)x, (float)y, (float)z);
 
 	data >> m_Pitch >> m_Yaw;
 
@@ -75,7 +75,7 @@ bool SpawnGlobalEntityPacket::Deserialize(DataBuffer& data, std::size_t packetLe
 
 	double x, y, z;
 	data >> x >> y >> z;
-	m_Position = Vector3d(x, y, z);
+	m_Position = glm::dvec3(x, y, z);
 
 	return true;
 }
@@ -105,7 +105,7 @@ bool SpawnMobPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 	double x, y, z;
 	data >> x >> y >> z;
-	m_Position = Vector3d(x, y, z);
+	m_Position = glm::dvec3(x, y, z);
 
 	data >> m_Yaw;
 	data >> m_Pitch;
@@ -113,7 +113,7 @@ bool SpawnMobPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 	short vx, vy, vz;
 	data >> vx >> vy >> vz;
-	m_Velocity = Vector3s(vx, vy, vz);
+	m_Velocity = glm::i16vec3(vx, vy, vz);
 	data >> m_Metadata;
 
 	return true;
@@ -133,7 +133,7 @@ bool SpawnPaintingPacket::Deserialize(DataBuffer& data, std::size_t packetLength
 	CVarInt eid;
 	MCString title;
 	Position position;
-	u8 direction;
+	uint8 direction;
 
 	data >> eid >> m_UUID;
 	data >> title;
@@ -172,7 +172,7 @@ bool SpawnPlayerPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 	double x, y, z;
 	data >> x >> y >> z;
 
-	m_Position = Vector3d(x, y, z);
+	m_Position = glm::dvec3(x, y, z);
 
 	data >> m_Yaw;
 	data >> m_Pitch;
@@ -198,7 +198,7 @@ bool AnimationPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 	m_EntityId = eid.GetInt();
 
-	u8 anim;
+	uint8 anim;
 	data >> anim;
 
 	m_Animation = (Animation)anim;
@@ -219,7 +219,7 @@ bool StatisticsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 	CVarInt count;
 	data >> count;
 
-	for (s32 i = 0; i < count.GetInt(); ++i)
+	for (int32 i = 0; i < count.GetInt(); ++i)
 	{
 		MCString name;
 		CVarInt value;
@@ -250,7 +250,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 	data >> mappingSize;
 
-	for (s32 i = 0; i < mappingSize.GetInt(); ++i)
+	for (int32 i = 0; i < mappingSize.GetInt(); ++i)
 	{
 		MCString key;
 		Advancement advancement;
@@ -285,7 +285,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 			advancement.display.frameType = (FrameType)frameType.GetInt();
 			data >> advancement.display.flags;
 
-			if ((advancement.display.flags & (s32)Flags::BackgroundTexture) != 0)
+			if ((advancement.display.flags & (int32)Flags::BackgroundTexture) != 0)
 			{
 				MCString texture;
 				data >> texture;
@@ -299,7 +299,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 		CVarInt criteriaSize;
 		data >> criteriaSize;
 
-		for (s32 j = 0; j < criteriaSize.GetInt(); ++j)
+		for (int32 j = 0; j < criteriaSize.GetInt(); ++j)
 		{
 			MCString identifier;
 			data >> identifier;
@@ -310,7 +310,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 		advancement.requirements.resize(requirementSize.GetInt());
 
-		for (s32 j = 0; j < requirementSize.GetInt(); ++j)
+		for (int32 j = 0; j < requirementSize.GetInt(); ++j)
 		{
 			CVarInt size;
 			data >> size;
@@ -318,7 +318,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 			auto& requirementArray = advancement.requirements[j];
 			requirementArray.resize(size.GetInt());
 
-			for (s32 k = 0; k < size.GetInt(); ++k)
+			for (int32 k = 0; k < size.GetInt(); ++k)
 			{
 				MCString requirement;
 
@@ -334,7 +334,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 	CVarInt listSize;
 	data >> listSize;
 
-	for (s32 i = 0; i < listSize.GetInt(); ++i)
+	for (int32 i = 0; i < listSize.GetInt(); ++i)
 	{
 		MCString identifier;
 		data >> identifier;
@@ -345,7 +345,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 	CVarInt progressSize;
 	data >> progressSize;
 
-	for (s32 i = 0; i < progressSize.GetInt(); ++i)
+	for (int32 i = 0; i < progressSize.GetInt(); ++i)
 	{
 		// The identifier of the advancement
 		MCString key;
@@ -356,7 +356,7 @@ bool AdvancementsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 		data >> size;
 
 		AdvancementProgress progress;
-		for (s32 j = 0; j < size.GetInt(); ++j)
+		for (int32 j = 0; j < size.GetInt(); ++j)
 		{
 			MCString criterionIdentifier;
 			CriterionProgress criterionProgress;
@@ -412,7 +412,7 @@ UpdateBlockEntityPacket::UpdateBlockEntityPacket()
 bool UpdateBlockEntityPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	Position pos;
-	u8 action;
+	uint8 action;
 
 	data >> pos;
 	data >> action;
@@ -421,7 +421,7 @@ bool UpdateBlockEntityPacket::Deserialize(DataBuffer& data, std::size_t packetLe
 	data >> nbt;
 
 	m_BlockEntity = BlockEntity::CreateFromNBT(&nbt);
-	m_Position = Vector3i(pos.GetX(), pos.GetY(), pos.GetZ());
+	m_Position = glm::ivec3(pos.GetX(), pos.GetY(), pos.GetZ());
 	m_Action = (Action)action;
 
 	return true;
@@ -467,7 +467,7 @@ bool BlockChangePacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 	data >> location >> blockId;
 
-	m_Position = Vector3i(location.GetX(), location.GetY(), location.GetZ());
+	m_Position = glm::ivec3(location.GetX(), location.GetY(), location.GetZ());
 	m_BlockId = blockId.GetInt();
 
 	return true;
@@ -569,7 +569,7 @@ bool TabCompletePacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	CVarInt count;
 	data >> count;
-	for (s32 i = 0; i < count.GetInt(); ++i)
+	for (int32 i = 0; i < count.GetInt(); ++i)
 	{
 		MCString match;
 		data >> match;
@@ -591,7 +591,7 @@ ChatPacket::ChatPacket()
 bool ChatPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	MCString chatData;
-	u8 position;
+	uint8 position;
 
 	data >> chatData;
 	data >> position;
@@ -625,10 +625,10 @@ bool MultiBlockChangePacket::Deserialize(DataBuffer& data, std::size_t packetLen
 
 	CVarInt count;
 	data >> count;
-	for (s32 i = 0; i < count.GetInt(); ++i)
+	for (int32 i = 0; i < count.GetInt(); ++i)
 	{
-		u8 horizontal;
-		u8 y;
+		uint8 horizontal;
+		uint8 y;
 		CVarInt blockID;
 
 		data >> horizontal >> y >> blockID;
@@ -711,10 +711,10 @@ WindowItemsPacket::WindowItemsPacket()
 bool WindowItemsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	data >> m_WindowId;
-	s16 count;
+	int16 count;
 	data >> count;
 
-	for (s16 i = 0; i < count; ++i)
+	for (int16 i = 0; i < count; ++i)
 	{
 		Slot slot;
 
@@ -817,7 +817,7 @@ bool NamedSoundEffectPacket::Deserialize(DataBuffer& data, std::size_t packetLen
 	m_Name = name.GetUTF16();
 	m_Category = (SoundCategory)category.GetInt();
 
-	FixedPointNumber<u32> x, y, z;
+	FixedPointNumber<uint32> x, y, z;
 
 	data >> x >> y >> z;
 	m_Position.x = (double)x.GetFloat();
@@ -857,27 +857,27 @@ ExplosionPacket::ExplosionPacket()
 bool ExplosionPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	float posX, posY, posZ;
-	s32 count;
+	int32 count;
 
 	data >> posX >> posY >> posZ;
 
-	m_Position = Vector3d(posX, posY, posZ);
+	m_Position = glm::dvec3(posX, posY, posZ);
 
 	data >> m_Radius;
 	data >> count;
 
-	for (s32 i = 0; i < count; ++i)
+	for (int32 i = 0; i < count; ++i)
 	{
-		s8 x, y, z;
+		int8 x, y, z;
 		data >> x >> y >> z;
-		m_AffectedBlocks.push_back(Vector3s(x, y, z));
+		m_AffectedBlocks.push_back(glm::i16vec3(x, y, z));
 	}
 
 	float motionX, motionY, motionZ;
 
 	data >> motionX >> motionY >> motionZ;
 
-	m_PlayerMotion = Vector3d(motionX, motionY, motionZ);
+	m_PlayerMotion = glm::dvec3(motionX, motionY, motionZ);
 
 	return true;
 }
@@ -908,7 +908,7 @@ ChangeGameStatePacket::ChangeGameStatePacket()
 }
 bool ChangeGameStatePacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
-	u8 reason;
+	uint8 reason;
 	data >> reason;
 
 	m_Reason = (Reason)reason;
@@ -974,9 +974,9 @@ bool ChunkDataPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 	CVarInt entities;
 	data >> entities;
 
-	s32 entityCount = entities.GetInt();
+	int32 entityCount = entities.GetInt();
 
-	for (s32 i = 0; i < entities.GetInt(); ++i)
+	for (int32 i = 0; i < entities.GetInt(); ++i)
 	{
 		NBT nbt;
 
@@ -1033,17 +1033,17 @@ bool ParticlePacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 	float x, y, z;
 	data >> x >> y >> z;
-	m_Position = Vector3d(x, y, z);
+	m_Position = glm::dvec3(x, y, z);
 
 	float offsetX, offsetY, offsetZ;
 	data >> offsetX >> offsetY >> offsetZ;
-	m_MaxOffset = Vector3d(offsetX, offsetY, offsetZ);
+	m_MaxOffset = glm::dvec3(offsetX, offsetY, offsetZ);
 
 	data >> m_ParticleData >> m_Count;
 
 	if (m_ParticleId == 36)
 	{ // iconcrack
-		for (s32 i = 0; i < 2; ++i)
+		for (int32 i = 0; i < 2; ++i)
 		{
 			CVarInt varData;
 			data >> varData;
@@ -1097,7 +1097,7 @@ bool MapPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 	data >> mapId >> m_Scale >> m_TrackPosition >> count;
 	m_MapId = mapId.GetInt();
 
-	for (s32 i = 0; i < count.GetInt(); ++i)
+	for (int32 i = 0; i < count.GetInt(); ++i)
 	{
 		Icon icon;
 		data >> icon.direction >> icon.x >> icon.z;
@@ -1320,7 +1320,7 @@ bool PlayerListItemPacket::Deserialize(DataBuffer& data, std::size_t packetLengt
 
 	m_Action = (Action)action.GetInt();
 
-	for (s32 i = 0; i < numPlayers.GetInt(); ++i)
+	for (int32 i = 0; i < numPlayers.GetInt(); ++i)
 	{
 		CUUID uuid;
 		data >> uuid;
@@ -1342,11 +1342,11 @@ bool PlayerListItemPacket::Deserialize(DataBuffer& data, std::size_t packetLengt
 
 				actionData->name = name.GetUTF16();
 
-				for (s32 j = 0; j < numProperties.GetInt(); ++j)
+				for (int32 j = 0; j < numProperties.GetInt(); ++j)
 				{
 					MCString propertyName;
 					MCString propertyValue;
-					u8 isSigned;
+					uint8 isSigned;
 					MCString signature;
 
 					data >> propertyName;
@@ -1362,7 +1362,7 @@ bool PlayerListItemPacket::Deserialize(DataBuffer& data, std::size_t packetLengt
 				data >> gameMode;
 				data >> ping;
 
-				u8 hasDisplayName;
+				uint8 hasDisplayName;
 				MCString displayName;
 
 				data >> hasDisplayName;
@@ -1392,7 +1392,7 @@ bool PlayerListItemPacket::Deserialize(DataBuffer& data, std::size_t packetLengt
 			break;
 			case Action::UpdateDisplay:
 			{
-				u8 hasDisplayName;
+				uint8 hasDisplayName;
 				MCString displayName;
 
 				data >> hasDisplayName;
@@ -1474,7 +1474,7 @@ bool DestroyEntitiesPacket::Deserialize(DataBuffer& data, std::size_t packetLeng
 
 	data >> count;
 
-	for (s32 i = 0; i < count.GetInt(); ++i)
+	for (int32 i = 0; i < count.GetInt(); ++i)
 	{
 		CVarInt eid;
 
@@ -1495,7 +1495,7 @@ UnlockRecipesPacket::UnlockRecipesPacket()
 {}
 bool UnlockRecipesPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
-	s16 action;
+	int16 action;
 
 	data >> action;
 	m_Action = (Action)action;
@@ -1508,7 +1508,7 @@ bool UnlockRecipesPacket::Deserialize(DataBuffer& data, std::size_t packetLength
 
 	m_Array1.resize(size1.GetInt());
 
-	for (s32 i = 0; i < size1.GetInt(); ++i)
+	for (int32 i = 0; i < size1.GetInt(); ++i)
 	{
 		CVarInt id;
 
@@ -1524,7 +1524,7 @@ bool UnlockRecipesPacket::Deserialize(DataBuffer& data, std::size_t packetLength
 
 		m_Array2.resize(size2.GetInt());
 
-		for (s32 i = 0; i < size2.GetInt(); ++i)
+		for (int32 i = 0; i < size2.GetInt(); ++i)
 		{
 			CVarInt id;
 
@@ -1727,7 +1727,7 @@ DisplayScoreboardPacket::DisplayScoreboardPacket()
 {}
 bool DisplayScoreboardPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
-	u8 pos;
+	uint8 pos;
 	MCString name;
 
 	data >> pos >> name;
@@ -1863,7 +1863,7 @@ ScoreboardObjectivePacket::ScoreboardObjectivePacket()
 bool ScoreboardObjectivePacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	MCString objective, value, type;
-	u8 mode;
+	uint8 mode;
 
 	data >> objective >> mode >> value >> type;
 
@@ -1890,7 +1890,7 @@ bool SetPassengersPacket::Deserialize(DataBuffer& data, std::size_t packetLength
 	data >> eid >> count;
 	m_EntityId = eid.GetInt();
 
-	for (s32 i = 0; i < count.GetInt(); ++i)
+	for (int32 i = 0; i < count.GetInt(); ++i)
 	{
 		CVarInt peid;
 
@@ -1912,7 +1912,7 @@ TeamsPacket::TeamsPacket()
 bool TeamsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	MCString name;
-	u8 mode;
+	uint8 mode;
 
 	data >> name >> mode;
 
@@ -1934,7 +1934,7 @@ bool TeamsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 			m_TagVisbility = visbility.GetUTF16();
 			m_CollisionRule = collision.GetUTF16();
 
-			for (s32 i = 0; i < count.GetInt(); ++i)
+			for (int32 i = 0; i < count.GetInt(); ++i)
 			{
 				MCString player;
 				data >> player;
@@ -1968,7 +1968,7 @@ bool TeamsPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 
 			data >> count;
 
-			for (s32 i = 0; i < count.GetInt(); ++i)
+			for (int32 i = 0; i < count.GetInt(); ++i)
 			{
 				MCString player;
 				data >> player;
@@ -1993,7 +1993,7 @@ UpdateScorePacket::UpdateScorePacket()
 bool UpdateScorePacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	MCString name, objective;
-	u8 action;
+	uint8 action;
 
 	data >> name >> action >> objective;
 
@@ -2184,10 +2184,10 @@ bool EntityPropertiesPacket::Deserialize(DataBuffer& data, std::size_t packetLen
 	data >> eid;
 	m_EntityId = eid.GetInt();
 
-	s32 propertyCount;
+	int32 propertyCount;
 	data >> propertyCount;
 
-	for (s32 i = 0; i < propertyCount; ++i)
+	for (int32 i = 0; i < propertyCount; ++i)
 	{
 		MCString key;
 		double value;
@@ -2200,11 +2200,11 @@ bool EntityPropertiesPacket::Deserialize(DataBuffer& data, std::size_t packetLen
 		CVarInt modifierCount;
 		data >> modifierCount;
 
-		for (s32 j = 0; j < modifierCount.GetInt(); ++j)
+		for (int32 j = 0; j < modifierCount.GetInt(); ++j)
 		{
 			CUUID uuid;
 			double amount;
-			u8 operation;
+			uint8 operation;
 
 			data >> uuid;
 			data >> amount;

@@ -46,7 +46,7 @@ namespace terra
 		void CreatePlayer(World* world);
 
 		std::shared_ptr<ICameraComponent3D> GetCamera() { return m_Camera; }
-		Vector3d GetPosition();
+		glm::dvec3 GetPosition();
 		CMinecraftClient& GetNetworkClient() { return m_NetworkClient; }
 
 	private:

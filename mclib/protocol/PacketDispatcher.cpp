@@ -7,13 +7,13 @@
 #include <algorithm>
 
 
-s32 GetDispatcherId(CMinecraftPacket* packet)
+int32 GetDispatcherId(CMinecraftPacket* packet)
 {
 	auto version = packet->GetProtocolVersion();
 
 	Protocol protocol = Protocol::GetProtocol(version);
 
-	s32 agnosticId = 0;
+	int32 agnosticId = 0;
 	if (!protocol.GetAgnosticId(packet->GetProtocolState(), packet->GetId().GetInt(), agnosticId))
 	{
 		throw std::runtime_error(std::string("Unknown packet type ") + std::to_string(packet->GetId().GetInt()) + " received");
@@ -57,7 +57,7 @@ void PacketDispatcher::Dispatch(CMinecraftPacket* packet)
 	if (!packet) return;
 
 	auto state = packet->GetProtocolState();
-	s64 id = GetDispatcherId(packet);
+	int64 id = GetDispatcherId(packet);
 
 	if (packet->GetProtocolState() != State::Play)
 		printf("Received: Id '0x%X'. State '%d'.\r\n", packet->GetId().GetInt(), packet->GetProtocolState());

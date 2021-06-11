@@ -49,11 +49,11 @@ ChunkMeshGenerator::~ChunkMeshGenerator()
 	m_World->UnregisterListener(this);
 }
 
-void ChunkMeshGenerator::OnBlockChange(Vector3i position, const CMinecraftBlock * newBlock, const CMinecraftBlock * oldBlock)
+void ChunkMeshGenerator::OnBlockChange(glm::ivec3 position, const CMinecraftBlock * newBlock, const CMinecraftBlock * oldBlock)
 {
 	std::shared_ptr<ChunkColumn> column = m_World->GetChunk(position);
 
-	const Vector3i chunk_base(column->GetMetadata().x * 16, (position.y / 16) * 16, column->GetMetadata().z * 16);
+	const glm::ivec3 chunk_base(column->GetMetadata().x * 16, (position.y / 16) * 16, column->GetMetadata().z * 16);
 
 	int chunk_x = column->GetMetadata().x;
 	int chunk_y = static_cast<int>(position.y / 16);
@@ -100,7 +100,7 @@ void ChunkMeshGenerator::OnBlockChange(Vector3i position, const CMinecraftBlock 
 	}
 }
 
-void ChunkMeshGenerator::OnChunkLoad(ChunkPtr chunk, const ChunkColumnMetadata& meta, u16 index_y)
+void ChunkMeshGenerator::OnChunkLoad(ChunkPtr chunk, const ChunkColumnMetadata& meta, uint16 index_y)
 {
 	EnqueueBuildWork(meta.x, index_y, meta.z);
 
@@ -114,7 +114,7 @@ void ChunkMeshGenerator::OnChunkLoad(ChunkPtr chunk, const ChunkColumnMetadata& 
 
 void ChunkMeshGenerator::EnqueueBuildWork(long chunk_x, int chunk_y, long chunk_z)
 {
-	Vector3i position(chunk_x * 16, chunk_y * 16, chunk_z * 16);
+	glm::ivec3 position(chunk_x * 16, chunk_y * 16, chunk_z * 16);
 
 	auto iter = std::find(m_ChunkPushQueue.begin(), m_ChunkPushQueue.end(), position);
 	if (iter == m_ChunkPushQueue.end())
@@ -154,30 +154,30 @@ void ChunkMeshGenerator::ProcessChunks()
 	// Push any new chunks that were added this frame into the work queue
 	for (std::size_t i = 0; i < kMaxMeshesPerFrame && false == m_ChunkPushQueue.empty(); ++i)
 	{
-		Vector3i chunk_base = m_ChunkPushQueue.front();
+		glm::ivec3 chunk_base = m_ChunkPushQueue.front();
 		m_ChunkPushQueue.pop_front();
 
 		auto ctx = std::make_shared<ChunkMeshBuildContext>();
 
 		ctx->world_position = chunk_base;
-		Vector3i offset_y(0, chunk_base.y, 0);
+		glm::ivec3 offset_y(0, chunk_base.y, 0);
 
 		std::shared_ptr<ChunkColumn> columns[3][3];
 
 		columns[1][1] = m_World->GetChunk(chunk_base);
 
 		// Cache the world data for this chunk so it can be pushed to another thread and built.
-		for (s64 y = 0; y < 18; ++y)
+		for (int64 y = 0; y < 18; ++y)
 		{
-			for (s64 z = 0; z < 18; ++z)
+			for (int64 z = 0; z < 18; ++z)
 			{
-				for (s64 x = 0; x < 18; ++x)
+				for (int64 x = 0; x < 18; ++x)
 				{
-					Vector3i offset(x - 1, y - 1, z - 1);
+					glm::ivec3 offset(x - 1, y - 1, z - 1);
 					const CMinecraftBlock* block = nullptr;
 
-					std::size_t x_index = (s64)std::floor(offset.x / 16.0) + 1;
-					std::size_t z_index = (s64)std::floor(offset.z / 16.0) + 1;
+					std::size_t x_index = (int64)std::floor(offset.x / 16.0) + 1;
+					std::size_t z_index = (int64)std::floor(offset.z / 16.0) + 1;
 					auto& column = columns[x_index][z_index];
 
 					if (column == nullptr)
@@ -187,7 +187,7 @@ void ChunkMeshGenerator::ProcessChunks()
 
 					if (column != nullptr)
 					{
-						Vector3i lookup = offset + offset_y;
+						glm::ivec3 lookup = offset + offset_y;
 
 						if (lookup.x < 0)
 						{
@@ -284,7 +284,7 @@ void ChunkMeshGenerator::ProcessChunks()
 	}
 }
 
-int ChunkMeshGenerator::GetAmbientOcclusion(ChunkMeshBuildContext& context, const Vector3i& side1, const Vector3i& side2, const Vector3i& corner)
+int ChunkMeshGenerator::GetAmbientOcclusion(ChunkMeshBuildContext& context, const glm::ivec3& side1, const glm::ivec3& side2, const glm::ivec3& corner)
 {
 	int value1, value2, value_corner;
 
@@ -444,7 +444,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 		{
 			for (int x = 0; x < 16; ++x)
 			{
-				Vector3i mc_pos = context.world_position + Vector3i(x, y, z);
+				glm::ivec3 mc_pos = context.world_position + glm::ivec3(x, y, z);
 
 				const CMinecraftBlock* currentBlock = context.GetBlock(mc_pos);
 				if (currentBlock == nullptr)
@@ -463,7 +463,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 				const glm::vec3 base = VecToGLM(mc_pos);
 
-				const CMinecraftBlock* above = context.GetBlock(mc_pos + Vector3i(0, 1, 0));
+				const CMinecraftBlock* above = context.GetBlock(mc_pos + glm::ivec3(0, 1, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::Up, above))
 				{
 					// Render the top face of the current block.
@@ -471,10 +471,10 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 					if (false == currentVariant->HasRotation())
 					{
-						obl = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, 1, 0), mc_pos + Vector3i(0, 1, -1), mc_pos + Vector3i(-1, 1, -1));
-						obr = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, 1, 0), mc_pos + Vector3i(0, 1, 1), mc_pos + Vector3i(-1, 1, 1));
-						otl = GetAmbientOcclusion(context, mc_pos + Vector3i(1, 1, 0), mc_pos + Vector3i(0, 1, -1), mc_pos + Vector3i(1, 1, -1));
-						otr = GetAmbientOcclusion(context, mc_pos + Vector3i(1, 1, 0), mc_pos + Vector3i(0, 1, 1), mc_pos + Vector3i(1, 1, 1));
+						obl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, 1, 0), mc_pos + glm::ivec3(0, 1, -1), mc_pos + glm::ivec3(-1, 1, -1));
+						obr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, 1, 0), mc_pos + glm::ivec3(0, 1, 1), mc_pos + glm::ivec3(-1, 1, 1));
+						otl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, 1, 0), mc_pos + glm::ivec3(0, 1, -1), mc_pos + glm::ivec3(1, 1, -1));
+						otr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, 1, 0), mc_pos + glm::ivec3(0, 1, 1), mc_pos + glm::ivec3(1, 1, 1));
 					}
 
 					for (const auto& element : currentVariantModel->GetElements())
@@ -524,7 +524,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const CMinecraftBlock* below = context.GetBlock(mc_pos + Vector3i(0, -1, 0));
+				const CMinecraftBlock* below = context.GetBlock(mc_pos + glm::ivec3(0, -1, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::Down, below))
 				{
 					// Render the bottom face of the current block.
@@ -532,10 +532,10 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 					if (false == currentVariant->HasRotation())
 					{
-						obl = GetAmbientOcclusion(context, mc_pos + Vector3i(1, -1, 0), mc_pos + Vector3i(0, -1, -1), mc_pos + Vector3i(1, -1, -1));
-						obr = GetAmbientOcclusion(context, mc_pos + Vector3i(1, -1, 0), mc_pos + Vector3i(0, -1, 1), mc_pos + Vector3i(1, -1, 1));
-						otl = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, -1, 0), mc_pos + Vector3i(0, -1, -1), mc_pos + Vector3i(-1, -1, -1));
-						otr = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, -1, 0), mc_pos + Vector3i(0, -1, 1), mc_pos + Vector3i(-1, -1, 1));
+						obl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, -1, 0), mc_pos + glm::ivec3(0, -1, -1), mc_pos + glm::ivec3(1, -1, -1));
+						obr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, -1, 0), mc_pos + glm::ivec3(0, -1, 1), mc_pos + glm::ivec3(1, -1, 1));
+						otl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, -1, 0), mc_pos + glm::ivec3(0, -1, -1), mc_pos + glm::ivec3(-1, -1, -1));
+						otr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, -1, 0), mc_pos + glm::ivec3(0, -1, 1), mc_pos + glm::ivec3(-1, -1, 1));
 					}
 
 					for (const auto& element : currentVariantModel->GetElements())
@@ -588,7 +588,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const CMinecraftBlock* north = context.GetBlock(mc_pos + Vector3i(0, 0, -1));
+				const CMinecraftBlock* north = context.GetBlock(mc_pos + glm::ivec3(0, 0, -1));
 				if (false == IsOccluding(currentVariant, BlockFace::North, north))
 				{
 					// Render the north face of the current block.
@@ -596,10 +596,10 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 					if (false == currentVariant->HasRotation())
 					{
-						obl = GetAmbientOcclusion(context, mc_pos + Vector3i(1, 0, -1), mc_pos + Vector3i(0, -1, -1), mc_pos + Vector3i(1, -1, -1));
-						obr = GetAmbientOcclusion(context, mc_pos + Vector3i(0, -1, -1), mc_pos + Vector3i(-1, 0, -1), mc_pos + Vector3i(-1, -1, -1));
-						otl = GetAmbientOcclusion(context, mc_pos + Vector3i(0, 1, -1), mc_pos + Vector3i(1, 0, -1), mc_pos + Vector3i(1, 1, -1));
-						otr = GetAmbientOcclusion(context, mc_pos + Vector3i(0, 1, -1), mc_pos + Vector3i(-1, 0, -1), mc_pos + Vector3i(-1, 1, -1));
+						obl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, 0, -1), mc_pos + glm::ivec3(0, -1, -1), mc_pos + glm::ivec3(1, -1, -1));
+						obr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(0, -1, -1), mc_pos + glm::ivec3(-1, 0, -1), mc_pos + glm::ivec3(-1, -1, -1));
+						otl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(0, 1, -1), mc_pos + glm::ivec3(1, 0, -1), mc_pos + glm::ivec3(1, 1, -1));
+						otr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(0, 1, -1), mc_pos + glm::ivec3(-1, 0, -1), mc_pos + glm::ivec3(-1, 1, -1));
 					}
 
 					for (const auto& element : currentVariantModel->GetElements())
@@ -650,7 +650,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const CMinecraftBlock* south = context.GetBlock(mc_pos + Vector3i(0, 0, 1));
+				const CMinecraftBlock* south = context.GetBlock(mc_pos + glm::ivec3(0, 0, 1));
 				if (false == IsOccluding(currentVariant, BlockFace::South, south))
 				{
 					// Render the south face of the current block.
@@ -658,10 +658,10 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 					if (false == currentVariant->HasRotation())
 					{
-						obl = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, 0, 1), mc_pos + Vector3i(0, -1, 1), mc_pos + Vector3i(-1, -1, 1));
-						obr = GetAmbientOcclusion(context, mc_pos + Vector3i(1, 0, 1), mc_pos + Vector3i(0, -1, 1), mc_pos + Vector3i(1, -1, 1));
-						otl = GetAmbientOcclusion(context, mc_pos + Vector3i(0, 1, 1), mc_pos + Vector3i(-1, 0, 1), mc_pos + Vector3i(-1, 1, 1));
-						otr = GetAmbientOcclusion(context, mc_pos + Vector3i(0, 1, 1), mc_pos + Vector3i(1, 0, 1), mc_pos + Vector3i(1, 1, 1));
+						obl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, 0, 1), mc_pos + glm::ivec3(0, -1, 1), mc_pos + glm::ivec3(-1, -1, 1));
+						obr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, 0, 1), mc_pos + glm::ivec3(0, -1, 1), mc_pos + glm::ivec3(1, -1, 1));
+						otl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(0, 1, 1), mc_pos + glm::ivec3(-1, 0, 1), mc_pos + glm::ivec3(-1, 1, 1));
+						otr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(0, 1, 1), mc_pos + glm::ivec3(1, 0, 1), mc_pos + glm::ivec3(1, 1, 1));
 					}
 
 					for (const auto& element : currentVariantModel->GetElements())
@@ -712,7 +712,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const CMinecraftBlock* east = context.GetBlock(mc_pos + Vector3i(1, 0, 0));
+				const CMinecraftBlock* east = context.GetBlock(mc_pos + glm::ivec3(1, 0, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::East, east))
 				{
 					// Render the east face of the current block.
@@ -720,10 +720,10 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 					if (false == currentVariant->HasRotation())
 					{
-						obl = GetAmbientOcclusion(context, mc_pos + Vector3i(1, 0, 1), mc_pos + Vector3i(1, -1, 0), mc_pos + Vector3i(1, -1, 1));
-						obr = GetAmbientOcclusion(context, mc_pos + Vector3i(1, -1, 0), mc_pos + Vector3i(1, 0, -1), mc_pos + Vector3i(1, -1, -1));
-						otl = GetAmbientOcclusion(context, mc_pos + Vector3i(1, 1, 0), mc_pos + Vector3i(1, 0, 1), mc_pos + Vector3i(1, 1, 1));
-						otr = GetAmbientOcclusion(context, mc_pos + Vector3i(1, 1, 0), mc_pos + Vector3i(1, 0, -1), mc_pos + Vector3i(1, 1, -1));
+						obl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, 0, 1), mc_pos + glm::ivec3(1, -1, 0), mc_pos + glm::ivec3(1, -1, 1));
+						obr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, -1, 0), mc_pos + glm::ivec3(1, 0, -1), mc_pos + glm::ivec3(1, -1, -1));
+						otl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, 1, 0), mc_pos + glm::ivec3(1, 0, 1), mc_pos + glm::ivec3(1, 1, 1));
+						otr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(1, 1, 0), mc_pos + glm::ivec3(1, 0, -1), mc_pos + glm::ivec3(1, 1, -1));
 					}
 
 					for (const auto& element : currentVariantModel->GetElements())
@@ -774,7 +774,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 					}
 				}
 
-				const CMinecraftBlock* west = context.GetBlock(mc_pos + Vector3i(-1, 0, 0));
+				const CMinecraftBlock* west = context.GetBlock(mc_pos + glm::ivec3(-1, 0, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::West, west))
 				{
 					// Render the west face of the current block.
@@ -782,10 +782,10 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 
 					if (false == currentVariant->HasRotation())
 					{
-						obl = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, -1, 0), mc_pos + Vector3i(-1, 0, -1), mc_pos + Vector3i(-1, -1, -1));
-						obr = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, -1, 0), mc_pos + Vector3i(-1, 0, 1), mc_pos + Vector3i(-1, -1, 1));
-						otl = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, 1, 0), mc_pos + Vector3i(-1, 0, -1), mc_pos + Vector3i(-1, 1, -1));
-						otr = GetAmbientOcclusion(context, mc_pos + Vector3i(-1, 1, 0), mc_pos + Vector3i(-1, 0, 1), mc_pos + Vector3i(-1, 1, 1));
+						obl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, -1, 0), mc_pos + glm::ivec3(-1, 0, -1), mc_pos + glm::ivec3(-1, -1, -1));
+						obr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, -1, 0), mc_pos + glm::ivec3(-1, 0, 1), mc_pos + glm::ivec3(-1, -1, 1));
+						otl = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, 1, 0), mc_pos + glm::ivec3(-1, 0, -1), mc_pos + glm::ivec3(-1, 1, -1));
+						otr = GetAmbientOcclusion(context, mc_pos + glm::ivec3(-1, 1, 0), mc_pos + glm::ivec3(-1, 0, 1), mc_pos + glm::ivec3(-1, 1, 1));
 					}
 
 					for (const auto& element : currentVariantModel->GetElements())
@@ -845,11 +845,11 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 	m_VertexPushes.push_back(std::move(push));
 }
 
-void ChunkMeshGenerator::GenerateMesh(s64 chunk_x, s64 chunk_y, s64 chunk_z)
+void ChunkMeshGenerator::GenerateMesh(int64 chunk_x, int64 chunk_y, int64 chunk_z)
 {
 	ChunkMeshBuildContext ctx;
 
-	ctx.world_position = Vector3i(chunk_x * 16, chunk_y * 16, chunk_z * 16);
+	ctx.world_position = glm::ivec3(chunk_x * 16, chunk_y * 16, chunk_z * 16);
 
 	for (int y = 0; y < 18; ++y)
 	{
@@ -857,7 +857,7 @@ void ChunkMeshGenerator::GenerateMesh(s64 chunk_x, s64 chunk_y, s64 chunk_z)
 		{
 			for (int x = 0; x < 18; ++x)
 			{
-				Vector3i offset(x - 1, y - 1, z - 1);
+				glm::ivec3 offset(x - 1, y - 1, z - 1);
 				const CMinecraftBlock* block = m_World->GetBlock(ctx.world_position + offset);
 
 				ctx.chunk_data[(y * 18 * 18) + (z * 18) + x] = block;
@@ -879,9 +879,9 @@ void ChunkMeshGenerator::OnChunkUnload(std::shared_ptr<ChunkColumn> chunk)
 	}
 }
 
-void ChunkMeshGenerator::DestroyChunk(s64 chunk_x, s64 chunk_y, s64 chunk_z)
+void ChunkMeshGenerator::DestroyChunk(int64 chunk_x, int64 chunk_y, int64 chunk_z)
 {
-	Vector3i key(chunk_x * 16, chunk_y * 16, chunk_z * 16);
+	glm::ivec3 key(chunk_x * 16, chunk_y * 16, chunk_z * 16);
 
 	auto iter = m_ChunkMeshes.find(key);
 	if (iter != m_ChunkMeshes.end())

@@ -9,14 +9,14 @@ class NoteBlock
 	: public BlockEntity
 {
 private:
-	u8 m_Note;
-	u8 m_Powered;
+	uint8 m_Note;
+	uint8 m_Powered;
 
 public:
-	MCLIB_API NoteBlock(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API NoteBlock(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 
-	inline u8 GetNode() const noexcept { return m_Note; }
+	inline uint8 GetNode() const noexcept { return m_Note; }
 	inline bool IsPowered() const noexcept { return m_Powered != 0; }
 };
 

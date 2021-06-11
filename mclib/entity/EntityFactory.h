@@ -6,7 +6,7 @@
 class EntityFactory
 {
 public:
-	static Entity* CreateEntity(EntityId id, u8 type);
+	static Entity* CreateEntity(EntityId id, uint8 type);
 };
 
 #endif

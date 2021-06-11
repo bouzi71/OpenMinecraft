@@ -11,19 +11,19 @@ class DataBuffer;
 class CVarInt
 {
 private:
-	s64 m_Value;
+	int64 m_Value;
 
 public:
 	MCLIB_API CVarInt() noexcept;
-	MCLIB_API CVarInt(s8 val) noexcept;
-	MCLIB_API CVarInt(s16 val) noexcept;
-	MCLIB_API CVarInt(s32 val) noexcept;
-	MCLIB_API CVarInt(s64 val) noexcept;
+	MCLIB_API CVarInt(int8 val) noexcept;
+	MCLIB_API CVarInt(int16 val) noexcept;
+	MCLIB_API CVarInt(int32 val) noexcept;
+	MCLIB_API CVarInt(int64 val) noexcept;
 
-	s8 GetByte() const noexcept { return (s8)m_Value; }
-	s16 GetShort() const noexcept { return (s16)m_Value; }
-	s32 GetInt() const noexcept { return (s32)m_Value; }
-	s64 GetLong() const noexcept { return m_Value; }
+	int8 GetByte() const noexcept { return (int8)m_Value; }
+	int16 GetShort() const noexcept { return (int16)m_Value; }
+	int32 GetInt() const noexcept { return (int32)m_Value; }
+	int64 GetLong() const noexcept { return m_Value; }
 
 	// Returns how many bytes this will take up in a buffer
 	std::size_t MCLIB_API GetSerializedLength() const;

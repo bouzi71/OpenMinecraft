@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-VersionFetcher::VersionFetcher(const std::string& host, u16 port)
+VersionFetcher::VersionFetcher(const std::string& host, uint16 port)
 	: m_Dispatcher(),
 	m_Version(Version::Minecraft_1_12_2),
 	m_Forge(&m_Dispatcher, nullptr),
@@ -21,7 +21,7 @@ VersionFetcher::VersionFetcher(const std::string& host, u16 port)
 
 void VersionFetcher::OnPingResponse(const json& node)
 {
-	static const std::map<s32, Version> mapping = {
+	static const std::map<int32, Version> mapping = {
 		{ 340, Version::Minecraft_1_12_2 },
 	};
 
@@ -33,7 +33,7 @@ void VersionFetcher::OnPingResponse(const json& node)
 
 		if (protocolNode.is_number_integer())
 		{
-			s32 protocol = protocolNode.get<int>();
+			int32 protocol = protocolNode.get<int>();
 
 			auto iter = mapping.lower_bound(protocol);
 			if (iter != mapping.end())

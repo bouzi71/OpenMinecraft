@@ -13,11 +13,11 @@ class BrewingStand
 	, public Nameable
 {
 private:
-	s32 m_BrewTime;
-	u8 m_Fuel;
+	int32 m_BrewTime;
+	uint8 m_Fuel;
 
 public:
-	MCLIB_API BrewingStand(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API BrewingStand(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 
 	Slot GetLeftSlot() const noexcept;
@@ -26,8 +26,8 @@ public:
 	Slot GetIngredientSlot() const noexcept;
 	Slot GetFuelSlot() const noexcept;
 
-	u8 GetBrewTime() const noexcept { return m_BrewTime; }
-	u8 GetFuel() const noexcept { return m_Fuel; }
+	uint8 GetBrewTime() const noexcept { return m_BrewTime; }
+	uint8 GetFuel() const noexcept { return m_Fuel; }
 };
 
 #endif

@@ -51,7 +51,6 @@
     <ClCompile Include="Passes\MinecraftMaterial.cpp" />
     <ClCompile Include="render\ChunkMesh.cpp" />
     <ClCompile Include="render\ChunkMeshGenerator.cpp" />
-    <ClCompile Include="render\Shader.cpp" />
     <ClCompile Include="SceneMinecraft.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -85,7 +84,6 @@
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="render\ChunkMesh.h" />
     <ClInclude Include="render\ChunkMeshGenerator.h" />
-    <ClInclude Include="render\Shader.h" />
     <ClInclude Include="SceneMinecraft.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Transform.h" />

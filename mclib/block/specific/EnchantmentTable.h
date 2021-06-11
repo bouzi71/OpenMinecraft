@@ -11,7 +11,7 @@ class EnchantmentTable
 	, public Nameable
 {
 public:
-	MCLIB_API EnchantmentTable(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API EnchantmentTable(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 };
 

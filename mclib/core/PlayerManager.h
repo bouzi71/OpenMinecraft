@@ -53,7 +53,7 @@ public:
 	// Called when a player leaves visible range of the client The PlayerPtr entity is already set to null at this point. The entity still exists in the entity manager, which can be grabbed by the entity id
 	virtual void OnPlayerDestroy(PlayerPtr player, EntityId eid) {}
 	// Called when a player changes position. Isn't called when player only rotates.
-	virtual void OnPlayerMove(PlayerPtr player, Vector3d oldPos, Vector3d newPos) {}
+	virtual void OnPlayerMove(PlayerPtr player, glm::dvec3 oldPos, glm::dvec3 newPos) {}
 };
 
 
@@ -89,7 +89,7 @@ public:
 	// EntityListener
 	void MCLIB_API OnPlayerSpawn(PlayerEntityPtr entity, CUUID uuid);
 	void MCLIB_API OnEntityDestroy(EntityPtr entity);
-	void MCLIB_API OnEntityMove(EntityPtr entity, Vector3d oldPos, Vector3d newPos);
+	void MCLIB_API OnEntityMove(EntityPtr entity, glm::dvec3 oldPos, glm::dvec3 newPos);
 
 	// PacketHandler
 	void MCLIB_API HandlePacket(login::in::LoginSuccessPacket* packet);

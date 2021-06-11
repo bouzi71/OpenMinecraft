@@ -10,13 +10,13 @@
 class InventoryBlock
 {
 public:
-	using ItemMap = std::unordered_map<u8, Slot>;
+	using ItemMap = std::unordered_map<uint8, Slot>;
 
 private:
 	std::wstring m_Lock;
 	ItemMap m_Items;
 	std::wstring m_LootTable;
-	s64 m_LootTableSeed;
+	int64 m_LootTableSeed;
 
 public:
 	MCLIB_API bool ImportNBT(NBT* nbt);
@@ -24,7 +24,7 @@ public:
 	const std::wstring& GetLock() const noexcept { return m_Lock; }
 	const ItemMap& GetItems() const noexcept { return m_Items; }
 	const std::wstring& GetLootTable() const noexcept { return m_LootTable; }
-	s64 GetLootTableSeed() const noexcept { return m_LootTableSeed; }
+	int64 GetLootTableSeed() const noexcept { return m_LootTableSeed; }
 };
 
 #endif

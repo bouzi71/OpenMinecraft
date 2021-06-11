@@ -26,17 +26,17 @@ public:
     };
 private:
     SkullType m_Type;
-    u8 m_Rotation;
+    uint8 m_Rotation;
     CUUID m_OwnerUUID;
     std::wstring m_OwnerName;
     std::vector<Texture> m_Textures;
 
 public:
-    MCLIB_API Skull(BlockEntityType type, Vector3i position) : BlockEntity(type, position) { }
+    MCLIB_API Skull(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) { }
     MCLIB_API bool ImportNBT(NBT* nbt);
 
     inline SkullType GetType() const noexcept { return m_Type; }
-    inline u8 GetRotation() const noexcept { return m_Rotation; }
+    inline uint8 GetRotation() const noexcept { return m_Rotation; }
     inline CUUID GetOwnerUUID() const noexcept { return m_OwnerUUID; }
     inline const std::wstring& GetOwnerName() const noexcept { return m_OwnerName; }
     inline const std::vector<Texture>& GetTextures() const noexcept { return m_Textures; }

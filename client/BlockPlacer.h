@@ -27,8 +27,8 @@ private:
 	CMinecraftClient* m_Client;
 	PlayerController* m_PlayerController;
 	World* m_World;
-	Vector3i m_Target;
-	s64 m_LastUpdate;
+	glm::ivec3 m_Target;
+	int64 m_LastUpdate;
 	Slot m_HeldItem;
 };
 

@@ -33,7 +33,7 @@ DataBuffer& operator<<(DataBuffer& out, const MCString& str)
 {
 	std::string utf8 = utf16to8(str.m_UTF16);
 
-	CVarInt bytes = (s32)utf8.size();
+	CVarInt bytes = (int32)utf8.size();
 	out << bytes;
 	out << utf8;
 

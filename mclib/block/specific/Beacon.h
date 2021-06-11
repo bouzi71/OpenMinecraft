@@ -11,17 +11,17 @@ class Beacon
 {
 private:
 	std::wstring m_Lock;
-	s32 m_Levels;
-	s32 m_Primary;
-	s32 m_Secondary;
+	int32 m_Levels;
+	int32 m_Primary;
+	int32 m_Secondary;
 
 public:
-	MCLIB_API Beacon(BlockEntityType type, Vector3i position) : BlockEntity(type, position), m_Levels(0), m_Primary(0), m_Secondary(0) {}
+	MCLIB_API Beacon(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position), m_Levels(0), m_Primary(0), m_Secondary(0) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 
-	s32 GetLevels() const noexcept { return m_Levels; }
-	s32 GetPrimary() const noexcept { return m_Primary; }
-	s32 GetSecondary() const noexcept { return m_Secondary; }
+	int32 GetLevels() const noexcept { return m_Levels; }
+	int32 GetPrimary() const noexcept { return m_Primary; }
+	int32 GetSecondary() const noexcept { return m_Secondary; }
 };
 
 #endif

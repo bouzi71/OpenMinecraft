@@ -24,10 +24,10 @@ public:
 
 	struct ByteType : public Type
 	{
-		u8 value;
+		uint8 value;
 
 		ByteType() = default;
-		ByteType(u8 value) : value(value) {}
+		ByteType(uint8 value) : value(value) {}
 	};
 
 	struct VarIntType : public Type
@@ -76,10 +76,10 @@ public:
 
 	struct RotationType : public Type
 	{
-		Vector3f value;
+		glm::vec3 value;
 
 		RotationType() = default;
-		RotationType(Vector3f value) : value(value) {}
+		RotationType(glm::vec3 value) : value(value) {}
 	};
 
 	struct PositionType : public Type

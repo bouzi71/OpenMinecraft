@@ -16,14 +16,14 @@ public:
 		, m_ItemCount(0)
 		, m_ItemDamage(0) 
 	{}
-	Slot(s16 itemId, u8 itemCount, s16 itemDamage) noexcept
+	Slot(int16 itemId, uint8 itemCount, int16 itemDamage) noexcept
 		: m_ItemId(itemId)
 		, m_ItemCount(itemCount)
 		, m_ItemDamage(itemDamage)
 		, m_NBT()
 	{}
 
-	Slot(s16 itemId, u8 itemCount, s16 itemDamage, NBT nbt) noexcept
+	Slot(int16 itemId, uint8 itemCount, int16 itemDamage, NBT nbt) noexcept
 		: m_ItemId(itemId)
 		, m_ItemCount(itemCount)
 		, m_ItemDamage(itemDamage)
@@ -35,9 +35,9 @@ public:
 	Slot(Slot&& rhs) = default;
 	Slot& operator=(Slot&& rhs) = default;
 
-	s16 GetItemId() const noexcept { return m_ItemId; }
-	u8 GetItemCount() const noexcept { return m_ItemCount; }
-	s16 GetItemDamage() const noexcept { return m_ItemDamage; }
+	int16 GetItemId() const noexcept { return m_ItemId; }
+	uint8 GetItemCount() const noexcept { return m_ItemCount; }
+	int16 GetItemDamage() const noexcept { return m_ItemDamage; }
 	const NBT& GetNBT() const noexcept { return m_NBT; }
 
 	static MCLIB_API Slot FromNBT(TagCompound& compound);
@@ -47,9 +47,9 @@ public:
 
 private:
 	NBT m_NBT;
-	s16 m_ItemId;
-	s16 m_ItemDamage;
-	u8 m_ItemCount;
+	int16 m_ItemId;
+	int16 m_ItemDamage;
+	uint8 m_ItemCount;
 };
 
 #endif

@@ -28,7 +28,7 @@ inline std::string to_string(const std::wstring& str)
 MCLIB_API bool GetProfileToken(const std::string& username, AuthToken* token);
 MCLIB_API std::string ParseChatNode(const json& node);
 MCLIB_API std::string StripChatMessage(const std::string& message);
-MCLIB_API s64 GetTime();
+MCLIB_API int64 GetTime();
 
 
 class PlayerController
@@ -38,36 +38,36 @@ private:
 	PlayerManager& m_PlayerManager;
 	Connection* m_Connection;
 	World& m_World;
-	Vector3d m_Position;
+	glm::dvec3 m_Position;
 	float m_Yaw;
 	float m_Pitch;
 	CMinecraftAABB m_BoundingBox;
 	EntityId m_EntityId;
-	u64 m_LastUpdate;
-	Vector3d m_TargetPos;
+	uint64 m_LastUpdate;
+	glm::dvec3 m_TargetPos;
 	bool m_Sprinting;
 	bool m_LoadedIn;
 	bool m_HandleFall;
 
 	double m_MoveSpeed;
 
-	std::queue<Vector3d> m_DigQueue;
+	std::queue<glm::dvec3> m_DigQueue;
 
 	// todo: gravity
 	const float FallSpeed = 8.3f * (50.0f / 1000.0f);
 
-	std::vector<std::pair<const CMinecraftBlock*, Vector3i>> GetNearbyBlocks(const s32 radius);
+	std::vector<std::pair<const CMinecraftBlock*, glm::ivec3>> GetNearbyBlocks(const int32 radius);
 
 public:
 	MCLIB_API PlayerController(Connection* connection, World& world, PlayerManager& playerManager);
 	MCLIB_API ~PlayerController();
 
 	void MCLIB_API OnClientSpawn(PlayerPtr player);
-	bool MCLIB_API ClearPath(Vector3d target);
+	bool MCLIB_API ClearPath(glm::dvec3 target);
 
-	void MCLIB_API Dig(Vector3d target);
+	void MCLIB_API Dig(glm::dvec3 target);
 	void MCLIB_API Attack(EntityId id);
-	void MCLIB_API Move(Vector3d delta);
+	void MCLIB_API Move(glm::dvec3 delta);
 
 	bool MCLIB_API HandleJump();
 	bool MCLIB_API HandleFall();
@@ -76,17 +76,17 @@ public:
 	void MCLIB_API Update();
 
 	bool MCLIB_API InLoadedChunk() const;
-	Vector3d MCLIB_API GetPosition() const;
-	Vector3d MCLIB_API GetHeading() const;
+	glm::dvec3 MCLIB_API GetPosition() const;
+	glm::dvec3 MCLIB_API GetHeading() const;
 	float MCLIB_API GetYaw() const;
 	float MCLIB_API GetPitch() const;
 	CMinecraftAABB MCLIB_API GetBoundingBox() const;
 
 	void MCLIB_API SetYaw(float yaw);
 	void MCLIB_API SetPitch(float pitch);
-	void MCLIB_API LookAt(Vector3d target);
+	void MCLIB_API LookAt(glm::dvec3 target);
 	void MCLIB_API SetMoveSpeed(double speed);
-	void MCLIB_API SetTargetPosition(Vector3d target);
+	void MCLIB_API SetTargetPosition(glm::dvec3 target);
 	void MCLIB_API SetHandleFall(bool handle);
 };
 
@@ -101,7 +101,7 @@ private:
 	PlayerPtr m_Following;
 	PlayerController& m_PlayerController;
 	std::wstring m_Target;
-	u64 m_LastUpdate;
+	uint64 m_LastUpdate;
 
 public:
 	MCLIB_API PlayerFollower(PacketDispatcher* dispatcher, CMinecraftClient* client);
@@ -119,7 +119,7 @@ public:
 	MCLIB_API void OnPlayerLeave(PlayerPtr player) override;
 	MCLIB_API void OnPlayerSpawn(PlayerPtr player) override;
 	MCLIB_API void OnPlayerDestroy(PlayerPtr player, EntityId eid) override;
-	MCLIB_API void OnPlayerMove(PlayerPtr player, Vector3d oldPos, Vector3d newPos) override;
+	MCLIB_API void OnPlayerMove(PlayerPtr player, glm::dvec3 oldPos, glm::dvec3 newPos) override;
 };
 
 

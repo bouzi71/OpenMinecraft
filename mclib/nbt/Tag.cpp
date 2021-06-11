@@ -28,7 +28,7 @@ std::wstring Tag::GetName() const noexcept
 
 DataBuffer& operator<<(DataBuffer& out, const Tag& tag)
 {
-	u8 type = (u8)tag.GetType();
+	uint8 type = (uint8)tag.GetType();
 	out << type;
 
 	std::wstring name = tag.GetName();
@@ -113,14 +113,14 @@ void TagString::Write(DataBuffer& buffer) const
 {
 	std::string utf8 = utf16to8(m_Value);
 
-	u16 length = (u16)utf8.length();
+	uint16 length = (uint16)utf8.length();
 	buffer << length;
 	buffer << utf8;
 }
 
 void TagString::Read(DataBuffer& buffer)
 {
-	u16 length;
+	uint16 length;
 
 	buffer >> length;
 
@@ -145,7 +145,7 @@ TagType TagByteArray::GetType() const noexcept
 
 void TagByteArray::Write(DataBuffer& buffer) const
 {
-	s32 length = m_Value.length();
+	int32 length = m_Value.length();
 
 	buffer << length;
 	buffer << m_Value;
@@ -153,7 +153,7 @@ void TagByteArray::Write(DataBuffer& buffer) const
 
 void TagByteArray::Read(DataBuffer& buffer)
 {
-	s32 length;
+	int32 length;
 
 	buffer >> length;
 
@@ -168,24 +168,24 @@ TagType TagIntArray::GetType() const noexcept
 
 void TagIntArray::Write(DataBuffer& buffer) const
 {
-	s32 length = m_Value.size();
+	int32 length = m_Value.size();
 
 	buffer << length;
-	for (s32 val : m_Value)
+	for (int32 val : m_Value)
 		buffer << val;
 }
 
 void TagIntArray::Read(DataBuffer& buffer)
 {
-	s32 length;
+	int32 length;
 
 	buffer >> length;
 
 	m_Value.clear();
 
-	for (s32 i = 0; i < length; ++i)
+	for (int32 i = 0; i < length; ++i)
 	{
-		s32 val;
+		int32 val;
 		buffer >> val;
 		m_Value.push_back(val);
 	}
@@ -193,8 +193,8 @@ void TagIntArray::Read(DataBuffer& buffer)
 
 void TagList::Write(DataBuffer& buffer) const
 {
-	u8 type = (u8)m_ListType;
-	s32 size = (m_ListType != TagType::End) ? m_Tags.size() : 0;
+	uint8 type = (uint8)m_ListType;
+	int32 size = (m_ListType != TagType::End) ? m_Tags.size() : 0;
 
 	buffer << type;
 	buffer << size;
@@ -207,15 +207,15 @@ void TagList::Write(DataBuffer& buffer) const
 
 void TagList::Read(DataBuffer& buffer)
 {
-	u8 type;
-	s32 size;
+	uint8 type;
+	int32 size;
 
 	buffer >> type;
 	buffer >> size;
 
 	m_ListType = static_cast<TagType>(type);
 
-	for (s32 i = 0; i < size; ++i)
+	for (int32 i = 0; i < size; ++i)
 	{
 		TagPtr tag;
 
@@ -349,14 +349,14 @@ void TagCompound::Write(DataBuffer& buffer) const
 		buffer << *pair.second;
 	}
 
-	buffer << (u8)0;
+	buffer << (uint8)0;
 }
 
 void TagCompound::Read(DataBuffer& buffer)
 {
 	while (true)
 	{
-		u8 typeValue;
+		uint8 typeValue;
 
 		buffer >> typeValue;
 
@@ -586,7 +586,7 @@ void TagDouble::Read(DataBuffer& buffer)
 
 DataBuffer& operator>>(DataBuffer& in, Tag& tag)
 {
-	u8 type;
+	uint8 type;
 	in >> type;
 
 	TagString name;

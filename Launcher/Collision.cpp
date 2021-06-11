@@ -11,20 +11,20 @@ inline T Sign(T val)
 	return std::signbit(val) ? static_cast<T>(-1) : static_cast<T>(1);
 }
 
-inline Vector3d BasisAxis(int basisIndex)
+inline glm::dvec3 BasisAxis(int basisIndex)
 {
-	static const Vector3d axes[3] = { Vector3d(1, 0, 0), Vector3d(0, 1, 0), Vector3d(0, 0, 1) };
+	static const glm::dvec3 axes[3] = { glm::dvec3(1, 0, 0), glm::dvec3(0, 1, 0), glm::dvec3(0, 0, 1) };
 	return axes[basisIndex];
 }
 
-Vector3d GetClosestFaceNormal(const Vector3d& pos, CMinecraftAABB bounds)
+glm::dvec3 GetClosestFaceNormal(const glm::dvec3& pos, CMinecraftAABB bounds)
 {
-	Vector3d center = bounds.min + (bounds.max - bounds.min) / 2;
-	Vector3d dim = bounds.max - bounds.min;
-	Vector3d offset = pos - center;
+	glm::dvec3 center = glm::vec3(bounds.min) + glm::vec3(bounds.max - bounds.min) / 2.0f;
+	glm::dvec3 dim = bounds.max - bounds.min;
+	glm::dvec3 offset = pos - center;
 
 	double minDist = std::numeric_limits<double>::max();
-	Vector3d normal;
+	glm::dvec3 normal;
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -40,14 +40,14 @@ Vector3d GetClosestFaceNormal(const Vector3d& pos, CMinecraftAABB bounds)
 }
 
 
-bool CollisionDetector::DetectCollision(Vector3d from, Vector3d rayVector, Collision* collision) const
+bool CollisionDetector::DetectCollision(glm::dvec3 from, glm::dvec3 rayVector, Collision* collision) const
 {
-	static const std::vector<Vector3d> directions = {
-		Vector3d(0, 0, 0), Vector3d(1, 0, 0), Vector3d(-1, 0, 0), Vector3d(0, 1, 0), Vector3d(0, -1, 0), Vector3d(0, 0, 1), Vector3d(0, 0, -1)
+	static const std::vector<glm::dvec3> directions = {
+		glm::dvec3(0, 0, 0), glm::dvec3(1, 0, 0), glm::dvec3(-1, 0, 0), glm::dvec3(0, 1, 0), glm::dvec3(0, -1, 0), glm::dvec3(0, 0, 1), glm::dvec3(0, 0, -1)
 	};
 
-	Vector3d direction = Vector3Normalize(rayVector);
-	double length = rayVector.Length();
+	glm::dvec3 direction = glm::normalize(rayVector);
+	double length = glm::length(rayVector);
 
 	CMinecraftRay ray(from, direction);
 
@@ -56,13 +56,13 @@ bool CollisionDetector::DetectCollision(Vector3d from, Vector3d rayVector, Colli
 
 	for (double i = 0; i < length; ++i)
 	{
-		Vector3d position = from + direction * i;
+		glm::dvec3 position = from + direction * i;
 
 		// Look for collisions in any blocks surrounding the ray
-		for (Vector3d checkDirection : directions)
+		for (glm::dvec3 checkDirection : directions)
 		{
-			Vector3d checkPos = position + checkDirection;
-			const CMinecraftBlock* block = m_World->GetBlock(ToVector3i(checkPos));
+			glm::dvec3 checkPos = position + checkDirection;
+			const CMinecraftBlock* block = m_World->GetBlock(checkPos);
 
 			if (block && block->IsSolid())
 			{
@@ -73,8 +73,8 @@ bool CollisionDetector::DetectCollision(Vector3d from, Vector3d rayVector, Colli
 				{
 					if (distance < 0 || distance > length) continue;
 
-					Vector3d collisionHit = from + direction * distance;
-					Vector3d normal = GetClosestFaceNormal(collisionHit, bounds);
+					glm::dvec3 collisionHit = from + direction * distance;
+					glm::dvec3 normal = GetClosestFaceNormal(collisionHit, bounds);
 
 					if (collision)
 						* collision = Collision(collisionHit, normal);
@@ -88,16 +88,16 @@ bool CollisionDetector::DetectCollision(Vector3d from, Vector3d rayVector, Colli
 	return false;
 }
 
-std::vector<Vector3i> CollisionDetector::GetSurroundingLocations(CMinecraftAABB bounds)
+std::vector<glm::ivec3> CollisionDetector::GetSurroundingLocations(CMinecraftAABB bounds)
 {
-	std::vector<Vector3i> locs;
+	std::vector<glm::ivec3> locs;
 
-	s32 radius = 2;
-	for (s32 y = (s32)bounds.min.y - radius; y < (s32)bounds.max.y + radius; ++y)
+	int32 radius = 2;
+	for (int32 y = (int32)bounds.min.y - radius; y < (int32)bounds.max.y + radius; ++y)
 	{
-		for (s32 z = (s32)bounds.min.z - radius; z < (s32)bounds.max.z + radius; ++z)
+		for (int32 z = (int32)bounds.min.z - radius; z < (int32)bounds.max.z + radius; ++z)
 		{
-			for (s32 x = (s32)bounds.min.x - radius; x < (s32)bounds.max.x + radius; ++x)
+			for (int32 x = (int32)bounds.min.x - radius; x < (int32)bounds.max.x + radius; ++x)
 			{
 				locs.emplace_back(x, y, z);
 			}
@@ -109,15 +109,15 @@ std::vector<Vector3i> CollisionDetector::GetSurroundingLocations(CMinecraftAABB 
 
 void CollisionDetector::ResolveCollisions(Transform* transform, double dt, bool* onGround)
 {
-	const s32 MaxIterations = 10;
+	const int32 MaxIterations = 10;
 	bool collisions = true;
 
-	Vector3d velocity = transform->velocity;
-	Vector3d input_velocity = transform->input_velocity;
+	glm::dvec3 velocity = transform->velocity;
+	glm::dvec3 input_velocity = transform->input_velocity;
 
-	for (s32 iteration = 0; iteration < MaxIterations && collisions; ++iteration)
+	for (int32 iteration = 0; iteration < MaxIterations && collisions; ++iteration)
 	{
-		Vector3d position = transform->position;
+		glm::dvec3 position = transform->position;
 
 		collisions = false;
 
@@ -131,9 +131,9 @@ void CollisionDetector::ResolveCollisions(Transform* transform, double dt, bool*
 			playerBounds.min += position;
 			playerBounds.max += position;
 
-			std::vector<Vector3i> surrounding = GetSurroundingLocations(playerBounds);
+			std::vector<glm::ivec3> surrounding = GetSurroundingLocations(playerBounds);
 
-			for (Vector3i checkPos : surrounding)
+			for (glm::ivec3 checkPos : surrounding)
 			{
 				const CMinecraftBlock* block = m_World->GetBlock(checkPos);
 

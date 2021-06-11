@@ -83,7 +83,7 @@ private:
 	void UpdateClient();
 
 	void CreatePlayer(World* world);
-	Vector3d GetPosition();
+	glm::dvec3 GetPosition();
 	CMinecraftClient& GetNetworkClient() { return m_NetworkClient; }
 
 

@@ -9,7 +9,7 @@ class CMinecraftBlock
 {
 	friend class BlockRegistry;
 public:
-	explicit CMinecraftBlock(const std::string& name, u32 ID, bool IsTransperent, bool IsSolid)
+	explicit CMinecraftBlock(const std::string& name, uint32 ID, bool IsTransperent, bool IsSolid)
 		: m_Name(name)
 		, m_ID(ID)
 		, m_IsTransperent(IsTransperent)
@@ -18,7 +18,7 @@ public:
 		//_ASSERT(false == name.empty());
 	}
 
-	explicit CMinecraftBlock(const std::string& name, u32 Type, u32 Meta, bool IsTransperent, bool IsSolid)
+	explicit CMinecraftBlock(const std::string& name, uint32 Type, uint32 Meta, bool IsTransperent, bool IsSolid)
 		: m_Name(name)
 		, m_ID(Type << 4 | (Meta & 15))
 		, m_IsTransperent(IsTransperent)
@@ -27,7 +27,7 @@ public:
 		//_ASSERT(false == name.empty());
 	}
 
-	explicit CMinecraftBlock(const std::string& name, u32 ID, bool IsTransperent, bool IsSolid, const CMinecraftAABB& bounds)
+	explicit CMinecraftBlock(const std::string& name, uint32 ID, bool IsTransperent, bool IsSolid, const CMinecraftAABB& bounds)
 		: m_Name(name)
 		, m_ID(ID)
 		, m_IsTransperent(IsTransperent)
@@ -55,17 +55,17 @@ public:
 		return m_Name; 
 	}
 
-	u32 GetID() const noexcept
+	uint32 GetID() const noexcept
 	{
 		return m_ID;
 	}
 
-	u32 GetType() const noexcept
+	uint32 GetType() const noexcept
 	{
 		return (GetID() >> 4);
 	}
 
-	u32 GetMeta() const noexcept
+	uint32 GetMeta() const noexcept
 	{
 		return (GetID() & 15);
 	}
@@ -82,7 +82,7 @@ public:
 
 	bool IsOpaque() const noexcept
 	{
-		return m_BoundingBox.min != Vector3d(0, 0, 0) || m_BoundingBox.max != Vector3d(0, 0, 0);
+		return m_BoundingBox.min != glm::dvec3(0, 0, 0) || m_BoundingBox.max != glm::dvec3(0, 0, 0);
 	}
 
 	virtual CMinecraftAABB GetBoundingBox() const noexcept
@@ -90,21 +90,21 @@ public:
 		return m_BoundingBox;
 	}
 
-	virtual CMinecraftAABB GetBoundingBox(Vector3i at) const // at is the world position of this block. Used to get the world bounding box
+	virtual CMinecraftAABB GetBoundingBox(glm::ivec3 at) const // at is the world position of this block. Used to get the world bounding box
 	{
-		Vector3d atd = ToVector3d(at);
+		glm::dvec3 atd = at;
 		CMinecraftAABB bounds = m_BoundingBox;
 		bounds.min += atd;
 		bounds.max += atd;
 		return bounds;
 	}
 
-	virtual CMinecraftAABB GetBoundingBox(Vector3d at) const
+	virtual CMinecraftAABB GetBoundingBox(glm::dvec3 at) const
 	{
-		return GetBoundingBox(ToVector3i(at));
+		return GetBoundingBox(at);
 	}
 
-	virtual std::pair<bool, CMinecraftAABB> CollidesWith(Vector3i at, const CMinecraftAABB& other) const
+	virtual std::pair<bool, CMinecraftAABB> CollidesWith(glm::ivec3 at, const CMinecraftAABB& other) const
 	{
 		CMinecraftAABB boundingBox = GetBoundingBox() + at;
 		return std::make_pair(boundingBox.Intersects(other), boundingBox);
@@ -156,12 +156,12 @@ public:
 	//
 	// Blockmetas
 	//
-	const std::map<u32, const CMinecraftBlock*>& GetBlockmetas() const noexcept
+	const std::map<uint32, const CMinecraftBlock*>& GetBlockmetas() const noexcept
 	{
 		return m_Blockmetas;
 	}
 
-	const CMinecraftBlock* GetBlockmeta(u32 Meta) const noexcept
+	const CMinecraftBlock* GetBlockmeta(uint32 Meta) const noexcept
 	{
 		const auto& blockmetasIt = m_Blockmetas.find(Meta);
 		if (blockmetasIt == m_Blockmetas.end())
@@ -176,12 +176,12 @@ public:
 
 protected:
 	std::string m_Name;
-	u32 m_ID;
+	uint32 m_ID;
 	bool m_IsTransperent;
 	bool m_Solid;
 	CMinecraftAABB m_BoundingBox;
 	std::vector<std::string> m_Variables;
-	std::map<u32, const CMinecraftBlock*> m_Blockmetas;
+	std::map<uint32, const CMinecraftBlock*> m_Blockmetas;
 };
 
 

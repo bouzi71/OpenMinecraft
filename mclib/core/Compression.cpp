@@ -13,7 +13,7 @@ DataBuffer CompressionNone::Compress(DataBuffer& buffer)
 {
 	DataBuffer packet;
 
-	CVarInt length((s32)buffer.GetSize());
+	CVarInt length((int32)buffer.GetSize());
 	packet << length;
 	packet << buffer;
 
@@ -53,7 +53,7 @@ DataBuffer CompressionZ::Compress(DataBuffer& buffer)
 	{
 		// Don't compress since it's a small packet
 		CVarInt dataLength(0);
-		CVarInt packetLength((s32)(buffer.GetSize() + dataLength.GetSerializedLength()));
+		CVarInt packetLength((int32)(buffer.GetSize() + dataLength.GetSerializedLength()));
 
 		packet << packetLength;
 		packet << dataLength;
@@ -64,8 +64,8 @@ DataBuffer CompressionZ::Compress(DataBuffer& buffer)
 
 	deflate(buffer.ToString(), compressedData);
 
-	CVarInt dataLength((s32)buffer.GetSize());
-	CVarInt packetLength((s32)(compressedData.length() + dataLength.GetSerializedLength()));
+	CVarInt dataLength((int32)buffer.GetSize());
+	CVarInt packetLength((int32)(compressedData.length() + dataLength.GetSerializedLength()));
 
 	packet << packetLength;
 	packet << dataLength;

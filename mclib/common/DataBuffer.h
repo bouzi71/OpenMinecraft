@@ -13,7 +13,7 @@ class CVarInt;
 class DataBuffer
 {
 private:
-	typedef std::vector<u8> Data;
+	typedef std::vector<uint8> Data;
 	Data m_Buffer;
 	std::size_t m_ReadOffset = 0;
 
@@ -45,7 +45,7 @@ public:
 	DataBuffer& operator<<(T data)
 	{
 		// Switch to big endian
-		std::reverse((u8*)&data, (u8*)&data + sizeof(T));
+		std::reverse((uint8*)&data, (uint8*)&data + sizeof(T));
 		Append(data);
 		return *this;
 	}
@@ -73,7 +73,7 @@ public:
 	{
 		assert(m_ReadOffset + sizeof(T) <= GetSize());
 		data = *(T *)&m_Buffer[m_ReadOffset];
-		std::reverse((u8*)&data, (u8*)&data + sizeof(T));
+		std::reverse((uint8*)&data, (uint8*)&data + sizeof(T));
 		m_ReadOffset += sizeof(T);
 		return *this;
 	}
@@ -101,7 +101,7 @@ public:
 		m_ReadOffset += amount;
 	}
 
-	void ReadSome(u8* buffer, std::size_t amount)
+	void ReadSome(uint8* buffer, std::size_t amount)
 	{
 		assert(m_ReadOffset + amount <= GetSize());
 		std::copy_n(m_Buffer.begin() + m_ReadOffset, amount, buffer);

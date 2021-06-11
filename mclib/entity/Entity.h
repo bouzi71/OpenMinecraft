@@ -118,8 +118,8 @@ public:
 protected:
 	AttributeMap m_Attributes;
 	EntityMetadata m_Metadata;
-	Vector3d m_Position;
-	Vector3d m_Velocity;
+	glm::dvec3 m_Position;
+	glm::dvec3 m_Velocity;
 	EntityId m_EntityId;
 	// Stored in radians
 	float m_Yaw, m_Pitch, m_HeadPitch;
@@ -137,8 +137,8 @@ public:
 
 	EntityId GetEntityId() const noexcept { return m_EntityId; }
 	EntityId GetVehicleId() const noexcept { return m_VehicleId; }
-	const Vector3d& GetPosition() const noexcept { return m_Position; }
-	const Vector3d& GetVelocity() const noexcept { return m_Velocity; }
+	const glm::dvec3& GetPosition() const noexcept { return m_Position; }
+	const glm::dvec3& GetVelocity() const noexcept { return m_Velocity; }
 	float GetYaw() const noexcept { return m_Yaw; }
 	float GetPitch() const noexcept { return m_Pitch; }
 	float GetHeadPitch() const noexcept { return m_HeadPitch; }
@@ -153,8 +153,8 @@ public:
 		return iter->second;
 	}
 
-	void SetPosition(const Vector3d& pos) noexcept { m_Position = pos; }
-	void SetVelocity(const Vector3d& vel) noexcept { m_Velocity = vel; }
+	void SetPosition(const glm::dvec3& pos) noexcept { m_Position = pos; }
+	void SetVelocity(const glm::dvec3& vel) noexcept { m_Velocity = vel; }
 	void SetYaw(float yaw) noexcept { m_Yaw = yaw; }
 	void SetPitch(float pitch) noexcept { m_Pitch = pitch; }
 	void SetHeadPitch(float pitch) noexcept { m_HeadPitch = pitch; }

@@ -10,7 +10,7 @@ namespace out
 {
 // Play packets
 
-TeleportConfirmPacket::TeleportConfirmPacket(s32 teleportId) : m_TeleportId(teleportId)
+TeleportConfirmPacket::TeleportConfirmPacket(int32 teleportId) : m_TeleportId(teleportId)
 {
 
 }
@@ -26,7 +26,7 @@ DataBuffer TeleportConfirmPacket::Serialize() const
 }
 
 
-PrepareCraftingGridPacket::PrepareCraftingGridPacket(u8 windowId, s16 actionNumber, const std::vector<Entry>& returnEntries, const std::vector<Entry>& prepareEntries)
+PrepareCraftingGridPacket::PrepareCraftingGridPacket(uint8 windowId, int16 actionNumber, const std::vector<Entry>& returnEntries, const std::vector<Entry>& prepareEntries)
 	: m_WindowId(windowId),
 	m_ActionNumber(actionNumber),
 	m_ReturnEntries(returnEntries),
@@ -42,7 +42,7 @@ DataBuffer PrepareCraftingGridPacket::Serialize() const
 	buffer << m_WindowId;
 	buffer << m_ActionNumber;
 
-	s16 returnSize = static_cast<s16>(m_ReturnEntries.size());
+	int16 returnSize = static_cast<int16>(m_ReturnEntries.size());
 
 	buffer << returnSize;
 	for (auto&& entry : m_ReturnEntries)
@@ -52,7 +52,7 @@ DataBuffer PrepareCraftingGridPacket::Serialize() const
 		buffer << entry.playerSlot;
 	}
 
-	s16 prepareSize = static_cast<s16>(m_PrepareEntries.size());
+	int16 prepareSize = static_cast<int16>(m_PrepareEntries.size());
 
 	buffer << prepareSize;
 	for (auto&& entry : m_PrepareEntries)
@@ -66,7 +66,7 @@ DataBuffer PrepareCraftingGridPacket::Serialize() const
 }
 
 
-CraftRecipeRequestPacket::CraftRecipeRequestPacket(u8 windowId, s32 recipeId, bool makeAll)
+CraftRecipeRequestPacket::CraftRecipeRequestPacket(uint8 windowId, int32 recipeId, bool makeAll)
 	: m_WindowId(windowId),
 	m_RecipeId(recipeId),
 	m_MakeAll(makeAll)
@@ -149,7 +149,7 @@ DataBuffer ClientStatusPacket::Serialize() const
 }
 
 
-ClientSettingsPacket::ClientSettingsPacket(const std::wstring& locale, u8 viewDistance, ChatMode chatMode, bool chatColors, u8 skinFlags, MainHand hand)
+ClientSettingsPacket::ClientSettingsPacket(const std::wstring& locale, uint8 viewDistance, ChatMode chatMode, bool chatColors, uint8 skinFlags, MainHand hand)
 	: m_Locale(locale), m_ViewDistance(viewDistance), m_ChatMode(chatMode),
 	m_ChatColors(chatColors), m_SkinFlags(skinFlags), m_MainHand(hand)
 {
@@ -174,7 +174,7 @@ DataBuffer ClientSettingsPacket::Serialize() const
 }
 
 
-ConfirmTransactionPacket::ConfirmTransactionPacket(u8 windowId, s16 action, bool accepted)
+ConfirmTransactionPacket::ConfirmTransactionPacket(uint8 windowId, int16 action, bool accepted)
 	: m_WindowId(windowId), m_Action(action), m_Accepted(accepted)
 {
 
@@ -192,7 +192,7 @@ DataBuffer ConfirmTransactionPacket::Serialize() const
 }
 
 
-EnchantItemPacket::EnchantItemPacket(u8 windowId, u8 enchantmentIndex)
+EnchantItemPacket::EnchantItemPacket(uint8 windowId, uint8 enchantmentIndex)
 {
 
 }
@@ -206,7 +206,7 @@ DataBuffer EnchantItemPacket::Serialize() const
 }
 
 
-ClickWindowPacket::ClickWindowPacket(u8 windowId, u16 slotIndex, u8 button, u16 action, s32 mode, Slot clickedItem)
+ClickWindowPacket::ClickWindowPacket(uint8 windowId, uint16 slotIndex, uint8 button, uint16 action, int32 mode, Slot clickedItem)
 	: m_WindowId(windowId), m_SlotIndex(slotIndex), m_Button(button), m_Action(action), m_Mode(mode), m_ClickedItem(clickedItem)
 {
 
@@ -224,7 +224,7 @@ DataBuffer ClickWindowPacket::Serialize() const
 }
 
 
-CloseWindowPacket::CloseWindowPacket(u8 windowId)
+CloseWindowPacket::CloseWindowPacket(uint8 windowId)
 	: m_WindowId(windowId)
 {
 
@@ -257,7 +257,7 @@ DataBuffer PluginMessagePacket::Serialize() const
 }
 
 
-UseEntityPacket::UseEntityPacket(EntityId target, Action action, Hand hand, Vector3f position)
+UseEntityPacket::UseEntityPacket(EntityId target, Action action, Hand hand, glm::vec3 position)
 	: m_Target(target), m_Action(action), m_Hand(hand), m_Position(position)
 {
 
@@ -289,7 +289,7 @@ DataBuffer UseEntityPacket::Serialize() const
 }
 
 
-KeepAlivePacket::KeepAlivePacket(s64 id) : m_KeepAliveId(id)
+KeepAlivePacket::KeepAlivePacket(int64 id) : m_KeepAliveId(id)
 {
 
 }
@@ -302,7 +302,7 @@ DataBuffer KeepAlivePacket::Serialize() const
 }
 
 
-PlayerPositionPacket::PlayerPositionPacket(Vector3d position, bool onGround)
+PlayerPositionPacket::PlayerPositionPacket(glm::dvec3 position, bool onGround)
 	: m_Position(position), m_OnGround(onGround)
 {
 
@@ -317,7 +317,7 @@ DataBuffer PlayerPositionPacket::Serialize() const
 }
 
 
-PlayerPositionAndLookPacket::PlayerPositionAndLookPacket(Vector3d position, float yaw, float pitch, bool onGround)
+PlayerPositionAndLookPacket::PlayerPositionAndLookPacket(glm::dvec3 position, float yaw, float pitch, bool onGround)
 	: m_Position(position), m_Yaw(yaw), m_Pitch(pitch), m_OnGround(onGround)
 {
 
@@ -364,7 +364,7 @@ DataBuffer PlayerPacket::Serialize() const
 }
 
 
-VehicleMovePacket::VehicleMovePacket(Vector3d position, float yaw, float pitch)
+VehicleMovePacket::VehicleMovePacket(glm::dvec3 position, float yaw, float pitch)
 	: m_Position(position), m_Yaw(yaw), m_Pitch(pitch)
 {
 
@@ -407,7 +407,7 @@ DataBuffer PlayerAbilitiesPacket::Serialize() const
 
 	buffer << m_Id;
 
-	u8 flags = (u8)m_IsFlying << 1;
+	uint8 flags = (uint8)m_IsFlying << 1;
 	float flyingSpeed = 0.0f;
 	float walkingSpeed = 0.0f;
 
@@ -417,7 +417,7 @@ DataBuffer PlayerAbilitiesPacket::Serialize() const
 }
 
 
-PlayerDiggingPacket::PlayerDiggingPacket(Status status, Vector3i position, Face face)
+PlayerDiggingPacket::PlayerDiggingPacket(Status status, glm::ivec3 position, Face face)
 	: m_Status(status), m_Position(position), m_Face(face)
 {
 
@@ -425,18 +425,18 @@ PlayerDiggingPacket::PlayerDiggingPacket(Status status, Vector3i position, Face 
 DataBuffer PlayerDiggingPacket::Serialize() const
 {
 	DataBuffer buffer;
-	Position location((s32)m_Position.x, (s32)m_Position.y, (s32)m_Position.z);
+	Position location((int32)m_Position.x, (int32)m_Position.y, (int32)m_Position.z);
 
 	buffer << m_Id;
-	buffer << (u8)m_Status;
+	buffer << (uint8)m_Status;
 	buffer << location;
-	buffer << (u8)m_Face;
+	buffer << (uint8)m_Face;
 
 	return buffer;
 }
 
 
-EntityActionPacket::EntityActionPacket(EntityId eid, Action action, s32 actionData)
+EntityActionPacket::EntityActionPacket(EntityId eid, Action action, int32 actionData)
 	: m_EntityId(eid), m_Action(action), m_ActionData(actionData)
 {
 
@@ -445,7 +445,7 @@ DataBuffer EntityActionPacket::Serialize() const
 {
 	DataBuffer buffer;
 	CVarInt eid(m_EntityId);
-	CVarInt action((s32)m_Action);
+	CVarInt action((int32)m_Action);
 	CVarInt actionData(m_ActionData);
 
 	buffer << m_Id;
@@ -455,7 +455,7 @@ DataBuffer EntityActionPacket::Serialize() const
 }
 
 
-SteerVehiclePacket::SteerVehiclePacket(float sideways, float forward, u8 flags)
+SteerVehiclePacket::SteerVehiclePacket(float sideways, float forward, uint8 flags)
 	: m_Sideways(sideways), m_Forward(forward), m_Flags(flags)
 {
 
@@ -487,7 +487,7 @@ DataBuffer ResourcePackStatusPacket::Serialize() const
 }
 
 
-HeldItemChangePacket::HeldItemChangePacket(u16 slot)
+HeldItemChangePacket::HeldItemChangePacket(uint16 slot)
 	: m_Slot(slot)
 {
 
@@ -503,7 +503,7 @@ DataBuffer HeldItemChangePacket::Serialize() const
 }
 
 
-CreativeInventoryActionPacket::CreativeInventoryActionPacket(s16 slot, Slot item)
+CreativeInventoryActionPacket::CreativeInventoryActionPacket(int16 slot, Slot item)
 	: m_Slot(slot),
 	m_Item(item)
 {
@@ -521,10 +521,10 @@ DataBuffer CreativeInventoryActionPacket::Serialize() const
 }
 
 
-UpdateSignPacket::UpdateSignPacket(Vector3d position, const std::wstring& line1, const std::wstring& line2, const std::wstring& line3, const std::wstring& line4)
+UpdateSignPacket::UpdateSignPacket(glm::dvec3 position, const std::wstring& line1, const std::wstring& line2, const std::wstring& line3, const std::wstring& line4)
 	: m_Line1(line1), m_Line2(line2), m_Line3(line3), m_Line4(line4)
 {
-	m_Position = Position((s32)position.x, (s32)position.y, (s32)position.z);
+	m_Position = Position((int32)position.x, (int32)position.y, (int32)position.z);
 }
 DataBuffer UpdateSignPacket::Serialize() const
 {
@@ -574,7 +574,7 @@ DataBuffer SpectatePacket::Serialize() const
 }
 
 
-PlayerBlockPlacementPacket::PlayerBlockPlacementPacket(Vector3i position, Face face, Hand hand, Vector3f cursorPos)
+PlayerBlockPlacementPacket::PlayerBlockPlacementPacket(glm::ivec3 position, Face face, Hand hand, glm::vec3 cursorPos)
 	: m_Position(position), m_Face(face), m_Hand(hand), m_CursorPos(cursorPos)
 {
 
@@ -582,8 +582,8 @@ PlayerBlockPlacementPacket::PlayerBlockPlacementPacket(Vector3i position, Face f
 DataBuffer PlayerBlockPlacementPacket::Serialize() const
 {
 	DataBuffer buffer;
-	Position location((s32)m_Position.x, (s32)m_Position.y, (s32)m_Position.z);
-	CVarInt face((u8)m_Face), hand((int)m_Hand);
+	Position location((int32)m_Position.x, (int32)m_Position.y, (int32)m_Position.z);
+	CVarInt face((uint8)m_Face), hand((int)m_Hand);
 
 	buffer << m_Id;
 	buffer << location;

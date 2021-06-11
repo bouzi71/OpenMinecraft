@@ -23,20 +23,20 @@ float Plane::PointDistance(const glm::vec3& q) const
 	return (glm::dot(m_Normal, q) - m_Distance) / glm::dot(m_Normal, m_Normal);
 }
 
-float Plane::PointDistance(Vector3i q) const
+float Plane::PointDistance(glm::ivec3 q) const
 {
-	using T = Vector3i::value_type;
+	using T = glm::ivec3::value_type;
 
-	Vector3i n(static_cast<T>(m_Normal.x), static_cast<T>(m_Normal.y), static_cast<T>(m_Normal.z));
+	glm::vec3 n(static_cast<T>(m_Normal.x), static_cast<T>(m_Normal.y), static_cast<T>(m_Normal.z));
 
-	return static_cast<float>((n.Dot(q) - m_Distance) / n.Dot(n));
+	return static_cast<float>((glm::dot(n, glm::vec3(q)) - m_Distance) / glm::dot(n, n));
 }
 
-float Plane::PointDistance(Vector3d q) const
+float Plane::PointDistance(glm::dvec3 q) const
 {
-	Vector3d n(m_Normal.x, m_Normal.y, m_Normal.z);
+	glm::dvec3 n(m_Normal.x, m_Normal.y, m_Normal.z);
 
-	return static_cast<float>((n.Dot(q) - m_Distance) / n.Dot(n));
+	return static_cast<float>((glm::dot(n, q) - m_Distance) / glm::dot(n, n));
 }
 
 } // ns math

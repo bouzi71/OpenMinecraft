@@ -25,7 +25,7 @@ public:
 		: m_ErrorMessage(error + ": " + errorMessage)
 	{}
 
-	virtual const char* what() const NOEXCEPT
+	virtual const char* what() const noexcept
 	{
 		return m_ErrorMessage.c_str();
 	}

@@ -71,7 +71,7 @@ public:
 	void MCLIB_API Dispatch(PacketHandler* handler);
 
 	// Packets of this size or higher may be compressed
-	s64 GetMaxPacketSize() const { return m_MaxPacketSize.GetLong(); }
+	int64 GetMaxPacketSize() const { return m_MaxPacketSize.GetLong(); }
 };
 }
 
@@ -85,11 +85,11 @@ class HandshakePacket : public CMinecraftOutboundPacket
 private:
 	CVarInt m_ProtocolVersion;
 	MCString m_Server;
-	u16 m_Port;
+	uint16 m_Port;
 	CVarInt m_NewState;
 
 public:
-	MCLIB_API HandshakePacket(s32 protocol, std::string server, u16 port, State state);
+	MCLIB_API HandshakePacket(int32 protocol, std::string server, uint16 port, State state);
 	DataBuffer MCLIB_API Serialize() const;
 };
 

@@ -9,7 +9,7 @@ class VersionFetcher
 	: public ConnectionListener
 {
 public:
-	MCLIB_API VersionFetcher(const std::string& host, u16 port);
+	MCLIB_API VersionFetcher(const std::string& host, uint16 port);
 
 	MCLIB_API Version GetVersion();
 
@@ -24,7 +24,7 @@ private:
 	ForgeHandler m_Forge;
 	Connection* m_Connection;
 	std::string m_Host;
-	u16 m_Port;
+	uint16 m_Port;
 	bool m_Found;
 };
 

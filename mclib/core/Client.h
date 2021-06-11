@@ -71,7 +71,7 @@ private:
 	Hotbar m_Hotbar;
 	std::unique_ptr<PlayerController> m_PlayerController;
 	World m_World;
-	s64 m_LastUpdate;
+	int64 m_LastUpdate;
 	bool m_Connected;
 	std::thread m_UpdateThread;
 };

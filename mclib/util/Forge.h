@@ -25,7 +25,7 @@ private:
 	// Filled out during ping response
 	std::vector<ModInfo> m_Mods;
 	Connection* m_Connection;
-	u8 m_Version;
+	uint8 m_Version;
 	bool m_ModInfoReceived;
 
 	void HandleData(const std::string& data);

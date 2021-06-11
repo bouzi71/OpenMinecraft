@@ -57,9 +57,6 @@
     <ClInclude Include="render\ChunkMeshGenerator.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="render\Shader.h">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="math\Plane.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -122,9 +119,6 @@
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="render\ChunkMeshGenerator.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Shader.cpp">
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="math\Plane.cpp">

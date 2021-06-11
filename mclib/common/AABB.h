@@ -13,12 +13,12 @@
 class CMinecraftRay
 {
 private:
-	Vector3d m_Origin;
-	Vector3d m_Direction;
-	Vector3d m_DirectionReciprocal;
+	glm::dvec3 m_Origin;
+	glm::dvec3 m_Direction;
+	glm::dvec3 m_DirectionReciprocal;
 
 public:
-	CMinecraftRay(const Vector3d& origin, const Vector3d& direction) noexcept
+	CMinecraftRay(const glm::dvec3& origin, const glm::dvec3& direction) noexcept
 		: m_Origin(origin),
 		m_Direction(direction)
 	{
@@ -38,41 +38,41 @@ public:
 			m_DirectionReciprocal.z = 1.0 / direction.z;
 	}
 
-	const Vector3d& GetOrigin() const noexcept { return m_Origin; }
-	const Vector3d& GetDirection() const noexcept { return m_Direction; }
-	const Vector3d& GetReciprocal() const noexcept { return m_DirectionReciprocal; }
+	const glm::dvec3& GetOrigin() const noexcept { return m_Origin; }
+	const glm::dvec3& GetDirection() const noexcept { return m_Direction; }
+	const glm::dvec3& GetReciprocal() const noexcept { return m_DirectionReciprocal; }
 };
 
 
 struct CMinecraftAABB
 {
-	Vector3d min;
-	Vector3d max;
+	glm::dvec3 min;
+	glm::dvec3 max;
 
 	MCLIB_API CMinecraftAABB() noexcept 
 		: min(0, 0, 0)
 		, max(0, 0, 0) 
 	{}
-	MCLIB_API CMinecraftAABB(const Vector3d& min, const Vector3d& max) noexcept 
+	MCLIB_API CMinecraftAABB(const glm::dvec3& min, const glm::dvec3& max) noexcept 
 		: min(min)
 		, max(max) 
 	{}
 
-	bool MCLIB_API Contains(Vector3d point) const noexcept
+	bool MCLIB_API Contains(glm::dvec3 point) const noexcept
 	{
 		return (point.x >= min.x && point.x <= max.x) &&
 			(point.y >= min.y && point.y <= max.y) &&
 			(point.z >= min.z && point.z <= max.z);
 	}
 
-	CMinecraftAABB operator+(Vector3d offset) const
+	CMinecraftAABB operator+(glm::dvec3 offset) const
 	{
 		return CMinecraftAABB(min + offset, max + offset);
 	}
 
-	CMinecraftAABB operator+(Vector3i offset) const
+	CMinecraftAABB operator+(glm::ivec3 offset) const
 	{
-		return CMinecraftAABB(min + ToVector3d(offset), max + ToVector3d(offset));
+		return CMinecraftAABB(min + glm::dvec3(offset), max + glm::dvec3(offset));
 	}
 
 	bool MCLIB_API Intersects(const CMinecraftAABB& other) const noexcept

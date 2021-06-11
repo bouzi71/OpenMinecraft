@@ -10,7 +10,7 @@
 class IPAddress
 {
 private:
-	u32 m_Address;
+	uint32 m_Address;
 	bool m_Valid;
 
 public:
@@ -24,13 +24,13 @@ public:
 	MCLIB_API IPAddress(const std::wstring& str);
 
 	/* Initialize by octets */
-	MCLIB_API IPAddress(u8 octet1, u8 octet2, u8 octet3, u8 octet4) noexcept;
+	MCLIB_API IPAddress(uint8 octet1, uint8 octet2, uint8 octet3, uint8 octet4) noexcept;
 
 	/* Get the specific octet. 1-4 */
-	u8 MCLIB_API GetOctet(u8 num) const;
+	uint8 MCLIB_API GetOctet(uint8 num) const;
 
 	/* Set the specific octet. 1-4 */
-	void MCLIB_API SetOctet(u8 num, u8 value);
+	void MCLIB_API SetOctet(uint8 num, uint8 value);
 
 	/* Make sure the IP is valid. It will be invalid if the host wasn't found. */
 	bool IsValid() const noexcept { return m_Valid; }

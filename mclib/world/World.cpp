@@ -19,13 +19,13 @@ World::~World()
 	GetDispatcher()->UnregisterHandler(this);
 }
 
-bool World::SetBlock(Vector3i position, u32 blockData)
+bool World::SetBlock(glm::ivec3 position, uint32 blockData)
 {
 	std::shared_ptr<ChunkColumn> chunk = GetChunk(position);
 	if (!chunk) 
 		return false;
 
-	Vector3i relative(position);
+	glm::ivec3 relative(position);
 
 	relative.x %= 16;
 	relative.y %= 16;
@@ -58,19 +58,19 @@ bool World::SetBlock(Vector3i position, u32 blockData)
 
 void World::HandlePacket(in::ExplosionPacket* packet)
 {
-	Vector3d position = packet->GetPosition();
+	glm::dvec3 position = packet->GetPosition();
 
-	for (Vector3s offset : packet->GetAffectedBlocks())
+	for (glm::i16vec3 offset : packet->GetAffectedBlocks())
 	{
-		Vector3d absolute = position + ToVector3d(offset);
+		glm::dvec3 absolute = position + glm::dvec3(offset);
 
 		const CMinecraftBlock* oldBlock = GetBlock(absolute);
 
 		// Set all affected blocks to air
-		SetBlock(ToVector3i(absolute), 0);
+		SetBlock(glm::ivec3(absolute), 0);
 
 		const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock(0);
-		NotifyListeners(&WorldListener::OnBlockChange, ToVector3i(absolute), newBlock, oldBlock);
+		NotifyListeners(&WorldListener::OnBlockChange, glm::ivec3(absolute), newBlock, oldBlock);
 	}
 }
 
@@ -91,7 +91,7 @@ void World::HandlePacket(in::ChunkDataPacket* packet)
 	if (!meta.continuous)
 	{
 		// This isn't an entire column of chunks, so just update the existing chunk column with the provided chunks.
-		for (s16 i = 0; i < ChunkColumn::ChunksPerColumn; ++i)
+		for (int16 i = 0; i < ChunkColumn::ChunksPerColumn; ++i)
 		{
 			// The section mask says whether or not there is data in this chunk.
 			if (meta.sectionmask & (1 << i))
@@ -106,7 +106,7 @@ void World::HandlePacket(in::ChunkDataPacket* packet)
 		m_Chunks[key] = col;
 	}
 
-	for (s32 i = 0; i < ChunkColumn::ChunksPerColumn; ++i)
+	for (int32 i = 0; i < ChunkColumn::ChunksPerColumn; ++i)
 	{
 		ChunkPtr chunk = (*col)[i];
 
@@ -116,7 +116,7 @@ void World::HandlePacket(in::ChunkDataPacket* packet)
 
 void World::HandlePacket(in::MultiBlockChangePacket* packet)
 {
-	Vector3i chunkStart(packet->GetChunkX() * 16, 0, packet->GetChunkZ() * 16);
+	glm::ivec3 chunkStart(packet->GetChunkX() * 16, 0, packet->GetChunkZ() * 16);
 
 	auto iter = m_Chunks.find(ChunkCoord(packet->GetChunkX(), packet->GetChunkZ()));
 	if (iter == m_Chunks.end()) 
@@ -129,7 +129,7 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 	const auto& changes = packet->GetBlockChanges();
 	for (const auto& change : changes)
 	{
-		Vector3i relative(change.x, change.y, change.z);
+		glm::ivec3 relative(change.x, change.y, change.z);
 
 		chunk->RemoveBlockEntity(chunkStart + relative);
 
@@ -148,7 +148,7 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 		if (newBlock == nullptr)
 			printf("World::MultiBlockChangePacket: CMinecraftBlock ID not found '%d'.\r\n", change.blockData);
 
-		Vector3i blockChangePos = chunkStart + relative;
+		glm::ivec3 blockChangePos = chunkStart + relative;
 		relative.y %= 16;
 		(*chunk)[index]->SetBlock(relative, newBlock);
 
@@ -158,7 +158,7 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 
 void World::HandlePacket(in::BlockChangePacket* packet)
 {
-	const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock((u16)packet->GetBlockId());
+	const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock((uint16)packet->GetBlockId());
 	const CMinecraftBlock* oldBlock = GetBlock(packet->GetPosition());
 
 	SetBlock(packet->GetPosition(), packet->GetBlockId());
@@ -174,7 +174,7 @@ void World::HandlePacket(in::BlockChangePacket* packet)
 
 void World::HandlePacket(in::UpdateBlockEntityPacket* packet)
 {
-	Vector3i pos = packet->GetPosition();
+	glm::ivec3 pos = packet->GetPosition();
 
 	std::shared_ptr<ChunkColumn> col = GetChunk(pos);
 	if (false == col) 
@@ -213,10 +213,10 @@ void World::HandlePacket(in::RespawnPacket* packet)
 	m_Chunks.clear();
 }
 
-std::shared_ptr<ChunkColumn> World::GetChunk(Vector3i pos) const
+std::shared_ptr<ChunkColumn> World::GetChunk(glm::ivec3 pos) const
 {
-	s32 x = (s32)std::floor(pos.x / 16.0);
-	s32 z = (s32)std::floor(pos.z / 16.0);
+	int32 x = (int32)std::floor(pos.x / 16.0);
+	int32 z = (int32)std::floor(pos.z / 16.0);
 
 	ChunkCoord key(x, z);
 
@@ -227,34 +227,34 @@ std::shared_ptr<ChunkColumn> World::GetChunk(Vector3i pos) const
 	return iter->second;
 }
 
-const CMinecraftBlock* World::GetBlock(Vector3f pos) const
+const CMinecraftBlock* World::GetBlock(glm::vec3 pos) const
 {
-	return GetBlock(Vector3i((s64)std::floor(pos.x), (s64)std::floor(pos.y), (s64)std::floor(pos.z)));
+	return GetBlock(glm::ivec3((int64)std::floor(pos.x), (int64)std::floor(pos.y), (int64)std::floor(pos.z)));
 }
 
-const CMinecraftBlock* World::GetBlock(Vector3d pos) const
+const CMinecraftBlock* World::GetBlock(glm::dvec3 pos) const
 {
-	return GetBlock(Vector3i((s64)std::floor(pos.x), (s64)std::floor(pos.y), (s64)std::floor(pos.z)));
+	return GetBlock(glm::ivec3((int64)std::floor(pos.x), (int64)std::floor(pos.y), (int64)std::floor(pos.z)));
 }
 
-const CMinecraftBlock* World::GetBlock(Vector3i pos) const
+const CMinecraftBlock* World::GetBlock(glm::ivec3 pos) const
 {
 	std::shared_ptr<ChunkColumn> col = GetChunk(pos);
 	if (!col) 
 		return BlockRegistry::GetInstance()->GetBlock(0);
 
-	s64 x = pos.x % 16;
-	s64 z = pos.z % 16;
+	int64 x = pos.x % 16;
+	int64 z = pos.z % 16;
 
 	if (x < 0)
 		x += 16;
 	if (z < 0)
 		z += 16;
 
-	return col->GetBlock(Vector3i(x, pos.y, z));
+	return col->GetBlock(glm::ivec3(x, pos.y, z));
 }
 
-BlockEntityPtr World::GetBlockEntity(Vector3i pos) const
+BlockEntityPtr World::GetBlockEntity(glm::ivec3 pos) const
 {
 	std::shared_ptr<ChunkColumn> col = GetChunk(pos);
 

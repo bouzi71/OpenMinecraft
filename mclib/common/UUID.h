@@ -12,17 +12,17 @@ class DataBuffer;
 class CUUID
 {
 private:
-	u64 m_MostSigBits;
-	u64 m_LeastSigBits;
+	uint64 m_MostSigBits;
+	uint64 m_LeastSigBits;
 
 public:
 	CUUID() noexcept : m_MostSigBits(0), m_LeastSigBits(0) {}
-	CUUID(u64 most, u64 least) noexcept : m_MostSigBits(most), m_LeastSigBits(least) {}
+	CUUID(uint64 most, uint64 least) noexcept : m_MostSigBits(most), m_LeastSigBits(least) {}
 
 	std::string MCLIB_API ToString(bool dashes = true) const;
 
-	u64 GetUpperBits() const noexcept { return m_MostSigBits; }
-	u64 GetLowerBits() const noexcept { return m_LeastSigBits; }
+	uint64 GetUpperBits() const noexcept { return m_MostSigBits; }
+	uint64 GetLowerBits() const noexcept { return m_LeastSigBits; }
 
 	static CUUID MCLIB_API FromString(const std::string& str, bool dashes = true);
 	static CUUID MCLIB_API FromString(const std::wstring& str, bool dashes = true);

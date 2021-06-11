@@ -191,7 +191,7 @@ bool TextureArray::GetTexture(const std::string& filename, TextureHandle* handle
 
 bool TextureArray::IsTransparent(TextureHandle handle) const
 {
-	return false;//return m_Transparency[handle];
+	return m_Transparency[handle];
 }
 
 } // ns terra

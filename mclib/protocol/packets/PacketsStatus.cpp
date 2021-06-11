@@ -83,7 +83,7 @@ DataBuffer RequestPacket::Serialize() const
 //
 // PingPacket
 //
-PingPacket::PingPacket(s64 payload) : m_Payload(payload)
+PingPacket::PingPacket(int64 payload) : m_Payload(payload)
 {
 	m_ProtocolState = State::Status;
 }

@@ -20,7 +20,7 @@ const std::string& BlockState::GetProperty(const std::string& property) const
 
 std::unique_ptr<BlockState> BlockState::FromJSON(const json& _json)
 {
-	u32 id = _json.value("id", 0);
+	uint32 id = _json.value("id", 0);
 	std::unique_ptr<BlockState> state = std::make_unique<BlockState>(id);
 
 	json properties_node = _json.value("properties", json());

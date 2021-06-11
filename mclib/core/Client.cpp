@@ -61,7 +61,7 @@ void CMinecraftClient::Update()
 		playerEntity->SetPosition(m_PlayerController->GetPosition());
 	}
 
-	s64 time = GetTime();
+	int64 time = GetTime();
 	if (time >= m_LastUpdate + (1000 / 20))
 	{
 		m_PlayerController->Update();

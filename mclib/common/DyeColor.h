@@ -24,7 +24,7 @@ enum DyeColor
 	White,
 };
 
-MCLIB_API Vector3d GetColor(DyeColor dyeColor);
+MCLIB_API glm::dvec3 GetColor(DyeColor dyeColor);
 MCLIB_API std::string to_string(DyeColor dyeColor);
 MCLIB_API std::wstring to_wstring(DyeColor dyeColor);
 

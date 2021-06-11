@@ -101,7 +101,7 @@ void PlayerManager::OnEntityDestroy(EntityPtr entity)
 	}
 }
 
-void PlayerManager::OnEntityMove(EntityPtr entity, Vector3d oldPos, Vector3d newPos)
+void PlayerManager::OnEntityMove(EntityPtr entity, glm::dvec3 oldPos, glm::dvec3 newPos)
 {
 	EntityId eid = entity->GetEntityId();
 	PlayerPtr player = GetPlayerByEntityId(eid);

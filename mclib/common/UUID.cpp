@@ -16,22 +16,22 @@ std::string CUUID::ToString(bool dashes) const
 	std::stringstream out;
 	std::size_t pos = 0;
 
-	for (u32 i = 0; i < 4; ++i)
+	for (uint32 i = 0; i < 4; ++i)
 		out << std::hex << std::setfill('0') << std::setw(2) << ((int)buffer[pos + i] & 0xFF);
 	if (dashes)
 		out << '-';
 	pos += 4;
 
-	for (u32 j = 0; j < 3; ++j)
+	for (uint32 j = 0; j < 3; ++j)
 	{
-		for (u32 i = 0; i < 2; ++i)
+		for (uint32 i = 0; i < 2; ++i)
 			out << std::hex << std::setfill('0') << std::setw(2) << ((int)buffer[pos + i] & 0xFF);
 		if (dashes)
 			out << '-';
 		pos += 2;
 	}
 
-	for (u32 i = 0; i < 6; ++i)
+	for (uint32 i = 0; i < 6; ++i)
 		out << std::hex << std::setfill('0') << std::setw(2) << ((int)buffer[pos + i] & 0xFF);
 
 	return out.str();
@@ -62,24 +62,24 @@ CUUID CUUID::FromString(const std::wstring& str, bool dashes)
 
 	if (dashes)
 	{
-		for (u32 i = 0; i < 8; ++i)
+		for (uint32 i = 0; i < 8; ++i)
 			upperStr += str[i];
-		for (u32 i = 0; i < 4; ++i)
+		for (uint32 i = 0; i < 4; ++i)
 			upperStr += str[i + 9];
-		for (u32 i = 0; i < 4; ++i)
+		for (uint32 i = 0; i < 4; ++i)
 			upperStr += str[i + 14];
 
-		for (u32 i = 0; i < 4; ++i)
+		for (uint32 i = 0; i < 4; ++i)
 			lowerStr += str[i + 19];
-		for (u32 i = 0; i < 12; ++i)
+		for (uint32 i = 0; i < 12; ++i)
 			lowerStr += str[i + 24];
 	}
 	else
 	{
-		for (u32 i = 0; i < 16; ++i)
+		for (uint32 i = 0; i < 16; ++i)
 			upperStr += str[i];
 
-		for (u32 i = 0; i < 16; ++i)
+		for (uint32 i = 0; i < 16; ++i)
 			lowerStr += str[i + 16];
 	}
 

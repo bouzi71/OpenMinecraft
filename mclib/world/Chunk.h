@@ -17,9 +17,9 @@ class DataBuffer;
 
 struct ChunkColumnMetadata
 {
-	s32 x;
-	s32 z;
-	u16 sectionmask;
+	int32 x;
+	int32 z;
+	uint16 sectionmask;
 	bool continuous;
 	bool skylight;
 };
@@ -31,9 +31,9 @@ struct ChunkColumnMetadata
 class Chunk
 {
 private:
-	std::vector<u32> m_Palette;
-	std::vector<u64> m_Data;
-	u8 m_BitsPerBlock;
+	std::vector<uint32> m_Palette;
+	std::vector<uint64> m_Data;
+	uint8 m_BitsPerBlock;
 
 public:
 	MCLIB_API Chunk();
@@ -43,17 +43,17 @@ public:
 	/**
 	 * Position is relative to this chunk position
 	 */
-	MCLIB_API const CMinecraftBlock* GetBlock(Vector3i chunkPosition) const;
+	MCLIB_API const CMinecraftBlock* GetBlock(glm::ivec3 chunkPosition) const;
 
 	/**
 	* Position is relative to this chunk position
 	*/
-	MCLIB_API void SetBlock(Vector3i chunkPosition, const CMinecraftBlock* block);
+	MCLIB_API void SetBlock(glm::ivec3 chunkPosition, const CMinecraftBlock* block);
 
 	/**
 	 * chunkIndex is the index (0-16) of this chunk in the ChunkColumn
 	 */
-	MCLIB_API void Load(DataBuffer& in, ChunkColumnMetadata* meta, s32 chunkIndex);
+	MCLIB_API void Load(DataBuffer& in, ChunkColumnMetadata* meta, int32 chunkIndex);
 };
 
 typedef std::shared_ptr<Chunk> ChunkPtr;
@@ -75,7 +75,7 @@ public:
 private:
 	std::array<ChunkPtr, ChunksPerColumn> m_Chunks;
 	ChunkColumnMetadata m_Metadata;
-	std::map<Vector3i, BlockEntityPtr> m_BlockEntities;
+	std::unordered_map<glm::ivec3, BlockEntityPtr> m_BlockEntities;
 
 public:
 	MCLIB_API ChunkColumn(ChunkColumnMetadata metadata);
@@ -120,7 +120,7 @@ public:
 		m_BlockEntities.insert(std::make_pair(blockEntity->GetPosition(), blockEntity));
 	}
 
-	void RemoveBlockEntity(Vector3i pos)
+	void RemoveBlockEntity(glm::ivec3 pos)
 	{
 		m_BlockEntities.erase(pos);
 	}
@@ -128,10 +128,10 @@ public:
 	/**
 	 * Position is relative to this ChunkColumn position.
 	 */
-	MCLIB_API const CMinecraftBlock* GetBlock(Vector3i position);
+	MCLIB_API const CMinecraftBlock* GetBlock(glm::ivec3 position);
 	MCLIB_API const ChunkColumnMetadata& GetMetadata() const { return m_Metadata; }
 
-	MCLIB_API BlockEntityPtr GetBlockEntity(Vector3i worldPos);
+	MCLIB_API BlockEntityPtr GetBlockEntity(glm::ivec3 worldPos);
 	std::vector<BlockEntityPtr> MCLIB_API GetBlockEntities();
 
 	friend MCLIB_API DataBuffer& operator>>(DataBuffer& in, ChunkColumn& column);

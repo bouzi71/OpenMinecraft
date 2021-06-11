@@ -4,8 +4,8 @@
 
 #include <protocol/PacketDispatcher.h>
 
-const s32 Inventory::HOTBAR_SLOT_START = 36;
-const s32 Inventory::PLAYER_INVENTORY_ID = 0;
+const int32 Inventory::HOTBAR_SLOT_START = 36;
+const int32 Inventory::PLAYER_INVENTORY_ID = 0;
 
 Inventory::Inventory(int windowId)
 	: m_WindowId(windowId),
@@ -14,16 +14,16 @@ Inventory::Inventory(int windowId)
 
 }
 
-Slot Inventory::GetItem(s32 index) const
+Slot Inventory::GetItem(int32 index) const
 {
 	auto iter = m_Items.find(index);
 	if (iter == m_Items.end()) return Slot();
 	return iter->second;
 }
 
-s32 Inventory::FindItemById(s32 itemId) const
+int32 Inventory::FindItemById(int32 itemId) const
 {
-	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<s32, Slot>& slot) {
+	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<int32, Slot>& slot) {
 		return slot.second.GetItemId() == itemId;
 	});
 
@@ -31,9 +31,9 @@ s32 Inventory::FindItemById(s32 itemId) const
 	return iter->first;
 }
 
-bool Inventory::Contains(s32 itemId) const
+bool Inventory::Contains(int32 itemId) const
 {
-	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<s32, Slot>& slot) {
+	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<int32, Slot>& slot) {
 		const Slot& compare = slot.second;
 
 		return compare.GetItemId() == itemId;
@@ -44,7 +44,7 @@ bool Inventory::Contains(s32 itemId) const
 
 bool Inventory::Contains(Slot item) const
 {
-	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<s32, Slot>& slot) {
+	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<int32, Slot>& slot) {
 		const Slot& compare = slot.second;
 
 		return compare.GetItemId() == item.GetItemId() &&
@@ -54,9 +54,9 @@ bool Inventory::Contains(Slot item) const
 	return iter != m_Items.end();
 }
 
-bool Inventory::ContainsAtLeast(s32 itemId, s32 amount) const
+bool Inventory::ContainsAtLeast(int32 itemId, int32 amount) const
 {
-	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<s32, Slot>& slot) {
+	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<int32, Slot>& slot) {
 		const Slot& compare = slot.second;
 
 		return compare.GetItemId() == itemId &&
@@ -66,9 +66,9 @@ bool Inventory::ContainsAtLeast(s32 itemId, s32 amount) const
 	return iter != m_Items.end();
 }
 
-bool Inventory::ContainsAtLeast(Slot item, s32 amount) const
+bool Inventory::ContainsAtLeast(Slot item, int32 amount) const
 {
-	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<s32, Slot>& slot) {
+	auto iter = std::find_if(m_Items.begin(), m_Items.end(), [&](const std::pair<int32, Slot>& slot) {
 		const Slot& compare = slot.second;
 
 		return compare.GetItemId() == item.GetItemId() &&
@@ -79,7 +79,7 @@ bool Inventory::ContainsAtLeast(Slot item, s32 amount) const
 	return iter != m_Items.end();
 }
 
-void Inventory::HandleTransaction(Connection& conn, u16 action, bool accepted)
+void Inventory::HandleTransaction(Connection& conn, uint16 action, bool accepted)
 {
 	if (!accepted)
 	{
@@ -89,7 +89,7 @@ void Inventory::HandleTransaction(Connection& conn, u16 action, bool accepted)
 	}
 }
 
-bool Inventory::PickUp(Connection& conn, s32 index)
+bool Inventory::PickUp(Connection& conn, int32 index)
 {
 	using namespace out;
 
@@ -98,7 +98,7 @@ bool Inventory::PickUp(Connection& conn, s32 index)
 	auto iter = m_Items.find(index);
 	if (iter == m_Items.end()) return false;
 
-	s32 windowId = m_WindowId;
+	int32 windowId = m_WindowId;
 	if (windowId == 0 && index < HOTBAR_SLOT_START)
 		windowId = -2;
 
@@ -108,13 +108,13 @@ bool Inventory::PickUp(Connection& conn, s32 index)
 	return true;
 }
 
-bool Inventory::Place(Connection& conn, s32 index)
+bool Inventory::Place(Connection& conn, int32 index)
 {
 	using namespace out;
 
 	if (m_Cursor.GetItemId() == -1) return false;
 
-	s32 windowId = m_WindowId;
+	int32 windowId = m_WindowId;
 	if (windowId == 0 && index < HOTBAR_SLOT_START)
 		windowId = -2;
 
@@ -139,7 +139,7 @@ InventoryManager::~InventoryManager()
 	GetDispatcher()->UnregisterHandler(this);
 }
 
-Inventory* InventoryManager::GetInventory(s32 windowId)
+Inventory* InventoryManager::GetInventory(int32 windowId)
 {
 	auto iter = m_Inventories.find(windowId);
 	if (iter == m_Inventories.end()) return nullptr;
@@ -151,7 +151,7 @@ Inventory* InventoryManager::GetPlayerInventory()
 	return GetInventory(Inventory::PLAYER_INVENTORY_ID);
 }
 
-void InventoryManager::SetSlot(s32 windowId, s32 slotIndex, const Slot& slot)
+void InventoryManager::SetSlot(int32 windowId, int32 slotIndex, const Slot& slot)
 {
 	auto iter = m_Inventories.find(windowId);
 
@@ -172,7 +172,7 @@ void InventoryManager::SetSlot(s32 windowId, s32 slotIndex, const Slot& slot)
 
 void InventoryManager::HandlePacket(in::SetSlotPacket* packet)
 {
-	s8 windowId = packet->GetWindowId();
+	int8 windowId = packet->GetWindowId();
 
 	if (windowId < 0 && packet->GetSlotIndex() == -1)
 	{
@@ -208,15 +208,15 @@ void InventoryManager::HandlePacket(in::WindowItemsPacket* packet)
 
 void InventoryManager::HandlePacket(in::OpenWindowPacket* packet)
 {
-	m_Inventories.erase((s32)packet->GetWindowId());
+	m_Inventories.erase((int32)packet->GetWindowId());
 	auto newInventory = std::make_unique<Inventory>(packet->GetWindowId());
 	m_Inventories.insert(std::make_pair(packet->GetWindowId(), std::move(newInventory)));
 }
 
 void InventoryManager::HandlePacket(in::ConfirmTransactionPacket* packet)
 {
-	u8 windowId = packet->GetWindowId();
-	s16 action = packet->GetAction();
+	uint8 windowId = packet->GetWindowId();
+	int16 action = packet->GetAction();
 	bool accepted = packet->IsAccepted();
 
 	auto iter = m_Inventories.find(windowId);

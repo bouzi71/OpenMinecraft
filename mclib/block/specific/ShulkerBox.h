@@ -13,7 +13,7 @@ class ShulkerBox
 	, public Nameable
 {
 public:
-	MCLIB_API ShulkerBox(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API ShulkerBox(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 };
 

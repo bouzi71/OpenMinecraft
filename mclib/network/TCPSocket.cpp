@@ -57,7 +57,7 @@ bool TCPSocket::Connect(const IPAddress& address, uint16_t port)
 	return true;
 }
 
-size_t TCPSocket::Send(const u8* data, std::size_t size)
+size_t TCPSocket::Send(const uint8* data, std::size_t size)
 {
 	if (this->GetStatus() != Connected)
 		return 0;

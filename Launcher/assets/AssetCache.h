@@ -38,7 +38,7 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<BlockModel>> m_BlockModels;
 
 	// Block name -> (list of Variants)
-	std::map<u32, std::unique_ptr<BlockVariant>> m_BlockVariants;
+	std::map<uint32, std::unique_ptr<BlockVariant>> m_BlockVariants;
 
 	TextureArray m_TextureArray;
 };

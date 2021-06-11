@@ -25,7 +25,7 @@ private:
 	CMinecraftClient* m_Client;
 	PlayerManager* m_PlayerManager;
 	Connection* m_Connection;
-	s64 m_StartTime;
+	int64 m_StartTime;
 };
 
 } // ns example

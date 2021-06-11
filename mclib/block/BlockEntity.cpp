@@ -62,7 +62,7 @@ BlockEntityType GetTypeFromString(const std::wstring& str)
 	return iter->second;
 }
 
-BlockEntity::BlockEntity(BlockEntityType type, Vector3i position) noexcept
+BlockEntity::BlockEntity(BlockEntityType type, glm::ivec3 position) noexcept
 	: m_Type(type), m_Position(position)
 {
 
@@ -83,7 +83,7 @@ std::unique_ptr<BlockEntity> BlockEntity::CreateFromNBT(NBT* nbt)
 	auto y = yTag->GetValue();
 	auto z = zTag->GetValue();
 
-	Vector3i position(x, y, z);
+	glm::ivec3 position(x, y, z);
 	BlockEntityType type = GetTypeFromString(id);
 
 	std::unique_ptr<BlockEntity> entity;

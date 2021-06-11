@@ -21,7 +21,7 @@ private:
 	DyeColor m_Base;
 
 public:
-	MCLIB_API Banner(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API Banner(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 
 	DyeColor GetBaseColor() const noexcept { return m_Base; }

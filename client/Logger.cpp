@@ -59,7 +59,7 @@ void Logger::HandlePacket(in::ChatPacket* packet)
 	{
 		std::string toFind = message.substr(message.find("!find ") + 6);
 
-		s32 itemId = strtol(toFind.c_str(), nullptr, 10);
+		int32 itemId = strtol(toFind.c_str(), nullptr, 10);
 		Inventory* inv = m_Client->GetInventoryManager()->GetPlayerInventory();
 		if (inv)
 		{
@@ -72,15 +72,15 @@ void Logger::HandlePacket(in::ChatPacket* packet)
 
 void Logger::HandlePacket(in::EntityLookAndRelativeMovePacket* packet)
 {
-	Vector3d delta = ToVector3d(packet->GetDelta()) / (128.0 * 32.0);
+	glm::dvec3 delta = ToVector3d(packet->GetDelta()) / (128.0 * 32.0);
 
 	//std::cout << delta << std::endl;
 }
 
 void Logger::HandlePacket(in::BlockChangePacket* packet)
 {
-	Vector3i pos = packet->GetPosition();
-	s32 blockId = packet->GetBlockId();
+	glm::ivec3 pos = packet->GetPosition();
+	int32 blockId = packet->GetBlockId();
 
 	std::cout << "Block changed at " << pos << " to " << blockId << std::endl;
 }
@@ -92,7 +92,7 @@ void Logger::HandlePacket(in::MultiBlockChangePacket* packet)
 
 	for (const auto& change : packet->GetBlockChanges())
 	{
-		Vector3i pos(chunkX + change.x, change.y + chunkZ + change.z);
+		glm::ivec3 pos(chunkX + change.x, change.y + chunkZ + change.z);
 
 		std::cout << "Block changed at " << pos << " to " << change.blockData << std::endl;
 	}

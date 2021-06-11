@@ -7,13 +7,13 @@
 
 class Bed : public BlockEntity {
 private:
-    s32 m_Color;
+    int32 m_Color;
 
 public:
-    MCLIB_API Bed(BlockEntityType type, Vector3i position) : BlockEntity(type, position) { }
+    MCLIB_API Bed(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) { }
     MCLIB_API bool ImportNBT(NBT* nbt);
 
-    inline s32 GetColor() const noexcept { return m_Color; }
+    inline int32 GetColor() const noexcept { return m_Color; }
 };
 
 #endif

@@ -60,8 +60,8 @@ public:
 	Status MCLIB_API GetStatus() const noexcept;
 	SocketHandle MCLIB_API GetHandle() const noexcept;
 
-	bool MCLIB_API Connect(const std::string& ip, u16 port);
-	virtual bool Connect(const IPAddress& address, u16 port) = 0;
+	bool MCLIB_API Connect(const std::string& ip, uint16 port);
+	virtual bool Connect(const IPAddress& address, uint16 port) = 0;
 
 	void MCLIB_API Disconnect();
 

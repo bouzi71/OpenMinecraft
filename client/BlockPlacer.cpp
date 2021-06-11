@@ -14,7 +14,7 @@ BlockPlacer::BlockPlacer(PacketDispatcher* dispatcher, CMinecraftClient* client,
 	m_World(world),
 	m_LastUpdate(GetTime())
 {
-	m_Target = Vector3i(-2, 62, 275);
+	m_Target = glm::ivec3(-2, 62, 275);
 	world->RegisterListener(this);
 	client->RegisterListener(this);
 
@@ -45,22 +45,22 @@ void BlockPlacer::HandlePacket(in::SetSlotPacket* packet)
 
 void BlockPlacer::OnTick()
 {
-	s64 time = GetTime();
+	int64 time = GetTime();
 	if (time - m_LastUpdate < 5000) return;
 	m_LastUpdate = time;
 
-	if (m_PlayerController->GetPosition() == Vector3d(0, 0, 0)) return;
+	if (m_PlayerController->GetPosition() == glm::dvec3(0, 0, 0)) return;
 	if (!m_World->GetChunk(m_Target)) return;
 
 	m_PlayerController->LookAt(ToVector3d(m_Target));
 
 	if (m_HeldItem.GetItemId() != -1)
 	{
-		Block* block = m_World->GetBlock(m_Target + Vector3i(0, 1, 0));
+		Block* block = m_World->GetBlock(m_Target + glm::ivec3(0, 1, 0));
 
 		if (!block || block->GetID() == 0)
 		{
-			out::PlayerBlockPlacementPacket blockPlacePacket(m_Target, Face::Top, Hand::Main, Vector3f(0.5, 0, 0.5));
+			out::PlayerBlockPlacementPacket blockPlacePacket(m_Target, Face::Top, Hand::Main, glm::vec3(0.5, 0, 0.5));
 
 			m_Client->GetConnection()->SendPacket(&blockPlacePacket);
 			std::wcout << "Placing block" << std::endl;
@@ -70,7 +70,7 @@ void BlockPlacer::OnTick()
 			using namespace out;
 			{
 				PlayerDiggingPacket::Status status = PlayerDiggingPacket::Status::StartedDigging;
-				PlayerDiggingPacket packet(status, m_Target + Vector3i(0, 1, 0), Face::West);
+				PlayerDiggingPacket packet(status, m_Target + glm::ivec3(0, 1, 0), Face::West);
 
 				m_Client->GetConnection()->SendPacket(&packet);
 			}
@@ -79,7 +79,7 @@ void BlockPlacer::OnTick()
 
 			{
 				PlayerDiggingPacket::Status status = PlayerDiggingPacket::Status::FinishedDigging;
-				PlayerDiggingPacket packet(status, m_Target + Vector3i(0, 1, 0), Face::West);
+				PlayerDiggingPacket packet(status, m_Target + glm::ivec3(0, 1, 0), Face::West);
 
 				m_Client->GetConnection()->SendPacket(&packet);
 			}

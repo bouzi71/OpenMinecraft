@@ -13,13 +13,13 @@ class Hopper
 	, public Nameable
 {
 private:
-	s32 m_TransferCooldown;
+	int32 m_TransferCooldown;
 
 public:
-	MCLIB_API Hopper(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API Hopper(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 
-	s32 GetTransferCooldown() const noexcept { return m_TransferCooldown; }
+	int32 GetTransferCooldown() const noexcept { return m_TransferCooldown; }
 };
 
 #endif

@@ -15,12 +15,12 @@ struct hash<DyeColor>
 } // ns std
 
 
-constexpr Vector3d normRGB(int x, int y, int z)
+constexpr glm::dvec3 normRGB(int x, int y, int z)
 {
-	return Vector3d(x / 255.0, y / 255.0, z / 255.0);
+	return glm::dvec3(x / 255.0, y / 255.0, z / 255.0);
 }
 
-const std::unordered_map<DyeColor, Vector3d> colorMap = {
+const std::unordered_map<DyeColor, glm::dvec3> colorMap = {
 	{ DyeColor::White,      normRGB(255, 255, 255) },
 	{ DyeColor::Orange,     normRGB(216, 127, 51) },
 	{ DyeColor::Magenta,    normRGB(178, 76, 216) },
@@ -58,7 +58,7 @@ const std::unordered_map<DyeColor, std::wstring> stringMap = {
 	{ DyeColor::Black,      L"Black" },
 };
 
-Vector3d GetColor(DyeColor dyeColor)
+glm::dvec3 GetColor(DyeColor dyeColor)
 {
 	return colorMap.at(dyeColor);
 }

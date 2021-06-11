@@ -12,9 +12,9 @@ class Piston
 {
 private:
 	// Id of the block being moved.
-	s32 m_BlockId;
+	int32 m_BlockId;
 	// Data of the block being moved.
-	s32 m_BlockData;
+	int32 m_BlockData;
 	// Direction that the block will be pushed.
 	Face m_Facing;
 	// How far the block has been moved.
@@ -25,11 +25,11 @@ private:
 	bool m_Source;
 
 public:
-	MCLIB_API Piston(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API Piston(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 
-	inline s32 GetBlockId() const noexcept { return m_BlockId; }
-	inline s32 GetBlockData() const noexcept { return m_BlockData; }
+	inline int32 GetBlockId() const noexcept { return m_BlockId; }
+	inline int32 GetBlockData() const noexcept { return m_BlockData; }
 	inline Face GetFacing() const noexcept { return m_Facing; }
 	inline float GetProgress() const noexcept { return m_Progress; }
 	inline bool IsExtending() const noexcept { return m_Extending; }

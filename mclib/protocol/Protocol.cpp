@@ -6,7 +6,7 @@
 #include <protocol/packets/PacketsPlayInbound.h>
 
 // Protocol agnostic protocol id to packet creators.
-std::unordered_map<State, std::unordered_map<s32, PacketCreator>> agnosticStateMap = {
+std::unordered_map<State, std::unordered_map<int32, PacketCreator>> agnosticStateMap = {
 	{
 		State::Login,
 		{
@@ -221,7 +221,7 @@ const std::unordered_map<Version, std::shared_ptr<Protocol>> protocolMap = {
 	{ Version::Minecraft_1_12_2, std::make_shared<Protocol>(Version::Minecraft_1_12_2, inboundMap_1_12_1) },
 };
 
-bool Protocol::GetAgnosticId(State state, s32 protocolId, s32& agnosticId)
+bool Protocol::GetAgnosticId(State state, int32 protocolId, int32& agnosticId)
 {
 	auto& packetMap = m_InboundMap[state];
 	auto iter = packetMap.find(protocolId);
@@ -234,9 +234,9 @@ bool Protocol::GetAgnosticId(State state, s32 protocolId, s32& agnosticId)
 	return true;
 }
 
-CMinecraftInboundPacket* Protocol::CreateInboundPacket(State state, s32 protocolId)
+CMinecraftInboundPacket* Protocol::CreateInboundPacket(State state, int32 protocolId)
 {
-	s32 agnosticId = 0;
+	int32 agnosticId = 0;
 
 	if (false == GetAgnosticId(state, protocolId, agnosticId))
 		return nullptr;
@@ -262,7 +262,7 @@ Protocol& Protocol::GetProtocol(Version version)
 
 	if (iter == protocolMap.end())
 	{
-		throw std::runtime_error(std::string("Unknown protocol version ") + std::to_string((s32)version));
+		throw std::runtime_error(std::string("Unknown protocol version ") + std::to_string((int32)version));
 	}
 
 	return *iter->second;

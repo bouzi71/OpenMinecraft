@@ -34,10 +34,10 @@ public:
 	bool MCLIB_API Deserialize(DataBuffer& data, std::size_t packetLength);
 	void MCLIB_API Dispatch(PacketHandler* handler);
 
-	s64 GetPayload() const { return m_Payload; }
+	int64 GetPayload() const { return m_Payload; }
 
 private:
-	s64 m_Payload;
+	int64 m_Payload;
 };
 
 }
@@ -60,11 +60,11 @@ class PingPacket
 	: public CMinecraftOutboundPacket
 { // 0x01
 public:
-	MCLIB_API PingPacket(s64 payload);
+	MCLIB_API PingPacket(int64 payload);
 	DataBuffer MCLIB_API Serialize() const;
 
 private:
-	s64 m_Payload;
+	int64 m_Payload;
 };
 
 } // ns out

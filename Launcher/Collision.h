@@ -9,15 +9,15 @@
 class Collision
 {
 private:
-	Vector3d m_Position;
-	Vector3d m_Normal;
+	glm::dvec3 m_Position;
+	glm::dvec3 m_Normal;
 
 public:
 	Collision() noexcept {}
-	Collision(Vector3d position, Vector3d normal) noexcept : m_Position(position), m_Normal(normal) {}
+	Collision(glm::dvec3 position, glm::dvec3 normal) noexcept : m_Position(position), m_Normal(normal) {}
 
-	Vector3d GetPosition() const noexcept { return m_Position; }
-	Vector3d GetNormal() const noexcept { return m_Normal; }
+	glm::dvec3 GetPosition() const noexcept { return m_Position; }
+	glm::dvec3 GetNormal() const noexcept { return m_Normal; }
 };
 
 class CollisionDetector
@@ -25,12 +25,12 @@ class CollisionDetector
 private:
 	World* m_World;
 
-	std::vector<Vector3i> GetSurroundingLocations(CMinecraftAABB bounds);
+	std::vector<glm::ivec3> GetSurroundingLocations(CMinecraftAABB bounds);
 
 public:
 	CollisionDetector(World* world) noexcept : m_World(world) {}
 
-	bool DetectCollision(Vector3d from, Vector3d rayVector, Collision* collision) const;
+	bool DetectCollision(glm::dvec3 from, glm::dvec3 rayVector, Collision* collision) const;
 
 	void ResolveCollisions(Transform* transform, double dt, bool* onGround);
 };

@@ -13,7 +13,7 @@ public:
 	UDPSocket();
 
 	bool MCLIB_API Connect(const IPAddress& address, uint16_t port);
-	std::size_t MCLIB_API Send(const u8* data, std::size_t size);
+	std::size_t MCLIB_API Send(const uint8* data, std::size_t size);
 	DataBuffer MCLIB_API Receive(std::size_t amount);
 
 private:

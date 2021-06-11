@@ -13,7 +13,7 @@ class Dropper
 	, public Nameable
 {
 public:
-	MCLIB_API Dropper(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API Dropper(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 };
 

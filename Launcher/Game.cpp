@@ -62,7 +62,7 @@ namespace terra
 		m_Player = std::make_unique<terra::Player>(world);
 	}
 
-	Vector3d Game::GetPosition()
+	glm::dvec3 Game::GetPosition()
 	{
 		return m_Player->GetTransform().position;
 	}
@@ -81,13 +81,13 @@ namespace terra
 		m_DeltaTime = current_frame - m_LastFrame;
 		m_LastFrame = current_frame;
 
-		Vector3d front(
+		glm::dvec3 front(
 			std::cos(m_Camera->GetYaw()) * std::cos(0),
 			std::sin(0),
 			std::sin(m_Camera->GetYaw()) * std::cos(0)
 		);
 
-		Vector3d direction;
+		glm::dvec3 direction;
 
 		/*if (m_Window)
 		{
@@ -110,14 +110,14 @@ namespace terra
 
 			if (m_Window->IsKeyDown(GLFW_KEY_A))
 			{
-				Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+				glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
 
 				direction -= right;
 			}
 
 			if (m_Window->IsKeyDown(GLFW_KEY_D))
 			{
-				Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+				glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
 
 				direction += right;
 			}
@@ -151,7 +151,7 @@ namespace terra
 		{
 			if (m_Window->IsKeyDown(GLFW_KEY_SPACE) && m_Player->OnGround())
 			{
-				m_Player->GetTransform().input_acceleration += Vector3d(0, 6 / m_DeltaTime, 0);
+				m_Player->GetTransform().input_acceleration += glm::dvec3(0, 6 / m_DeltaTime, 0);
 			}
 		}*/
 
@@ -217,8 +217,8 @@ namespace terra
 	void Game::OnClientSpawn(PlayerPtr player)
 	{
 		m_Player->GetTransform().position = player->GetEntity()->GetPosition();
-		m_Player->GetTransform().velocity = Vector3d();
-		m_Player->GetTransform().acceleration = Vector3d();
+		m_Player->GetTransform().velocity = glm::dvec3();
+		m_Player->GetTransform().acceleration = glm::dvec3();
 		m_Player->GetTransform().orientation = player->GetEntity()->GetYaw() * 3.14159f / 180.0f;
 	}
 
@@ -234,7 +234,7 @@ namespace terra
 		auto playerEntity = m_NetworkClient.GetEntityManager()->GetPlayerEntity();
 		if (playerEntity && playerEntity->GetEntityId() == eid)
 		{
-			Vector3d newVelocity = ToVector3d(packet->GetVelocity()) * 20.0 / 8000.0;
+			glm::dvec3 newVelocity = ToVector3d(packet->GetVelocity()) * 20.0 / 8000.0;
 
 			std::cout << "Applying new velocity " << newVelocity << std::endl;
 			m_Player->GetTransform().velocity = newVelocity;
@@ -243,9 +243,9 @@ namespace terra
 
 	void Game::HandlePacket(in::SpawnPositionPacket* packet)
 	{
-		s64 x = packet->GetLocation().GetX();
-		s64 y = packet->GetLocation().GetY();
-		s64 z = packet->GetLocation().GetZ();
+		int64 x = packet->GetLocation().GetX();
+		int64 y = packet->GetLocation().GetY();
+		int64 z = packet->GetLocation().GetZ();
 	}
 
 	// TODO: Temporary fun code
@@ -256,21 +256,21 @@ namespace terra
 	}
 
 	// TODO: Temporary fun code
-	inline Vector3d BasisAxis(int basisIndex)
+	inline glm::dvec3 BasisAxis(int basisIndex)
 	{
-		static const Vector3d axes[3] = { Vector3d(1, 0, 0), Vector3d(0, 1, 0), Vector3d(0, 0, 1) };
+		static const glm::dvec3 axes[3] = { glm::dvec3(1, 0, 0), glm::dvec3(0, 1, 0), glm::dvec3(0, 0, 1) };
 		return axes[basisIndex];
 	}
 
 	// TODO: Temporary fun code
-	std::pair<Vector3d, Face> GetClosestNormal(const Vector3d& pos, CMinecraftAABB bounds)
+	std::pair<glm::dvec3, Face> GetClosestNormal(const glm::dvec3& pos, CMinecraftAABB bounds)
 	{
-		Vector3d center = bounds.min + (bounds.max - bounds.min) / 2;
-		Vector3d dim = bounds.max - bounds.min;
-		Vector3d offset = pos - center;
+		glm::dvec3 center = bounds.min + (bounds.max - bounds.min) / 2;
+		glm::dvec3 dim = bounds.max - bounds.min;
+		glm::dvec3 offset = pos - center;
 
 		double minDist = std::numeric_limits<double>::max();
-		Vector3d normal;
+		glm::dvec3 normal;
 
 		for (int i = 0; i < 3; ++i)
 		{
@@ -309,36 +309,36 @@ namespace terra
 	}
 
 	// TODO: Temporary fun code
-	bool RayCast(World& world, Vector3d from, Vector3d direction, double range, Vector3d& hit, Vector3d& normal, Face& face)
+	bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, glm::dvec3& hit, glm::dvec3& normal, Face& face)
 	{
-		static const std::vector<Vector3d> directions = {
-			Vector3d(0, 0, 0),
-			Vector3d(1, 0, 0), Vector3d(-1, 0, 0),
-			Vector3d(0, 1, 0), Vector3d(0, -1, 0),
-			Vector3d(0, 0, 1), Vector3d(0, 0, -1),
-			Vector3d(0, 1, 1), Vector3d(0, 1, -1),
-			Vector3d(1, 1, 0), Vector3d(1, 1, 1), Vector3d(1, 1, -1),
-			Vector3d(-1, 1, 0), Vector3d(-1, 1, 1), Vector3d(-1, 1, -1),
+		static const std::vector<glm::dvec3> directions = {
+			glm::dvec3(0, 0, 0),
+			glm::dvec3(1, 0, 0), glm::dvec3(-1, 0, 0),
+			glm::dvec3(0, 1, 0), glm::dvec3(0, -1, 0),
+			glm::dvec3(0, 0, 1), glm::dvec3(0, 0, -1),
+			glm::dvec3(0, 1, 1), glm::dvec3(0, 1, -1),
+			glm::dvec3(1, 1, 0), glm::dvec3(1, 1, 1), glm::dvec3(1, 1, -1),
+			glm::dvec3(-1, 1, 0), glm::dvec3(-1, 1, 1), glm::dvec3(-1, 1, -1),
 
-			Vector3d(0, -1, 1), Vector3d(0, -1, -1),
-			Vector3d(1, -1, 0), Vector3d(1, -1, 1), Vector3d(1, -1, -1),
-			Vector3d(-1, -1, 0), Vector3d(-1, -1, 1), Vector3d(-1, -1, -1)
+			glm::dvec3(0, -1, 1), glm::dvec3(0, -1, -1),
+			glm::dvec3(1, -1, 0), glm::dvec3(1, -1, 1), glm::dvec3(1, -1, -1),
+			glm::dvec3(-1, -1, 0), glm::dvec3(-1, -1, 1), glm::dvec3(-1, -1, -1)
 		};
 
 		CMinecraftRay ray(from, direction);
 
 		double closest_distance = std::numeric_limits<double>::max();
-		Vector3d closest_pos;
+		glm::dvec3 closest_pos;
 		CMinecraftAABB closest_aabb;
 		bool collided = false;
 
 		for (double i = 0; i < range + 1; ++i)
 		{
-			Vector3d position = from + direction * i;
+			glm::dvec3 position = from + direction * i;
 
-			for (Vector3d checkDirection : directions)
+			for (glm::dvec3 checkDirection : directions)
 			{
-				Vector3d checkPos = position + checkDirection;
+				glm::dvec3 checkPos = position + checkDirection;
 				const CMinecraftBlock* block = world.GetBlock(checkPos);
 
 				if (block && block->IsOpaque())
@@ -380,10 +380,10 @@ namespace terra
 			using namespace out;
 
 			auto& world = *m_NetworkClient.GetWorld();
-			Vector3d position(m_Camera.GetPosition().x, m_Camera.GetPosition().y, m_Camera.GetPosition().z);
-			Vector3d forward(m_Camera.GetFront().x, m_Camera.GetFront().y, m_Camera.GetFront().z);
-			Vector3d hit;
-			Vector3d normal;
+			glm::dvec3 position(m_Camera.GetPosition().x, m_Camera.GetPosition().y, m_Camera.GetPosition().z);
+			glm::dvec3 forward(m_Camera.GetFront().x, m_Camera.GetFront().y, m_Camera.GetFront().z);
+			glm::dvec3 hit;
+			glm::dvec3 normal;
 			Face face;
 
 			if (RayCast(world, position, forward, 5.0, hit, normal, face))
@@ -411,10 +411,10 @@ namespace terra
 		else if (button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS)
 		{
 			auto& world = *m_NetworkClient.GetWorld();
-			Vector3d position(m_Camera.GetPosition().x, m_Camera.GetPosition().y, m_Camera.GetPosition().z);
-			Vector3d forward(m_Camera.GetFront().x, m_Camera.GetFront().y, m_Camera.GetFront().z);
-			Vector3d hit;
-			Vector3d normal;
+			glm::dvec3 position(m_Camera.GetPosition().x, m_Camera.GetPosition().y, m_Camera.GetPosition().z);
+			glm::dvec3 forward(m_Camera.GetFront().x, m_Camera.GetFront().y, m_Camera.GetFront().z);
+			glm::dvec3 hit;
+			glm::dvec3 normal;
 			Face face;
 
 			if (RayCast(world, position, forward, 5.0, hit, normal, face))
@@ -422,12 +422,12 @@ namespace terra
 				Inventory& inventory = *m_NetworkClient.GetInventoryManager()->GetPlayerInventory();
 
 				auto& hotbar = m_NetworkClient.GetHotbar();
-				s32 slot_id = hotbar.GetSelectedSlot() + Inventory::HOTBAR_SLOT_START;
+				int32 slot_id = hotbar.GetSelectedSlot() + Inventory::HOTBAR_SLOT_START;
 
 				Slot slot = inventory.GetItem(slot_id);
 
 				// Item ids are separate from block ids.
-				const u32 draw_block = 9;
+				const uint32 draw_block = 9;
 
 				if (slot.GetItemId() != draw_block)
 				{
@@ -435,9 +435,9 @@ namespace terra
 					m_NetworkClient.GetConnection()->SendPacket(&packet);
 				}
 
-				Vector3i target = ToVector3i(hit + forward * 0.1);
+				glm::ivec3 target = ToVector3i(hit + forward * 0.1);
 
-				out::PlayerBlockPlacementPacket packet(target, face, Hand::Main, Vector3f(1.0f, 0.0f, 0.0f));
+				out::PlayerBlockPlacementPacket packet(target, face, Hand::Main, glm::vec3(1.0f, 0.0f, 0.0f));
 				m_NetworkClient.GetConnection()->SendPacket(&packet);
 			}
 		}*/

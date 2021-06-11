@@ -178,12 +178,12 @@ bool GetProfileToken(const std::string& username, AuthToken* token)
 	return false;
 }
 
-s64 GetTime()
+int64 GetTime()
 {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-Slot CreateFirework(bool flicker, bool trail, u8 type, u8 duration, std::vector<int> colors, const std::string& name = "")
+Slot CreateFirework(bool flicker, bool trail, uint8 type, uint8 duration, std::vector<int> colors, const std::string& name = "")
 {
 	NBT nbt;
 
@@ -327,7 +327,7 @@ PlayerController::PlayerController(Connection* connection, World& world, PlayerM
 	m_Connection(connection),
 	m_World(world),
 	m_Position(0, 0, 0),
-	m_BoundingBox(Vector3d(-0.3, 0, -0.3), Vector3d(0.3, 1.8, 0.3)),
+	m_BoundingBox(glm::dvec3(-0.3, 0, -0.3), glm::dvec3(0.3, 1.8, 0.3)),
 	m_EntityId(-1),
 	m_LastUpdate(GetTime()),
 	m_Sprinting(false),
@@ -351,23 +351,23 @@ CMinecraftAABB PlayerController::GetBoundingBox() const
 	return m_BoundingBox + m_Position;
 }
 
-bool PlayerController::ClearPath(Vector3d target)
+bool PlayerController::ClearPath(glm::dvec3 target)
 {
 	return true;
-	Vector3d position = m_Position;
+	glm::dvec3 position = m_Position;
 
-	double dist = target.Distance(position);
+	double dist = glm::distance(target, position);
 
-	Vector3d toTarget = target - position;
-	Vector3d n = Vector3Normalize(toTarget);
+	glm::dvec3 toTarget = target - position;
+	glm::dvec3 n = glm::normalize(toTarget);
 
-	Vector3d side = n.Cross(Vector3d(0, 1, 0));
+	glm::dvec3 side = glm::cross(n, glm::dvec3(0, 1, 0));
 
 	const double CheckWidth = 0.3;
 
-	auto check = [&](Vector3d start, Vector3d delta) {
-		Vector3d checkAbove = start + delta + Vector3d(0, 1, 0);
-		Vector3d checkBelow = start + delta + Vector3d(0, 0, 0);
+	auto check = [&](glm::dvec3 start, glm::dvec3 delta) {
+		glm::dvec3 checkAbove = start + delta + glm::dvec3(0, 1, 0);
+		glm::dvec3 checkBelow = start + delta + glm::dvec3(0, 0, 0);
 		const CMinecraftBlock* aboveBlock = m_World.GetBlock(checkAbove);
 		const CMinecraftBlock* belowBlock = m_World.GetBlock(checkBelow);
 
@@ -376,30 +376,30 @@ bool PlayerController::ClearPath(Vector3d target)
 
 		if (belowBlock && belowBlock->IsSolid())
 		{
-			const CMinecraftBlock* twoAboveBlock = m_World.GetBlock(checkAbove + Vector3d(0, 1, 0));
+			const CMinecraftBlock* twoAboveBlock = m_World.GetBlock(checkAbove + glm::dvec3(0, 1, 0));
 			// Bad path if there isn't a two high gap in it
 			if (twoAboveBlock && twoAboveBlock->IsSolid())
 				return false;
 
 			// Jump up 1 block to keep searching
-			position += Vector3d(0, 1, 0);
+			position += glm::dvec3(0, 1, 0);
 		}
 		return true;
 	};
 
-	for (s32 i = 0; i < (int)std::ceil(dist); ++i)
+	for (int32 i = 0; i < (int)std::ceil(dist); ++i)
 	{
-		Vector3d delta(i * n.x, 0, i * n.z);
+		glm::dvec3 delta(i * n.x, 0, i * n.z);
 
 		// Check right side
 		if (!check(position + side * CheckWidth, delta)) return false;
 		if (!check(position - side * CheckWidth, delta)) return false;
 
-		Vector3d checkFloor = position + delta + Vector3d(0, -1, 0);
+		glm::dvec3 checkFloor = position + delta + glm::dvec3(0, -1, 0);
 		const CMinecraftBlock* floorBlock = m_World.GetBlock(checkFloor);
 		if (floorBlock && !floorBlock->IsSolid())
 		{
-			const CMinecraftBlock* belowFloorBlock = m_World.GetBlock(checkFloor - Vector3d(0, 1, 0));
+			const CMinecraftBlock* belowFloorBlock = m_World.GetBlock(checkFloor - glm::dvec3(0, 1, 0));
 
 			// Fail if there is a two block drop
 			if (belowFloorBlock && !belowFloorBlock->IsSolid())
@@ -430,19 +430,20 @@ void PlayerController::OnClientSpawn(PlayerPtr player)
 	}
 }
 
-void PlayerController::Dig(Vector3d target)
+void PlayerController::Dig(glm::dvec3 target)
 {
-	Vector3d toTarget = target - m_Position;
+	glm::dvec3 toTarget = target - m_Position;
 
-	if (toTarget.Length() > 6) return;
+	if (glm::length(toTarget) > 6) 
+		return;
 
 	m_DigQueue.push(target);
 }
 
 void PlayerController::Attack(EntityId id)
 {
-	static u64 timer = 0;
-	static const u64 cooldown = 500;
+	static uint64 timer = 0;
+	static const uint64 cooldown = 500;
 
 	if (GetTime() - timer < cooldown)
 		return;
@@ -460,28 +461,28 @@ void PlayerController::UpdateDigging()
 	if (m_DigQueue.empty()) 
 		return;
 
-	//Vector3d target = m_DigQueue.front();
+	//glm::dvec3 target = m_DigQueue.front();
 
 }
 
-std::vector<std::pair<const CMinecraftBlock*, Vector3i>> PlayerController::GetNearbyBlocks(const s32 radius)
+std::vector<std::pair<const CMinecraftBlock*, glm::ivec3>> PlayerController::GetNearbyBlocks(const int32 radius)
 {
-	using BlockPos = std::pair<const CMinecraftBlock*, Vector3i>;
+	using BlockPos = std::pair<const CMinecraftBlock*, glm::ivec3>;
 
 	std::vector<BlockPos> nearbyBlocks;
 
-	for (s32 x = -radius; x < radius; ++x)
+	for (int32 x = -radius; x < radius; ++x)
 	{
-		for (s32 y = -radius; y < radius; ++y)
+		for (int32 y = -radius; y < radius; ++y)
 		{
-			for (s32 z = -radius; z < radius; ++z)
+			for (int32 z = -radius; z < radius; ++z)
 			{
-				Vector3d checkPos = m_Position + Vector3d(x, y, z);
+				glm::dvec3 checkPos = m_Position + glm::dvec3(x, y, z);
 
 				auto state = m_World.GetBlock(checkPos);
 
 				if (state && state->IsSolid())
-					nearbyBlocks.push_back(std::make_pair<>(state, ToVector3i(checkPos)));
+					nearbyBlocks.push_back(std::make_pair<>(state, checkPos));
 			}
 		}
 	}
@@ -523,7 +524,7 @@ bool PlayerController::HandleFall()
 	if (!InLoadedChunk())
 		return false;
 
-	CMinecraftAABB playerBounds = m_BoundingBox + (m_Position - Vector3d(0, FallSpeed, 0));
+	CMinecraftAABB playerBounds = m_BoundingBox + (m_Position - glm::dvec3(0, FallSpeed, 0));
 
 	for (const auto& state : GetNearbyBlocks(2))
 	{
@@ -545,12 +546,12 @@ bool PlayerController::HandleFall()
 		}
 	}
 
-	m_Position -= Vector3d(0.0, bestDist, 0.0);
+	m_Position -= glm::dvec3(0.0, bestDist, 0.0);
 
 	return bestDist == FallSpeed;
 }
 
-void PlayerController::SetTargetPosition(Vector3d target)
+void PlayerController::SetTargetPosition(glm::dvec3 target)
 {
 	m_TargetPos = target;
 }
@@ -566,7 +567,7 @@ void PlayerController::UpdatePosition()
 	//static const double WalkingSpeed = 8.6; // m/s
 	static const double TicksPerSecond = 20;
 
-	u64 dt = GetTime() - m_LastUpdate;
+	uint64 dt = GetTime() - m_LastUpdate;
 
 	if (dt < 1000 / TicksPerSecond)
 		return;
@@ -581,21 +582,21 @@ void PlayerController::UpdatePosition()
 		counter = 0;
 	}
 
-	Vector3d target = m_TargetPos;
-	Vector3d toTarget = target - GetPosition();
+	glm::dvec3 target = m_TargetPos;
+	glm::dvec3 toTarget = target - GetPosition();
 	toTarget.y = 0;
-	double dist = toTarget.Length();
+	double dist = glm::length(toTarget);
 
 	if (!ClearPath(target))
 		return;
 
-	Vector3d n = Vector3Normalize(toTarget);
+	glm::dvec3 n = glm::normalize(toTarget);
 	double change = dt / 1000.0;
 
 	n *= m_MoveSpeed * change;
 
-	if (n.Length() > dist)
-		n = Vector3Normalize(n) * dist;
+	if (glm::length(n) > dist)
+		n = glm::normalize(n) * dist;
 
 	Move(n);
 }
@@ -621,7 +622,7 @@ void PlayerController::Update()
 			onGround = false;
 			for (float angle = 0.0f; angle < FullCircle; angle += FullCircle / 8)
 			{
-				Vector3d checkPos = m_Position + Vector3RotateAboutY(Vector3d(0, 0, CheckWidth), angle) - Vector3d(0, 1, 0);
+				glm::dvec3 checkPos = m_Position + Vector3RotateAboutY(glm::dvec3(0, 0, CheckWidth), angle) - glm::dvec3(0, 1, 0);
 
 				const CMinecraftBlock* checkBlock = m_World.GetBlock(checkPos);
 				if (checkBlock && checkBlock->IsSolid())
@@ -649,13 +650,13 @@ void PlayerController::Update()
 
 bool PlayerController::InLoadedChunk() const
 {
-	return m_World.GetChunk(ToVector3i(m_Position)) != nullptr;
+	return m_World.GetChunk(m_Position) != nullptr;
 }
 
-Vector3d PlayerController::GetPosition() const { return m_Position; }
-Vector3d PlayerController::GetHeading() const
+glm::dvec3 PlayerController::GetPosition() const { return m_Position; }
+glm::dvec3 PlayerController::GetHeading() const
 {
-	return Vector3d(
+	return glm::dvec3(
 		-std::cos(GetPitch()) * std::sin(GetYaw()),
 		-std::sin(GetPitch()),
 		std::cos(GetPitch()) * std::cos(GetYaw())
@@ -664,7 +665,7 @@ Vector3d PlayerController::GetHeading() const
 float PlayerController::GetYaw() const { return m_Yaw; }
 float PlayerController::GetPitch() const { return m_Pitch; }
 
-void PlayerController::Move(Vector3d delta)
+void PlayerController::Move(glm::dvec3 delta)
 {
 	//delta.y = 0;
 
@@ -688,9 +689,9 @@ void PlayerController::Move(Vector3d delta)
 
 void PlayerController::SetYaw(float yaw) { m_Yaw = yaw; }
 void PlayerController::SetPitch(float pitch) { m_Pitch = pitch; }
-void PlayerController::LookAt(Vector3d target)
+void PlayerController::LookAt(glm::dvec3 target)
 {
-	Vector3d toTarget = target - m_Position;
+	glm::dvec3 toTarget = target - m_Position;
 
 	double dist = std::sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
 	double pitch = -std::atan2(toTarget.y, dist);
@@ -876,9 +877,9 @@ public:
 
 		for (const Slot& slot : slots)
 		{
-			s16 id = slot.GetItemId();
-			u8 count = slot.GetItemCount();
-			s16 dmg = slot.GetItemDamage();
+			int16 id = slot.GetItemId();
+			uint8 count = slot.GetItemCount();
+			int16 dmg = slot.GetItemDamage();
 			//const Minecraft::NBT::NBT& nbt = slot.GetNBT();
 
 			if (id != -1)
@@ -910,7 +911,7 @@ public:
 	void OnPlayerSpawn(PlayerPtr player)
 	{
 		auto entity = player->GetEntity();
-		Vector3d pos(0, 0, 0);
+		glm::dvec3 pos(0, 0, 0);
 
 		if (entity)
 			pos = entity->GetPosition();
@@ -1005,8 +1006,8 @@ void PlayerFollower::UpdateRotation()
 	if (!m_Following || !m_Following->GetEntity()) return;
 
 	m_PlayerController.LookAt(m_Following->GetEntity()->GetPosition());
-	/*static u64 lastUpdate = GetTime();
-	u64 ticks = GetTime();
+	/*static uint64 lastUpdate = GetTime();
+	uint64 ticks = GetTime();
 	float dt = (ticks - lastUpdate) / 1000.0f;
 	lastUpdate = ticks;
 
@@ -1038,7 +1039,7 @@ void PlayerFollower::OnTick()
 
 	auto entity = m_Following->GetEntity();
 	EntityId vid = entity->GetVehicleId();
-	Vector3d targetPosition = entity->GetPosition();
+	glm::dvec3 targetPosition = entity->GetPosition();
 
 	if (vid != -1)
 		targetPosition = m_EntityManager.GetEntity(vid)->GetPosition();
@@ -1049,13 +1050,13 @@ void PlayerFollower::OnTick()
 
 	if ((yaw += 90) >= 360.0) yaw -= 360;
 
-	Vector3d heading(
+	glm::dvec3 heading(
 		std::cos(yaw * toRads) * std::cos(pitch * toRads),
 		0.0,
 		std::sin(yaw * toRads) * std::cos(pitch * toRads)
 	);
 
-	Vector3d newPosition = targetPosition + Vector3Normalize(heading) * 0.4;
+	glm::dvec3 newPosition = targetPosition + glm::normalize(heading) * 0.4;
 
 	if ((yaw -= 180.0f + 90.0f) < 0.0f) yaw += 360.0f;
 	//m_PlayerController.SetYaw(yaw);
@@ -1106,7 +1107,7 @@ void PlayerFollower::FindClosestPlayer()
 			EntityId peid = m_EntityManager.GetPlayerEntity()->GetEntityId();
 			if (entity->GetEntityId() == peid) continue;
 
-			Vector3d pos = entity->GetPosition();
+			glm::dvec3 pos = entity->GetPosition();
 			EntityId vid = entity->GetVehicleId();
 			if (vid != -1)
 			{
@@ -1115,7 +1116,7 @@ void PlayerFollower::FindClosestPlayer()
 					pos = vehicle->GetPosition();
 			}
 
-			double dist = pos.Distance(m_PlayerController.GetPosition());
+			double dist = glm::distance(pos, m_PlayerController.GetPosition());
 
 			if (dist < closest)
 			{
@@ -1125,7 +1126,7 @@ void PlayerFollower::FindClosestPlayer()
 		}
 	}
 
-	static u64 lastOutput = 0;
+	static uint64 lastOutput = 0;
 
 	if (GetTime() - lastOutput >= 3000)
 	{
@@ -1135,7 +1136,7 @@ void PlayerFollower::FindClosestPlayer()
 			auto entity = m_Following->GetEntity();
 			if (entity)
 			{
-				Vector3d pos = entity->GetPosition();
+				glm::dvec3 pos = entity->GetPosition();
 				EntityId vid = entity->GetVehicleId();
 				if (vid != -1)
 				{
@@ -1143,7 +1144,7 @@ void PlayerFollower::FindClosestPlayer()
 					if (vehicle)
 						pos = vehicle->GetPosition();
 				}
-				double dist = m_PlayerController.GetPosition().Distance(pos);
+				double dist = glm::distance(m_PlayerController.GetPosition(), pos);
 				std::wstring followName = m_Following->GetName();
 
 				std::string followMesg = "Tracking " + std::string(followName.begin(), followName.end()) + " dist: " + std::to_string(dist) + "\n";
@@ -1183,7 +1184,7 @@ void PlayerFollower::OnPlayerDestroy(PlayerPtr player, EntityId eid)
 	UpdateRotation();
 }
 
-void PlayerFollower::OnPlayerMove(PlayerPtr player, Vector3d oldPos, Vector3d newPos)
+void PlayerFollower::OnPlayerMove(PlayerPtr player, glm::dvec3 oldPos, glm::dvec3 newPos)
 {
 	FindClosestPlayer();
 	UpdateRotation();
@@ -1194,14 +1195,14 @@ class CreativeCreator : public PacketHandler
 private:
 	Connection* m_Connection;
 	PlayerController* m_Controller;
-	s16 m_Slot;
+	int16 m_Slot;
 	Slot m_Item;
 	bool m_Created;
 
 	std::queue<Slot> m_CreateQueue;
 
 public:
-	CreativeCreator(PacketDispatcher* dispatcher, Connection* connection, PlayerController* controller, s16 slot, Slot item)
+	CreativeCreator(PacketDispatcher* dispatcher, Connection* connection, PlayerController* controller, int16 slot, Slot item)
 		: PacketHandler(dispatcher),
 		m_Connection(connection), m_Controller(controller),
 		m_Slot(slot), m_Item(item), m_Created(false)
@@ -1233,7 +1234,7 @@ public:
 			using namespace out;
 
 			PlayerDiggingPacket::Status status = PlayerDiggingPacket::Status::DropItemStack;
-			Vector3i pos(0, 0, 0);
+			glm::ivec3 pos(0, 0, 0);
 
 			PlayerDiggingPacket packet(status, pos, Face::Bottom);
 
@@ -1279,7 +1280,7 @@ public:
 			};
 			int slotIndex = 36;
 
-			/* std::map<u32, bool> usedMap;
+			/* std::map<uint32, bool> usedMap;
 
 			 for (u8 colorIndex1 = 0; colorIndex1 < colors.size(); ++colorIndex1) {
 				 for (u8 colorIndex2 = 0; colorIndex2 < colors.size(); ++colorIndex2) {
@@ -1291,7 +1292,7 @@ public:
 						 std::vector<u8> sorted = { colorIndex1, colorIndex2, colorIndex3 };
 						 std::sort(sorted.begin(), sorted.end());
 
-						 u32 combined = (sorted[0] << 16) | (sorted[1] << 8) | sorted[2];
+						 uint32 combined = (sorted[0] << 16) | (sorted[1] << 8) | sorted[2];
 
 						 if (usedMap.find(combined) != usedMap.end()) continue;
 

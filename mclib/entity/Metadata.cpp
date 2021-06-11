@@ -122,7 +122,7 @@ DataBuffer& operator<<(DataBuffer& out, const EntityMetadata& md)
 
 		if (!value) continue;
 
-		u8 item = ((type << 5) | (i & 0x1F)) & 0xFF;
+		uint8 item = ((type << 5) | (i & 0x1F)) & 0xFF;
 
 		out << item;
 
@@ -187,7 +187,7 @@ DataBuffer& operator<<(DataBuffer& out, const EntityMetadata& md)
 	}
 
 	// End byte
-	out << (u8)0x7F;
+	out << (uint8)0x7F;
 	return out;
 }
 
@@ -195,13 +195,13 @@ DataBuffer& operator>>(DataBuffer& in, EntityMetadata& md)
 {
 	while (true)
 	{
-		u8 index;
+		uint8 index;
 
 		in >> index;
 
 		if (index == 0xFF) return in;
 
-		u8 typeVal;
+		uint8 typeVal;
 
 		in >> typeVal;
 

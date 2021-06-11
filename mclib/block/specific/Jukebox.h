@@ -9,14 +9,14 @@ class Jukebox
 	: public BlockEntity
 {
 private:
-	s32 m_RecordId;
+	int32 m_RecordId;
 	Slot m_RecordItem;
 
 public:
-	MCLIB_API Jukebox(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API Jukebox(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 
-	inline s32 GetRecordId() const noexcept { return m_RecordId; }
+	inline int32 GetRecordId() const noexcept { return m_RecordId; }
 	inline Slot GetItem() const noexcept { return m_RecordItem; }
 };
 

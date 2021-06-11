@@ -18,8 +18,8 @@ namespace terra
 
 				bool Intersects(const CMinecraftAABB& aabb) const;
 				bool Intersects(glm::vec3 v) const;
-				bool Intersects(Vector3i v) const;
-				bool Intersects(Vector3d v) const;
+				bool Intersects(glm::ivec3 v) const;
+				bool Intersects(glm::dvec3 v) const;
 
 			private:
 				glm::vec3 m_Position;

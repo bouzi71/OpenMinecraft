@@ -31,10 +31,10 @@ private:
 	// How large a packet needs to be before it's compressed.
 	// Don't compress packets smaller than this.
 	// Received in SetCompressionPacket.
-	u64 m_CompressionThreshold;
+	uint64 m_CompressionThreshold;
 
 public:
-	MCLIB_API CompressionZ(u64 threshold) : m_CompressionThreshold(threshold) {}
+	MCLIB_API CompressionZ(uint64 threshold) : m_CompressionThreshold(threshold) {}
 
 	DataBuffer MCLIB_API Compress(DataBuffer& buffer);
 	DataBuffer MCLIB_API Decompress(DataBuffer& buffer, std::size_t packetLength);

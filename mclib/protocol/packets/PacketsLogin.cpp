@@ -111,11 +111,11 @@ namespace out
 //
 // Handshake packets
 //
-HandshakePacket::HandshakePacket(s32 protocol, std::string server, u16 port, State state)
+HandshakePacket::HandshakePacket(int32 protocol, std::string server, uint16 port, State state)
 	: m_ProtocolVersion(protocol)
 	, m_Server(server)
 	, m_Port(port)
-	, m_NewState((s32)state)
+	, m_NewState((int32)state)
 {
 	m_ProtocolState = State::Handshake;
 }
@@ -161,8 +161,8 @@ DataBuffer EncryptionResponsePacket::Serialize() const
 
 	buffer << m_Id;
 
-	CVarInt sharedLength = (s32)m_SharedSecret.length();
-	CVarInt verifyLength = (s32)m_VerifyToken.length();
+	CVarInt sharedLength = (int32)m_SharedSecret.length();
+	CVarInt verifyLength = (int32)m_VerifyToken.length();
 	buffer << sharedLength;
 	buffer << m_SharedSecret;
 	buffer << verifyLength;

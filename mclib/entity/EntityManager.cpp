@@ -15,9 +15,9 @@
 #define TAU 3.14159f * 2.0f
 #define DEG_TO_RAD 3.14159f / 180.0f
 
-EntityType GetEntityTypeFromObjectId(s32 oid)
+EntityType GetEntityTypeFromObjectId(int32 oid)
 {
-	static const std::unordered_map<s32, EntityType> mapping = {
+	static const std::unordered_map<int32, EntityType> mapping = {
 		{ 1, EntityType::Boat },
 		{ 2, EntityType::Item },
 		{ 3, EntityType::AreaEffectCloud },
@@ -150,11 +150,11 @@ void EntityManager::HandlePacket(in::SpawnObjectPacket* packet)
 	EntityPtr entity = std::make_shared<Entity>(eid, m_ProtocolVersion);
 
 	m_Entities[eid] = entity;
-	entity->SetPosition(ToVector3d(packet->GetPosition()));
+	entity->SetPosition(packet->GetPosition());
 	entity->SetYaw(packet->GetYaw() / 256.0f * TAU);
 	entity->SetPitch(packet->GetPitch() / 256.0f * TAU);
 
-	Vector3d velocity = ToVector3d(packet->GetVelocity()) / 8000.0;
+	glm::dvec3 velocity = glm::dvec3(packet->GetVelocity()) / 8000.0;
 	entity->SetVelocity(velocity);
 
 	EntityType type = GetEntityTypeFromObjectId(packet->GetType());
@@ -170,7 +170,7 @@ void EntityManager::HandlePacket(in::SpawnPaintingPacket* packet)
 
 	m_Entities[eid] = entity;
 
-	entity->SetPosition(ToVector3d(packet->GetPosition()));
+	entity->SetPosition(packet->GetPosition());
 	entity->SetType(EntityType::Painting);
 	entity->SetTitle(packet->GetTitle());
 	entity->SetDirection((PaintingEntity::Direction)packet->GetDirection());
@@ -212,7 +212,7 @@ void EntityManager::HandlePacket(in::SpawnMobPacket* packet)
 	entity->SetHeadPitch(packet->GetHeadPitch() / 256.0f * TAU);
 	entity->SetMetadata(packet->GetMetadata());
 
-	Vector3d velocity = ToVector3d(packet->GetVelocity()) / 8000.0;
+	glm::dvec3 velocity = glm::dvec3(packet->GetVelocity()) / 8000.0;
 	entity->SetVelocity(velocity);
 
 	NotifyListeners(&EntityListener::OnEntitySpawn, entity);
@@ -260,7 +260,7 @@ void EntityManager::HandlePacket(in::EntityVelocityPacket* packet)
 
 	if (entity)
 	{
-		Vector3d velocity = ToVector3d(packet->GetVelocity()) / 8000.0;
+		glm::dvec3 velocity = glm::dvec3(packet->GetVelocity()) / 8000.0;
 
 		entity->SetVelocity(velocity);
 	}
@@ -270,7 +270,7 @@ void EntityManager::HandlePacket(in::EntityRelativeMovePacket* packet)
 {
 	EntityId eid = packet->GetEntityId();
 
-	Vector3d delta = ToVector3d(packet->GetDelta()) / (32.0 * 128.0);
+	glm::dvec3 delta = glm::dvec3(packet->GetDelta()) / (32.0 * 128.0);
 
 	auto iter = m_Entities.find(eid);
 	if (iter == m_Entities.end()) return;
@@ -279,8 +279,8 @@ void EntityManager::HandlePacket(in::EntityRelativeMovePacket* packet)
 
 	if (entity)
 	{
-		Vector3d oldPos = entity->GetPosition();
-		Vector3d newPos = entity->GetPosition() + delta;
+		glm::dvec3 oldPos = entity->GetPosition();
+		glm::dvec3 newPos = entity->GetPosition() + delta;
 
 		entity->SetPosition(newPos);
 
@@ -292,7 +292,7 @@ void EntityManager::HandlePacket(in::EntityLookAndRelativeMovePacket* packet)
 {
 	EntityId eid = packet->GetEntityId();
 
-	Vector3d delta = ToVector3d(packet->GetDelta()) / (32.0 * 128.0);
+	glm::dvec3 delta = glm::dvec3(packet->GetDelta()) / (32.0 * 128.0);
 
 	auto iter = m_Entities.find(eid);
 	if (iter == m_Entities.end()) return;
@@ -301,8 +301,8 @@ void EntityManager::HandlePacket(in::EntityLookAndRelativeMovePacket* packet)
 
 	if (entity)
 	{
-		Vector3d oldPos = entity->GetPosition();
-		Vector3d newPos = entity->GetPosition() + delta;
+		glm::dvec3 oldPos = entity->GetPosition();
+		glm::dvec3 newPos = entity->GetPosition() + delta;
 
 		entity->SetPosition(newPos);
 		entity->SetYaw(packet->GetYaw() / 256.0f * TAU);
@@ -323,8 +323,8 @@ void EntityManager::HandlePacket(in::EntityTeleportPacket* packet)
 
 	if (entity)
 	{
-		Vector3d oldPos = entity->GetPosition();
-		Vector3d newPos = packet->GetPosition();
+		glm::dvec3 oldPos = entity->GetPosition();
+		glm::dvec3 newPos = packet->GetPosition();
 
 		entity->SetPosition(newPos);
 		entity->SetYaw(packet->GetYaw() / 256.0f * TAU);

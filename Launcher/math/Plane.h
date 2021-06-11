@@ -20,8 +20,8 @@ public:
 	float GetDistance() const { return m_Distance; }
 
 	float PointDistance(const glm::vec3& q) const;
-	float PointDistance(Vector3i q) const;
-	float PointDistance(Vector3d q) const;
+	float PointDistance(glm::ivec3 q) const;
+	float PointDistance(glm::dvec3 q) const;
 
 private:
 	glm::vec3 m_Normal;

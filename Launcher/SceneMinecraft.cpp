@@ -13,7 +13,6 @@
 #include <core/Client.h>
 #include <util/Utility.h>
 
-#include "render/Shader.h"
 #include "ChatWindow.h"
 #include "math/TypeUtil.h"
 
@@ -48,7 +47,7 @@ std::unique_ptr<terra::AssetCache> g_AssetCache;
 void GetConnectionParams()
 {
 	std::string server = "127.0.0.1";
-	u16 port = 25565;
+	uint16 port = 25565;
 	std::string username = "Bouzi71";
 	std::string password = "";
 
@@ -74,7 +73,7 @@ void GetConnectionParams()
 			username = login_node.value("username", "");
 			password = login_node.value("password", "");
 			server = login_node.value("server", "");
-			port = login_node.value("port", static_cast<u16>(25565));
+			port = login_node.value("port", static_cast<uint16>(25565));
 		}
 	}
 }
@@ -88,7 +87,7 @@ void GetConnectionParams()
 
 CGamePlayer::CGamePlayer(World* world) : m_CollisionDetector(world), m_OnGround(false), m_Sneaking(false), m_Transform({})
 {
-	m_Transform.bounding_box = CMinecraftAABB(Vector3d(-0.3, 0, -0.3), Vector3d(0.3, 1.8, 0.3));
+	m_Transform.bounding_box = CMinecraftAABB(glm::dvec3(-0.3, 0, -0.3), glm::dvec3(0.3, 1.8, 0.3));
 	m_Transform.max_speed = 14.3f;
 }
 
@@ -102,25 +101,27 @@ void CGamePlayer::Update(float dt)
 	const float kMaxAcceleration = 100.0f;
 	const double kEpsilon = 0.0001;
 
-	using vec3 = Vector3d;
+	using vec3 = glm::dvec3;
 
 	vec3 horizontal_acceleration = m_Transform.acceleration;
 	horizontal_acceleration.y = 0;
+	horizontal_acceleration = Truncate(horizontal_acceleration, kMaxAcceleration);
 
-	horizontal_acceleration.Truncate(kMaxAcceleration);
-
-	vec3 acceleration(horizontal_acceleration.x, -38 + m_Transform.acceleration.y, horizontal_acceleration.z);
+	glm::vec3 acceleration(horizontal_acceleration.x, -38 + m_Transform.acceleration.y, horizontal_acceleration.z);
 
 	m_OnGround = false;
 
 	m_CollisionDetector.ResolveCollisions(&m_Transform, dt, &m_OnGround);
 
-	m_Transform.velocity += acceleration * dt;
-	m_Transform.input_velocity += m_Transform.input_acceleration * dt;
+	m_Transform.velocity += (acceleration * dt);
+	m_Transform.input_velocity += (glm::vec3(m_Transform.input_acceleration) * dt);
 	m_Transform.orientation += m_Transform.rotation * dt;
 
-	if (m_Transform.velocity.LengthSq() < kEpsilon) m_Transform.velocity = vec3(0, 0, 0);
-	if (m_Transform.input_velocity.LengthSq() < kEpsilon) m_Transform.input_velocity = vec3(0, 0, 0);
+	if (glm::length2(m_Transform.velocity) < kEpsilon) 
+		m_Transform.velocity = vec3(0, 0, 0);
+
+	if (glm::length2(m_Transform.input_velocity) < kEpsilon)
+		m_Transform.input_velocity = vec3(0, 0, 0);
 
 	float drag = 0.98 - (int)m_OnGround * 0.13;
 	m_Transform.velocity *= drag;
@@ -130,7 +131,7 @@ void CGamePlayer::Update(float dt)
 
 	vec3 horizontal_velocity = m_Transform.input_velocity;
 	horizontal_velocity.y = 0;
-	horizontal_velocity.Truncate(m_Transform.max_speed);
+	horizontal_velocity = Truncate(horizontal_velocity, m_Transform.max_speed);
 
 	m_Transform.input_velocity = horizontal_velocity + vec3(0, m_Transform.input_velocity.y, 0);
 
@@ -188,8 +189,8 @@ std::shared_ptr<terra::render::ChunkMeshGenerator> CSceneMinecraft::GetMeshGen()
 void CSceneMinecraft::OnClientSpawn(PlayerPtr player)
 {
 	m_Player->GetTransform().position = player->GetEntity()->GetPosition();
-	m_Player->GetTransform().velocity = Vector3d();
-	m_Player->GetTransform().acceleration = Vector3d();
+	m_Player->GetTransform().velocity = glm::dvec3();
+	m_Player->GetTransform().acceleration = glm::dvec3();
 	m_Player->GetTransform().orientation = player->GetEntity()->GetYaw() * 3.14159f / 180.0f;
 }
 
@@ -205,7 +206,7 @@ void CSceneMinecraft::HandlePacket(in::EntityVelocityPacket* packet)
 	auto playerEntity = m_NetworkClient.GetEntityManager()->GetPlayerEntity();
 	if (playerEntity && playerEntity->GetEntityId() == eid)
 	{
-		Vector3d newVelocity = ToVector3d(packet->GetVelocity()) * 20.0 / 8000.0;
+		glm::dvec3 newVelocity = glm::dvec3(packet->GetVelocity()) * 20.0 / 8000.0;
 
 		std::cout << "Applying new velocity " << newVelocity << std::endl;
 		m_Player->GetTransform().velocity = newVelocity;
@@ -214,9 +215,9 @@ void CSceneMinecraft::HandlePacket(in::EntityVelocityPacket* packet)
 
 void CSceneMinecraft::HandlePacket(in::SpawnPositionPacket* packet)
 {
-	s64 x = packet->GetLocation().GetX();
-	s64 y = packet->GetLocation().GetY();
-	s64 z = packet->GetLocation().GetZ();
+	int64 x = packet->GetLocation().GetX();
+	int64 y = packet->GetLocation().GetY();
+	int64 z = packet->GetLocation().GetZ();
 }
 
 
@@ -277,7 +278,7 @@ void CSceneMinecraft::Initialize()
 	BlockRegistry::GetInstance()->RegisterVanillaBlocks();
 
 	std::string server = "127.0.0.1";
-	u16 port = 25565;
+	uint16 port = 25565;
 	std::string username = "Bouzi71";
 	std::string password = "";
 
@@ -361,14 +362,14 @@ bool CSceneMinecraft::OnWindowKeyPressed(KeyEventArgs & e)
 	}
 	else if (e.Key == KeyCode::A)
 	{
-		Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+		glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
 
 		direction -= right;
 		return true;
 	}
 	else if (e.Key == KeyCode::D)
 	{
-		Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+		glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
 
 		direction += right;
 		return true;
@@ -377,7 +378,7 @@ bool CSceneMinecraft::OnWindowKeyPressed(KeyEventArgs & e)
 	{
 		if (m_Player->OnGround())
 		{
-			m_Player->GetTransform().input_acceleration += Vector3d(0, 6 / m_DeltaTime, 0);
+			m_Player->GetTransform().input_acceleration += glm::dvec3(0, 6 / m_DeltaTime, 0);
 		}
 	}
 
@@ -409,13 +410,13 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 	m_DeltaTime = current_frame - m_LastFrame;
 	m_LastFrame = current_frame;
 
-	Vector3d front(
+	glm::dvec3 front(
 		std::cos(glm::radians(GetCameraController()->GetCamera()->GetYaw())) * std::cos(0),
 		std::sin(0),
 		std::sin(glm::radians(GetCameraController()->GetCamera()->GetYaw())) * std::cos(0)
 	);
 
-	Vector3d direction;
+	glm::dvec3 direction;
 
 	/*if (m_Window)
 	{
@@ -438,14 +439,14 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 
 		if (m_Window->IsKeyDown(GLFW_KEY_A))
 		{
-			Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+			glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
 
 			direction -= right;
 		}
 
 		if (m_Window->IsKeyDown(GLFW_KEY_D))
 		{
-			Vector3d right = Vector3Normalize(front.Cross(Vector3d(0, 1, 0)));
+			glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
 
 			direction += right;
 		}
@@ -458,7 +459,7 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 
 	if (m_Sprinting)
 	{
-		if (direction.LengthSq() <= 0.0)
+		if (glm::length2(direction) <= 0.0)
 		{
 			m_Sprinting = false;
 		}
@@ -479,12 +480,12 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 	{
 		if (m_Window->IsKeyDown(GLFW_KEY_SPACE) && m_Player->OnGround())
 		{
-			m_Player->GetTransform().input_acceleration += Vector3d(0, 6 / m_DeltaTime, 0);
+			m_Player->GetTransform().input_acceleration += glm::dvec3(0, 6 / m_DeltaTime, 0);
 		}
 	}*/
 
 	m_Player->GetTransform().max_speed = 4.3f + (int)m_Sprinting * 1.3f;
-	m_Player->GetTransform().input_acceleration += direction * 85.0f;
+	m_Player->GetTransform().input_acceleration += glm::vec3(direction) * 85.0f;
 
 	m_Player->Update(m_DeltaTime);
 
@@ -498,8 +499,8 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 		float yaw = glm::radians(GetCameraController()->GetCamera()->GetYaw()) - glm::radians(90.0f);
 		float pitch = -(glm::radians(GetCameraController()->GetCamera()->GetPitch()));
 
-		out::PlayerPositionAndLookPacket response(m_Player->GetTransform().position, yaw * 180.0f / 3.14159f, pitch * 180.0f / 3.14159f, m_Player->OnGround());
-		m_NetworkClient.GetConnection()->SendPacket(&response);
+		//out::PlayerPositionAndLookPacket response(m_Player->GetTransform().position, yaw * 180.0f / 3.14159f, pitch * 180.0f / 3.14159f, m_Player->OnGround());
+		//m_NetworkClient.GetConnection()->SendPacket(&response);
 
 		m_LastPositionTime = current_frame;
 
@@ -539,7 +540,7 @@ void CSceneMinecraft::CreatePlayer(World* world)
 	m_Player = std::make_unique<CGamePlayer>(world);
 }
 
-Vector3d CSceneMinecraft::GetPosition()
+glm::dvec3 CSceneMinecraft::GetPosition()
 {
 	return m_Player->GetTransform().position;
 }

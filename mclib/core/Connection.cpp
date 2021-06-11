@@ -177,7 +177,7 @@ void Connection::HandlePacket(login::in::SetCompressionPacket* packet)
 	m_Compressor = std::make_unique<CompressionZ>(packet->GetMaxPacketSize());
 }
 
-bool Connection::Connect(const std::string& server, u16 port)
+bool Connection::Connect(const std::string& server, uint16 port)
 {
 	bool result = false;
 
@@ -244,7 +244,7 @@ CMinecraftPacket* Connection::CreatePacket(DataBuffer& buffer)
 		return nullptr;
 	}
 
-	if (length.GetInt() == 0 || buffer.GetRemaining() < (u32)length.GetInt())
+	if (length.GetInt() == 0 || buffer.GetRemaining() < (uint32)length.GetInt())
 	{
 		// Reset the read offset back to what it was because the full packet hasn't been received yet.
 		buffer.SetReadOffset(readOffset);
@@ -328,7 +328,7 @@ bool Connection::Login(const std::string& username, const std::string& password)
 		return false;
 	}
 
-	login::out::HandshakePacket handshake(static_cast<s32>(m_Protocol.GetVersion()), m_Server + fml, m_Port, State::Login);
+	login::out::HandshakePacket handshake(static_cast<int32>(m_Protocol.GetVersion()), m_Server + fml, m_Port, State::Login);
 	SendPacket(&handshake);
 
 	m_ProtocolState = State::Login;
@@ -369,7 +369,7 @@ bool Connection::Login(const std::string& username, AuthToken token)
 
 	m_Yggdrasil = std::move(token.GetYggdrasil());
 
-	login::out::HandshakePacket handshake(static_cast<s32>(m_Protocol.GetVersion()), m_Server + fml, m_Port, State::Login);
+	login::out::HandshakePacket handshake(static_cast<int32>(m_Protocol.GetVersion()), m_Server + fml, m_Port, State::Login);
 	SendPacket(&handshake);
 
 	m_ProtocolState = State::Login;
@@ -404,7 +404,7 @@ void Connection::Ping()
 {
 	std::string fml("\0FML\0", 5);
 
-	login::out::HandshakePacket handshake(static_cast<s32>(m_Protocol.GetVersion()), m_Server + fml, m_Port, State::Status);
+	login::out::HandshakePacket handshake(static_cast<int32>(m_Protocol.GetVersion()), m_Server + fml, m_Port, State::Status);
 	SendPacket(&handshake);
 
 	m_ProtocolState = State::Status;

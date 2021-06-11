@@ -14,7 +14,7 @@ class Chest
 	, public Nameable
 {
 public:
-	MCLIB_API Chest(BlockEntityType type, Vector3i position) : BlockEntity(type, position) {}
+	MCLIB_API Chest(BlockEntityType type, glm::ivec3 position) : BlockEntity(type, position) {}
 	MCLIB_API bool ImportNBT(NBT* nbt);
 };
 

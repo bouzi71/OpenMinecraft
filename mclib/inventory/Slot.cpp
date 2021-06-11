@@ -6,9 +6,9 @@
 
 Slot Slot::FromNBT(TagCompound& compound)
 {
-	u8 count = 0;
-	s16 id = -1;
-	s16 damage = 0;
+	uint8 count = 0;
+	int16 id = -1;
+	int16 damage = 0;
 	NBT nbt;
 
 	for (auto iter = compound.begin(); iter != compound.end(); ++iter)
@@ -52,7 +52,7 @@ DataBuffer Slot::Serialize(Version version) const
 	}
 	else
 	{
-		out << (u8)0;
+		out << (uint8)0;
 	}
 
 	return out;
@@ -64,7 +64,7 @@ void Slot::Deserialize(DataBuffer& in, Version version)
 	m_ItemCount = 0;
 	m_ItemDamage = 0;
 
-	s16 id;
+	int16 id;
 	in >> id;
 
 	m_ItemId = id;
@@ -79,7 +79,7 @@ void Slot::Deserialize(DataBuffer& in, Version version)
 	in >> m_ItemCount;
 	in >> m_ItemDamage;
 
-	u8 hasNBT;
+	uint8 hasNBT;
 	in >> hasNBT;
 
 	if (hasNBT)

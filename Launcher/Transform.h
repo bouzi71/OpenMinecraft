@@ -8,11 +8,11 @@
 
 struct Transform
 {
-	Vector3d position;
-	Vector3d velocity;
-	Vector3d input_velocity;
-	Vector3d acceleration;
-	Vector3d input_acceleration;
+	glm::dvec3 position;
+	glm::dvec3 velocity;
+	glm::dvec3 input_velocity;
+	glm::dvec3 acceleration;
+	glm::dvec3 input_acceleration;
 	float max_speed;
 	float orientation;
 	float rotation;

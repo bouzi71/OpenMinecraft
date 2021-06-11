@@ -19,7 +19,7 @@ struct RegisterPacket
 	{
 		DataBuffer buffer;
 
-		u8 nullChar = '\0';
+		uint8 nullChar = '\0';
 
 		for (std::string channel : channels)
 		{
@@ -65,9 +65,9 @@ enum class HandshakeServerPhase
 
 struct ServerHelloPacket
 {
-	u8 discriminator;
-	u8 version;
-	s32 dimension;
+	uint8 discriminator;
+	uint8 version;
+	int32 dimension;
 
 	void Deserialize(DataBuffer buffer)
 	{
@@ -79,10 +79,10 @@ struct ServerHelloPacket
 
 struct ClientHelloPacket
 {
-	u8 discriminator;
-	u8 version;
+	uint8 discriminator;
+	uint8 version;
 
-	ClientHelloPacket(u8 version) : discriminator(1), version(version) {}
+	ClientHelloPacket(uint8 version) : discriminator(1), version(version) {}
 
 	DataBuffer Serialize()
 	{
@@ -96,7 +96,7 @@ struct ClientHelloPacket
 
 struct ModListPacket
 {
-	u8 discriminator;
+	uint8 discriminator;
 	std::vector<ForgeHandler::ModInfo> mods;
 
 	ModListPacket(std::vector<ForgeHandler::ModInfo> mods) : discriminator(2), mods(mods) {}
@@ -105,7 +105,7 @@ struct ModListPacket
 	{
 		DataBuffer buffer;
 
-		CVarInt count((s32)mods.size());
+		CVarInt count((int32)mods.size());
 
 		buffer << discriminator << count;
 
@@ -123,7 +123,7 @@ struct ModListPacket
 
 struct RegistryDataPacket
 {
-	u8 discriminator;
+	uint8 discriminator;
 	bool hasMore;
 
 	void Deserialize(DataBuffer buffer)
@@ -134,12 +134,12 @@ struct RegistryDataPacket
 
 struct HandshakeAckPacket
 {
-	u8 discriminator;
-	u8 phase;
+	uint8 discriminator;
+	uint8 phase;
 
 	HandshakeAckPacket(HandshakeClientPhase phase) 
-		: discriminator((u8)ForgePacket::HandshakeAck)
-		, phase((u8)phase) 
+		: discriminator((uint8)ForgePacket::HandshakeAck)
+		, phase((uint8)phase) 
 	{}
 	HandshakeAckPacket() 
 	{}

@@ -77,7 +77,7 @@ BlockRegistry::~BlockRegistry()
 }
 
 
-const CMinecraftBlock* BlockRegistry::GetBlock(u32 ID) const
+const CMinecraftBlock* BlockRegistry::GetBlock(uint32 ID) const
 {
 	//const auto& blocksIt = m_Blocks.find(ID);
 	//if (blocksIt == m_Blocks.end())
@@ -85,8 +85,8 @@ const CMinecraftBlock* BlockRegistry::GetBlock(u32 ID) const
 
 	//return blocksIt->second;
 
-	u32 type = ID >> 4;
-	u32 meta = ID & 15;
+	uint32 type = ID >> 4;
+	uint32 meta = ID & 15;
 
 	const auto& blocksIt = m_Blocks.find(type);
 	if (blocksIt == m_Blocks.end())
@@ -103,14 +103,14 @@ const CMinecraftBlock* BlockRegistry::GetBlock(u32 ID) const
 	return blockMeta;
 }
 
-const CMinecraftBlock* BlockRegistry::GetBlock(u16 type, u16 meta) const
+const CMinecraftBlock* BlockRegistry::GetBlock(uint16 type, uint16 meta) const
 {
 	return GetBlock(type << 4 | (meta & 15));
 }
 
 void BlockRegistry::RegisterVanillaBlocks()
 {
-	const CMinecraftAABB FullSolidBounds(Vector3d(0, 0, 0), Vector3d(1, 1, 1));
+	const CMinecraftAABB FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
 
 	BlockInfos();
 
@@ -141,7 +141,7 @@ void BlockRegistry::RegisterVanillaBlocks()
 	{
 		json blockJSON = blockJSONIt.value();
 
-		u32 blockId = blockJSON.value("id", 0);
+		uint32 blockId = blockJSON.value("id", 0);
 
 		std::string displayName = blockJSON.value("display_name", "");
 		_ASSERT(false == displayName.empty());
@@ -174,7 +174,7 @@ void BlockRegistry::RegisterVanillaBlocks()
 			{
 				json metadataJSON = metadataJSONIt.value();
 
-				u32 metaID = metadataJSON.value("value", 0);
+				uint32 metaID = metadataJSON.value("value", 0);
 				json variablesJSON = metadataJSON.value("variables", json());
 				std::string blockState = metadataJSON.value("blockstate", "");
 			
@@ -185,7 +185,7 @@ void BlockRegistry::RegisterVanillaBlocks()
 				CMinecraftBlock* blockMeta = new CMinecraftBlock(blockState, blockId, metaID, isTransperent, isSolid);
 
 				CMinecraftAABB bounds = blockMeta->GetBoundingBox();
-				if (blockMeta->IsSolid() && (bounds.max - bounds.min).Length() == 0)
+				if (blockMeta->IsSolid() && glm::length(bounds.max - bounds.min) == 0)
 					blockMeta->SetBoundingBox(FullSolidBounds);
 
 				if (variablesJSON.is_array())
@@ -213,14 +213,14 @@ void BlockRegistry::RegisterVanillaBlocks()
 		registry->RegisterBlock(block);
 
 		CMinecraftAABB bounds = block->GetBoundingBox();
-		if (block->IsSolid() && (bounds.max - bounds.min).Length() == 0)
+		if (block->IsSolid() && glm::length(bounds.max - bounds.min) == 0)
 			block->SetBoundingBox(FullSolidBounds);
 	}
 }
 
 void BlockRegistry::RegisterVanillaBlocks2()
 {
-	const CMinecraftAABB FullSolidBounds(Vector3d(0, 0, 0), Vector3d(1, 1, 1));
+	const CMinecraftAABB FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
 
 	BlockInfos();
 
@@ -273,7 +273,7 @@ void BlockRegistry::RegisterVanillaBlocks2()
 
 		for (const auto& stateJSON : statesJSONArray)
 		{
-			u32 blockId = stateJSON.value("id", 0);
+			uint32 blockId = stateJSON.value("id", 0);
 
 			CMinecraftBlock* block = new CMinecraftBlock(blockName, blockId, isTransperent, isSolid);
 
@@ -292,7 +292,7 @@ void BlockRegistry::RegisterVanillaBlocks2()
 			registry->RegisterBlock(block);
 
 			CMinecraftAABB bounds = block->GetBoundingBox();
-			if (block->IsSolid() && (bounds.max - bounds.min).Length() == 0)
+			if (block->IsSolid() && glm::length(bounds.max - bounds.min) == 0)
 				block->SetBoundingBox(FullSolidBounds);
 		}
 
@@ -305,7 +305,7 @@ void BlockRegistry::RegisterVanillaBlocks2()
 			{
 				json metadataJSON = metadataJSONIt.value();
 
-				u32 metaID = metadataJSON.value("value", 0);
+				uint32 metaID = metadataJSON.value("value", 0);
 				json variablesJSON = metadataJSON.value("variables", json());
 				std::string blockState = metadataJSON.value("blockstate", "");
 
@@ -351,7 +351,7 @@ void BlockRegistry::ClearRegistry()
 	m_Blocks.clear();
 }
 
-const std::map<u32, CMinecraftBlock*>& BlockRegistry::GetAllBlocks() const noexcept
+const std::map<uint32, CMinecraftBlock*>& BlockRegistry::GetAllBlocks() const noexcept
 {
 	return m_Blocks;
 }

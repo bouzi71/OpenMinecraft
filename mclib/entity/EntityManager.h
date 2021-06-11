@@ -18,7 +18,7 @@ public:
 	virtual void OnEntitySpawn(EntityPtr entity) {}
 	virtual void OnObjectSpawn(EntityPtr entity) {}
 	virtual void OnEntityDestroy(EntityPtr entity) {}
-	virtual void OnEntityMove(EntityPtr entity, Vector3d oldPos, Vector3d newPos) {}
+	virtual void OnEntityMove(EntityPtr entity, glm::dvec3 oldPos, glm::dvec3 newPos) {}
 };
 
 

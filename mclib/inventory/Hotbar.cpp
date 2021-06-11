@@ -18,7 +18,7 @@ Hotbar::~Hotbar() {
     GetDispatcher()->UnregisterHandler(this);
 }
 
-void Hotbar::SelectSlot(s32 hotbarIndex) {
+void Hotbar::SelectSlot(int32 hotbarIndex) {
     m_SelectedSlot = hotbarIndex;
 
     out::HeldItemChangePacket heldItemPacket(hotbarIndex);
@@ -33,7 +33,7 @@ Slot Hotbar::GetCurrentItem() {
     return GetItem(m_SelectedSlot);
 }
 
-Slot Hotbar::GetItem(s32 hotbarIndex) {
+Slot Hotbar::GetItem(int32 hotbarIndex) {
     Inventory* inventory = m_InventoryManager->GetPlayerInventory();
     if (inventory == nullptr) return Slot();
 

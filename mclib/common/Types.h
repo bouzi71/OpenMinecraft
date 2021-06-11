@@ -1,37 +1,34 @@
 #ifndef MCLIB_COMMON_TYPES_H_
 #define MCLIB_COMMON_TYPES_H_
 
-#include <cstdint>
-#include <cstddef>
+typedef int32 EntityId;
 
-typedef int8_t s8;
-typedef int16_t s16;
-typedef int32_t s32;
-typedef int64_t s64;
+enum class Hand 
+{ 
+	Main, 
+	Off 
+};
+enum class MainHand 
+{ 
+	Left, 
+	Right 
+};
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-
-#ifdef _MSC_VER
-#define NOEXCEPT
-#else
-#define NOEXCEPT noexcept
-#endif
-
-typedef s32 EntityId;
-
-enum class Hand { Main, Off };
-enum class MainHand { Left, Right };
-
-enum class ChatMode { Enabled, Commands, Hidden };
+enum class ChatMode 
+{ 
+	Enabled, 
+	Commands, 
+	Hidden 
+};
 
 enum class SkinPart
 {
-	Cape = 0x1, Jacket = 0x2,
-	LeftSleeve = 0x4, RightSleeve = 0x8,
-	LeftPants = 0x10, RightPants = 0x20,
+	Cape = 0x1, 
+	Jacket = 0x2,
+	LeftSleeve = 0x4, 
+	RightSleeve = 0x8,
+	LeftPants = 0x10, 
+	RightPants = 0x20,
 	Hat = 0x40
 };
 

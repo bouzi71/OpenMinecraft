@@ -44,10 +44,10 @@ struct CubeVertex
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 uv;
-	u32 texture_index;
+	uint32 texture_index;
 	glm::vec3 tint;
 
-	CubeVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, u32 tex_index, glm::vec3 tint) 
+	CubeVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, uint32 tex_index, glm::vec3 tint) 
 		: position(pos)
 		, normal(normal)
 		, uv(uv)
@@ -67,7 +67,7 @@ int main2(int argc, char* argvp[])
 	}
 
 	std::string server = "127.0.0.1";
-	u16 port = 25565;
+	uint16 port = 25565;
 	std::string username = "Bouzi71";
 	std::string password = "";
 
@@ -93,7 +93,7 @@ int main2(int argc, char* argvp[])
 			username = login_node.value("username", "");
 			password = login_node.value("password", "");
 			server = login_node.value("server", "");
-			port = login_node.value("port", static_cast<u16>(25565));
+			port = login_node.value("port", static_cast<uint16>(25565));
 		}
 	}
 
@@ -205,10 +205,10 @@ int main2(int argc, char* argvp[])
 			for (auto&& kv : *mesh_gen)
 			{
 				terra::render::ChunkMesh* mesh = kv.second.get();
-				Vector3i chunk_base = kv.first;
+				glm::ivec3 chunk_base = kv.first;
 
-				Vector3d min = ToVector3d(chunk_base);
-				Vector3d max = ToVector3d(chunk_base) + Vector3d(16, 16, 16);
+				glm::dvec3 min = ToVector3d(chunk_base);
+				glm::dvec3 max = ToVector3d(chunk_base) + glm::dvec3(16, 16, 16);
 				CMinecraftAABB chunk_bounds(min, max);
 
 				if (false == frustum.Intersects(chunk_bounds)) 
@@ -226,7 +226,7 @@ int main2(int argc, char* argvp[])
 				if (entity_manager->GetPlayerEntity() == entity) 
 					continue;
 
-				Vector3d position = entity->GetPosition() + Vector3d(0, 0.5, 0);
+				glm::dvec3 position = entity->GetPosition() + glm::dvec3(0, 0.5, 0);
 
 				glm::mat4 model(1.0);
 				model = glm::translate(model, glm::vec3(position.x, position.y + 0.5, position.z));

@@ -28,19 +28,19 @@ public:
 		return (float)(m_IntRep >> 5) + (m_IntRep & 31) / 32.0f;
 	}
 
-	friend DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<s8>& fpn);
-	friend DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<s32>& fpn);
+	friend DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<int8>& fpn);
+	friend DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<int32>& fpn);
 
 private:
 	T m_IntRep;
 };
 
-inline DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<s8>& fpn)
+inline DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<int8>& fpn)
 {
 	return in >> fpn.m_IntRep;
 }
 
-inline DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<s32>& fpn)
+inline DataBuffer& operator>>(DataBuffer& in, FixedPointNumber<int32>& fpn)
 {
 	return in >> fpn.m_IntRep;
 }
@@ -74,7 +74,7 @@ public:
 	void SetProtocolVersion(Version version) noexcept { m_ProtocolVersion = version; }
 
 	CVarInt GetId() const noexcept { return m_Id; }
-	void SetId(s32 id) { m_Id = id; }
+	void SetId(int32 id) { m_Id = id; }
 
 	State GetProtocolState() const noexcept { return m_ProtocolState; }
 

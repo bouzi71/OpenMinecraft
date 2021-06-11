@@ -19,7 +19,7 @@ namespace
 {
 
 const std::string server("127.0.0.1");
-const u16 port = 25565;
+const uint16 port = 25565;
 const std::string username("Bouzi71");
 const std::string password("");
 const bool useProfileToken = false;
