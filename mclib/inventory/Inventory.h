@@ -5,23 +5,15 @@
 #include <inventory/Slot.h>
 #include <protocol/PacketHandler.h>
 
-
-
 class Inventory
 {
+	friend class InventoryManager;
+
 public:
 	static const MCLIB_API int32 HOTBAR_SLOT_START;
 	static const MCLIB_API int32 PLAYER_INVENTORY_ID;
 
 	using ItemMap = std::map<int32, Slot>;
-
-private:
-	ItemMap m_Items;
-	int m_WindowId;
-	int16 m_CurrentAction;
-	Slot m_Cursor;
-
-	MCLIB_API void HandleTransaction(Connection& conn, uint16 action, bool accepted);
 
 public:
 	MCLIB_API Inventory(int windowId);
@@ -41,14 +33,23 @@ public:
 
 	// Moves an item to the cursor. It will fail if something is already on cursor or if target slot is empty.
 	MCLIB_API bool PickUp(Connection& conn, int32 index);
-	// Place the current cursor item into a slot. 
-	// The server may set the new cursor to the item in the target slot.
+	// Place the current cursor item into a slot. The server may set the new cursor to the item in the target slot.
 	MCLIB_API bool Place(Connection& conn, int32 index);
 
-	friend class InventoryManager;
+private:
+	MCLIB_API void HandleTransaction(Connection& conn, uint16 action, bool accepted);
+
+private:
+	ItemMap m_Items;
+	int m_WindowId;
+	int16 m_CurrentAction;
+	Slot m_Cursor;
 };
 
-class InventoryManager : public PacketHandler
+
+
+class InventoryManager 
+	: public PacketHandler
 {
 private:
 	Connection* m_Connection;

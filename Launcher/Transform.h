@@ -13,11 +13,12 @@ struct Transform
 	glm::dvec3 input_velocity;
 	glm::dvec3 acceleration;
 	glm::dvec3 input_acceleration;
+
 	float max_speed;
 	float orientation;
 	float rotation;
 
-	CMinecraftAABB bounding_box;
+	BoundingBox bounding_box;
 };
 
 #endif

@@ -1,9 +1,6 @@
 #ifndef TERRACOTTA_UTIL_ZIPARCHIVE_H_
 #define TERRACOTTA_UTIL_ZIPARCHIVE_H_
 
-
-
-
 #include "miniz.h"
 
 namespace terra

@@ -8,6 +8,7 @@ enum class Hand
 	Main, 
 	Off 
 };
+
 enum class MainHand 
 { 
 	Left, 

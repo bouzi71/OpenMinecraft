@@ -41,7 +41,7 @@ private:
 	glm::dvec3 m_Position;
 	float m_Yaw;
 	float m_Pitch;
-	CMinecraftAABB m_BoundingBox;
+	BoundingBox m_BoundingBox;
 	EntityId m_EntityId;
 	uint64 m_LastUpdate;
 	glm::dvec3 m_TargetPos;
@@ -80,7 +80,7 @@ public:
 	glm::dvec3 MCLIB_API GetHeading() const;
 	float MCLIB_API GetYaw() const;
 	float MCLIB_API GetPitch() const;
-	CMinecraftAABB MCLIB_API GetBoundingBox() const;
+	BoundingBox MCLIB_API GetBoundingBox() const;
 
 	void MCLIB_API SetYaw(float yaw);
 	void MCLIB_API SetPitch(float pitch);

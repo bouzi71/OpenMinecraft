@@ -17,10 +17,10 @@ inline glm::dvec3 BasisAxis(int basisIndex)
 	return axes[basisIndex];
 }
 
-glm::dvec3 GetClosestFaceNormal(const glm::dvec3& pos, CMinecraftAABB bounds)
+glm::dvec3 GetClosestFaceNormal(const glm::dvec3& pos, BoundingBox bounds)
 {
-	glm::dvec3 center = glm::vec3(bounds.min) + glm::vec3(bounds.max - bounds.min) / 2.0f;
-	glm::dvec3 dim = bounds.max - bounds.min;
+	glm::dvec3 center = glm::vec3(bounds.getMin()) + glm::vec3(bounds.getMax() - bounds.getMin()) / 2.0f;
+	glm::dvec3 dim = bounds.getMax() - bounds.getMin();
 	glm::dvec3 offset = pos - center;
 
 	double minDist = std::numeric_limits<double>::max();
@@ -49,7 +49,7 @@ bool CollisionDetector::DetectCollision(glm::dvec3 from, glm::dvec3 rayVector, C
 	glm::dvec3 direction = glm::normalize(rayVector);
 	double length = glm::length(rayVector);
 
-	CMinecraftRay ray(from, direction);
+	Ray ray(from, direction);
 
 	if (collision)
 		* collision = Collision();
@@ -66,7 +66,7 @@ bool CollisionDetector::DetectCollision(glm::dvec3 from, glm::dvec3 rayVector, C
 
 			if (block && block->IsSolid())
 			{
-				CMinecraftAABB bounds = block->GetBoundingBox(checkPos);
+				BoundingBox bounds = block->GetBoundingBox(checkPos);
 				double distance;
 
 				if (bounds.Intersects(ray, &distance))
@@ -88,16 +88,16 @@ bool CollisionDetector::DetectCollision(glm::dvec3 from, glm::dvec3 rayVector, C
 	return false;
 }
 
-std::vector<glm::ivec3> CollisionDetector::GetSurroundingLocations(CMinecraftAABB bounds)
+std::vector<glm::ivec3> CollisionDetector::GetSurroundingLocations(BoundingBox bounds)
 {
 	std::vector<glm::ivec3> locs;
 
 	int32 radius = 2;
-	for (int32 y = (int32)bounds.min.y - radius; y < (int32)bounds.max.y + radius; ++y)
+	for (int32 y = (int32)bounds.getMin().y - radius; y < (int32)bounds.getMax().y + radius; ++y)
 	{
-		for (int32 z = (int32)bounds.min.z - radius; z < (int32)bounds.max.z + radius; ++z)
+		for (int32 z = (int32)bounds.getMin().z - radius; z < (int32)bounds.getMax().z + radius; ++z)
 		{
-			for (int32 x = (int32)bounds.min.x - radius; x < (int32)bounds.max.x + radius; ++x)
+			for (int32 x = (int32)bounds.getMin().x - radius; x < (int32)bounds.getMax().x + radius; ++x)
 			{
 				locs.emplace_back(x, y, z);
 			}
@@ -123,13 +123,13 @@ void CollisionDetector::ResolveCollisions(Transform* transform, double dt, bool*
 
 		for (std::size_t i = 0; i < 3; ++i)
 		{
-			CMinecraftAABB playerBounds = transform->bounding_box;
+			BoundingBox playerBounds = transform->bounding_box;
 
 			if (iteration == 0)
 				position[i] += velocity[i] * dt + input_velocity[i] * dt;
 
-			playerBounds.min += position;
-			playerBounds.max += position;
+			playerBounds.setMin(playerBounds.getMin() + glm::vec3(position));
+			playerBounds.setMax(playerBounds.getMax() + glm::vec3(position));
 
 			std::vector<glm::ivec3> surrounding = GetSurroundingLocations(playerBounds);
 
@@ -139,7 +139,7 @@ void CollisionDetector::ResolveCollisions(Transform* transform, double dt, bool*
 
 				if (block && block->IsSolid())
 				{
-					CMinecraftAABB blockBounds = block->GetBoundingBox(checkPos);
+					BoundingBox blockBounds = block->GetBoundingBox(checkPos);
 
 					if (playerBounds.Intersects(blockBounds))
 					{
@@ -153,13 +153,13 @@ void CollisionDetector::ResolveCollisions(Transform* transform, double dt, bool*
 
 						double penetrationDepth;
 
-						if (playerBounds.min[i] < blockBounds.min[i])
+						if (playerBounds.getMin()[i] < blockBounds.getMin()[i])
 						{
-							penetrationDepth = playerBounds.max[i] - blockBounds.min[i];
+							penetrationDepth = playerBounds.getMax()[i] - blockBounds.getMin()[i];
 						}
 						else
 						{
-							penetrationDepth = playerBounds.min[i] - blockBounds.max[i];
+							penetrationDepth = playerBounds.getMin()[i] - blockBounds.getMax()[i];
 						}
 
 						position[i] -= penetrationDepth;

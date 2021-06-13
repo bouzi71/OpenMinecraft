@@ -39,6 +39,15 @@ void CMinecraftCubePass::Render(RenderEventArgs & e)
 
 	for (auto i = meshGen->begin(); i != meshGen->end(); i++)
 	{
+		glm::ivec3 chunk_base = i->first;
+
+		glm::dvec3 min = glm::dvec3(chunk_base);
+		glm::dvec3 max = glm::dvec3(chunk_base) + glm::dvec3(16, 16, 16);
+		BoundingBox chunk_bounds(min, max);
+
+		if (e.CameraForCulling->GetFrustum().cullBox(BoundingBox(chunk_bounds.getMin(), chunk_bounds.getMax())))
+			continue;
+
 		i->second->GetGeometry().Render(GetPipeline().GetVertexShaderPtr());
 	}
 }

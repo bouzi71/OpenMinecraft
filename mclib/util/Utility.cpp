@@ -346,7 +346,7 @@ PlayerController::~PlayerController()
 	m_PlayerManager.UnregisterListener(this);
 }
 
-CMinecraftAABB PlayerController::GetBoundingBox() const
+BoundingBox PlayerController::GetBoundingBox() const
 {
 	return m_BoundingBox + m_Position;
 }
@@ -498,7 +498,7 @@ std::vector<std::pair<const CMinecraftBlock*, glm::ivec3>> PlayerController::Get
 
 bool PlayerController::HandleJump()
 {
-	CMinecraftAABB playerBounds = m_BoundingBox + m_Position;
+	BoundingBox playerBounds = m_BoundingBox + m_Position;
 
 	for (const auto& state : GetNearbyBlocks(2))
 	{
@@ -508,7 +508,7 @@ bool PlayerController::HandleJump()
 		auto result = checkBlock->CollidesWith(pos, playerBounds);
 		if (result.first)
 		{
-			m_Position.y = result.second.max.y;
+			m_Position.y = result.second.getMax().y;
 			return true;
 		}
 	}
@@ -524,7 +524,7 @@ bool PlayerController::HandleFall()
 	if (!InLoadedChunk())
 		return false;
 
-	CMinecraftAABB playerBounds = m_BoundingBox + (m_Position - glm::dvec3(0, FallSpeed, 0));
+	BoundingBox playerBounds = m_BoundingBox + (m_Position - glm::dvec3(0, FallSpeed, 0));
 
 	for (const auto& state : GetNearbyBlocks(2))
 	{
@@ -533,11 +533,11 @@ bool PlayerController::HandleFall()
 		auto boundingBoxes = checkBlock->GetBoundingBoxes();
 		for (auto blockBounds : boundingBoxes)
 		{
-			CMinecraftAABB checkBounds = blockBounds + state.second;
+			BoundingBox checkBounds = blockBounds + state.second;
 
 			if (checkBounds.Intersects(playerBounds))
 			{
-				double penetration = checkBounds.max.y - playerBounds.min.y;
+				double penetration = checkBounds.getMax().y - playerBounds.getMin().y;
 				double dist = FallSpeed - penetration;
 
 				if (dist < bestDist)

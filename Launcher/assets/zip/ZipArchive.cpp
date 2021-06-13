@@ -14,7 +14,7 @@ bool ZipArchive::Open(const char *archivePath)
 {
 	mz_zip_zero_struct(&m_Archive);
 
-	if (!mz_zip_reader_init_file_v2(&m_Archive, archivePath, MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY, 0, 0))
+	if (false == mz_zip_reader_init_file_v2(&m_Archive, archivePath, MZ_ZIP_FLAG_DO_NOT_SORT_CENTRAL_DIRECTORY, 0, 0))
 	{
 		return false;
 	}
@@ -48,7 +48,6 @@ void ZipArchive::FreeFileData(char* data)
 	mz_free(data);
 }
 
-// Lists all of the files in the archive that contain search in their name.
 std::vector<std::string> ZipArchive::ListFiles(const char* search)
 {
 	std::vector<std::string> results;
@@ -56,19 +55,21 @@ std::vector<std::string> ZipArchive::ListFiles(const char* search)
 
 	mz_zip_archive_file_stat stat;
 
-	if (!mz_zip_reader_file_stat(&m_Archive, 0, &stat))
+	if (false == mz_zip_reader_file_stat(&m_Archive, 0, &stat))
 	{
 		return results;
 	}
 
 	for (unsigned int i = 0; i < count; ++i)
 	{
-		if (!mz_zip_reader_file_stat(&m_Archive, i, &stat)) continue;
-		if (mz_zip_reader_is_file_a_directory(&m_Archive, i)) continue;
+		if (false == mz_zip_reader_file_stat(&m_Archive, i, &stat)) 
+			continue;
+
+		if (mz_zip_reader_is_file_a_directory(&m_Archive, i)) 
+			continue;
 
 		const char* current = stat.m_filename;
-
-		if (search == nullptr || strstr(current, search) != nullptr)
+		if (search == nullptr || ::strstr(current, search) != nullptr)
 		{
 			results.emplace_back(current);
 		}

@@ -22,17 +22,19 @@ public:
 
 class CollisionDetector
 {
-private:
-	World* m_World;
-
-	std::vector<glm::ivec3> GetSurroundingLocations(CMinecraftAABB bounds);
-
 public:
-	CollisionDetector(World* world) noexcept : m_World(world) {}
+	CollisionDetector(World* world) noexcept 
+		: m_World(world) 
+	{}
 
 	bool DetectCollision(glm::dvec3 from, glm::dvec3 rayVector, Collision* collision) const;
-
 	void ResolveCollisions(Transform* transform, double dt, bool* onGround);
+
+private:
+	std::vector<glm::ivec3> GetSurroundingLocations(BoundingBox bounds);
+
+private:
+	World* m_World;
 };
 
 

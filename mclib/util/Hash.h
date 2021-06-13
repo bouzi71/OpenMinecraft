@@ -2,10 +2,6 @@
 #define MCLIB_UTIL_HASH_H_
 
 
-
-
-
-
 std::string MCLIB_API Base64Decode(const std::string& message);
 
 #define SHA1_DIGEST_LENGTH 20

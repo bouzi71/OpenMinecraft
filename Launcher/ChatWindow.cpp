@@ -2,8 +2,6 @@
 
 #include "ChatWindow.h"
 
-#include "lib/imgui/imgui.h"
-
 #include <util/Utility.h>
 #include <cstring>
 
@@ -22,7 +20,7 @@ namespace terra
 		: PacketHandler(dispatcher)
 		, m_Connection(connection)
 	{
-		memset(m_InputText, 0, IM_ARRAYSIZE(m_InputText));
+		//memset(m_InputText, 0, IM_ARRAYSIZE(m_InputText));
 
 		dispatcher->RegisterHandler(State::Play, play::Chat, this);
 	}
@@ -34,7 +32,7 @@ namespace terra
 
 	void ChatWindow::Render()
 	{
-		ImGui::SetNextWindowBgAlpha(0.3f);
+		/*ImGui::SetNextWindowBgAlpha(0.3f);
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar;
 		ImGui::Begin("chat", 0, flags);
 
@@ -63,7 +61,7 @@ namespace terra
 			memset(m_InputText, 0, IM_ARRAYSIZE(m_InputText));
 		}
 		ImGui::PopItemWidth();
-		ImGui::End();
+		ImGui::End();*/
 	}
 
 	void ChatWindow::HandlePacket(in::ChatPacket* packet)

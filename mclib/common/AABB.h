@@ -1,6 +1,7 @@
 #ifndef MCLIB_COMMON_AABB_H_
 #define MCLIB_COMMON_AABB_H_
 
+#if 0
 
 #include <common/Vector.h>
 
@@ -9,39 +10,6 @@
 
 #undef min
 #undef max
-
-class CMinecraftRay
-{
-private:
-	glm::dvec3 m_Origin;
-	glm::dvec3 m_Direction;
-	glm::dvec3 m_DirectionReciprocal;
-
-public:
-	CMinecraftRay(const glm::dvec3& origin, const glm::dvec3& direction) noexcept
-		: m_Origin(origin),
-		m_Direction(direction)
-	{
-		if (m_Direction.x == 0.0)
-			m_DirectionReciprocal.x = std::numeric_limits<double>::max();
-		else
-			m_DirectionReciprocal.x = 1.0 / direction.x;
-
-		if (m_Direction.y == 0.0)
-			m_DirectionReciprocal.y = std::numeric_limits<double>::max();
-		else
-			m_DirectionReciprocal.y = 1.0 / direction.y;
-
-		if (m_Direction.z == 0.0)
-			m_DirectionReciprocal.z = std::numeric_limits<double>::max();
-		else
-			m_DirectionReciprocal.z = 1.0 / direction.z;
-	}
-
-	const glm::dvec3& GetOrigin() const noexcept { return m_Origin; }
-	const glm::dvec3& GetDirection() const noexcept { return m_Direction; }
-	const glm::dvec3& GetReciprocal() const noexcept { return m_DirectionReciprocal; }
-};
 
 
 struct CMinecraftAABB
@@ -85,7 +53,7 @@ struct CMinecraftAABB
 			min.z < other.max.z);
 	}
 
-	bool MCLIB_API Intersects(const CMinecraftRay& ray, double* length) const noexcept
+	bool MCLIB_API Intersects(const Ray& ray, double* length) const noexcept
 	{
 		double t1 = (min.x - ray.GetOrigin().x) * ray.GetReciprocal().x;
 		double t2 = (max.x - ray.GetOrigin().x) * ray.GetReciprocal().x;
@@ -121,5 +89,7 @@ struct CMinecraftAABB
 		return true;
 	}
 };
+
+#endif
 
 #endif

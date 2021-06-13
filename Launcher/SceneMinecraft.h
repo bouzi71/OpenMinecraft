@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Game.h"
 #include "Camera.h"
-
 
 #include <core/Client.h>
 
@@ -101,4 +99,7 @@ private:
 	float m_LastFrame;
 	float m_LastPositionTime;
 	bool m_Sprinting;
+
+
+
 };

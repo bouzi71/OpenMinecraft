@@ -3,7 +3,6 @@
 #include "ChunkMeshGenerator.h"
 
 #include "../assets/AssetCache.h"
-#include "../math/TypeUtil.h"
 
 #include <iostream>
 #include <algorithm>
@@ -461,7 +460,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 				if (currentVariantModel->GetElements().empty())
 					continue;
 
-				const glm::vec3 base = VecToGLM(mc_pos);
+				const glm::vec3 base = mc_pos;
 
 				const CMinecraftBlock* above = context.GetBlock(mc_pos + glm::ivec3(0, 1, 0));
 				if (false == IsOccluding(currentVariant, BlockFace::Up, above))

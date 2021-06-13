@@ -14,16 +14,13 @@
 #include <util/Utility.h>
 
 #include "ChatWindow.h"
-#include "math/TypeUtil.h"
 
 #include "render/ChunkMesh.h"
 #include "render/ChunkMeshGenerator.h"
 
-#include "math/Plane.h"
-#include "math/TypeUtil.h"
 
 #include <util/Utility.h>
-#include <util/Utility.h>
+
 #include <world/World.h>
 #include <common/AABB.h>
 #include <inventory/Inventory.h>
@@ -80,6 +77,133 @@ void GetConnectionParams()
 
 
 
+namespace
+{
+// TODO: Temporary fun code
+template <typename T>
+inline T Sign(T val)
+{
+	return std::signbit(val) ? static_cast<T>(-1) : static_cast<T>(1);
+}
+
+// TODO: Temporary fun code
+inline glm::dvec3 BasisAxis(int basisIndex)
+{
+	static const glm::dvec3 axes[3] = { glm::dvec3(1, 0, 0), glm::dvec3(0, 1, 0), glm::dvec3(0, 0, 1) };
+	return axes[basisIndex];
+}
+
+// TODO: Temporary fun code
+std::pair<glm::dvec3, Face> GetClosestNormal(const glm::dvec3& pos, BoundingBox bounds)
+{
+	glm::dvec3 center = bounds.getMin() + (bounds.getMax() - bounds.getMin()) / 2.0f;
+	glm::dvec3 dim = bounds.getMax() - bounds.getMin();
+	glm::dvec3 offset = pos - center;
+
+	double minDist = std::numeric_limits<double>::max();
+	glm::dvec3 normal;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		double dist = dim[i] - std::abs(offset[i]);
+		if (dist < minDist)
+		{
+			minDist = dist;
+			normal = BasisAxis(i) * Sign(offset[i]);
+		}
+	}
+
+	Face face = Face::North;
+
+	if (normal.x == 1)
+	{
+		face = Face::East;
+	}
+	else if (normal.x == -1)
+	{
+		face = Face::West;
+	}
+	else if (normal.y == 1)
+	{
+		face = Face::Top;
+	}
+	else if (normal.y == -1)
+	{
+		face = Face::Bottom;
+	}
+	else if (normal.z == 1)
+	{
+		face = Face::South;
+	}
+
+	return std::make_pair<>(normal, face);
+}
+
+// TODO: Temporary fun code
+bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, glm::dvec3& hit, glm::dvec3& normal, Face& face)
+{
+	static const std::vector<glm::dvec3> directions = {
+		glm::dvec3(0, 0, 0),
+		glm::dvec3(1, 0, 0), glm::dvec3(-1, 0, 0),
+		glm::dvec3(0, 1, 0), glm::dvec3(0, -1, 0),
+		glm::dvec3(0, 0, 1), glm::dvec3(0, 0, -1),
+		glm::dvec3(0, 1, 1), glm::dvec3(0, 1, -1),
+		glm::dvec3(1, 1, 0), glm::dvec3(1, 1, 1), glm::dvec3(1, 1, -1),
+		glm::dvec3(-1, 1, 0), glm::dvec3(-1, 1, 1), glm::dvec3(-1, 1, -1),
+
+		glm::dvec3(0, -1, 1), glm::dvec3(0, -1, -1),
+		glm::dvec3(1, -1, 0), glm::dvec3(1, -1, 1), glm::dvec3(1, -1, -1),
+		glm::dvec3(-1, -1, 0), glm::dvec3(-1, -1, 1), glm::dvec3(-1, -1, -1)
+	};
+
+	Ray ray(from, direction);
+
+	double closest_distance = std::numeric_limits<double>::max();
+	glm::dvec3 closest_pos;
+	BoundingBox closest_aabb;
+	bool collided = false;
+
+	for (double i = 0; i < range + 1; ++i)
+	{
+		glm::dvec3 position = from + direction * i;
+
+		for (glm::dvec3 checkDirection : directions)
+		{
+			glm::dvec3 checkPos = position + checkDirection;
+			const CMinecraftBlock* block = world.GetBlock(checkPos);
+
+			if (block && block->IsOpaque())
+			{
+				BoundingBox bounds = block->GetBoundingBox(checkPos);
+				double distance;
+
+				if (bounds.Intersects(ray, &distance))
+				{
+					if (distance < 0 || distance > range) continue;
+
+					if (distance < closest_distance)
+					{
+						closest_distance = distance;
+						closest_pos = from + direction * closest_distance;
+						closest_aabb = bounds;
+						collided = true;
+					}
+				}
+			}
+		}
+	}
+
+	if (collided)
+	{
+		hit = closest_pos;
+		std::tie(normal, face) = GetClosestNormal(hit, closest_aabb);
+		return true;
+	}
+
+	return false;
+}
+}
+
 
 
 
@@ -87,7 +211,7 @@ void GetConnectionParams()
 
 CGamePlayer::CGamePlayer(World* world) : m_CollisionDetector(world), m_OnGround(false), m_Sneaking(false), m_Transform({})
 {
-	m_Transform.bounding_box = CMinecraftAABB(glm::dvec3(-0.3, 0, -0.3), glm::dvec3(0.3, 1.8, 0.3));
+	m_Transform.bounding_box = BoundingBox(glm::dvec3(-0.3, 0, -0.3), glm::dvec3(0.3, 1.8, 0.3));
 	m_Transform.max_speed = 14.3f;
 }
 
@@ -111,19 +235,21 @@ void CGamePlayer::Update(float dt)
 
 	m_OnGround = false;
 
+	//Log::Print("Collision: %f", dt);
+
 	m_CollisionDetector.ResolveCollisions(&m_Transform, dt, &m_OnGround);
 
 	m_Transform.velocity += (acceleration * dt);
 	m_Transform.input_velocity += (glm::vec3(m_Transform.input_acceleration) * dt);
 	m_Transform.orientation += m_Transform.rotation * dt;
 
-	if (glm::length2(m_Transform.velocity) < kEpsilon) 
+	if (glm::length2(m_Transform.velocity) < kEpsilon)
 		m_Transform.velocity = vec3(0, 0, 0);
 
 	if (glm::length2(m_Transform.input_velocity) < kEpsilon)
 		m_Transform.input_velocity = vec3(0, 0, 0);
 
-	float drag = 0.98 - (int)m_OnGround * 0.13;
+	double drag = 0.98 - (int)m_OnGround * 0.13;
 	m_Transform.velocity *= drag;
 	m_Transform.input_velocity *= drag;
 
@@ -162,6 +288,9 @@ CSceneMinecraft::CSceneMinecraft(IBaseManager& BaseManager, IRenderWindow& Rende
 	, world(GetNetworkClient().GetDispatcher())
 	, m_Sprinting(false)
 	, m_LastPositionTime(0)
+
+	, m_DeltaTime(0.0f)
+	, m_LastFrame(0.0f)
 {
 	m_NetworkClient.GetPlayerController()->SetHandleFall(true);
 	m_NetworkClient.GetConnection()->GetSettings().SetMainHand(MainHand::Right).SetViewDistance(4);
@@ -188,10 +317,14 @@ std::shared_ptr<terra::render::ChunkMeshGenerator> CSceneMinecraft::GetMeshGen()
 
 void CSceneMinecraft::OnClientSpawn(PlayerPtr player)
 {
+	Log::Print("Player position: %f, %f, %f", player->GetEntity()->GetPosition().x, player->GetEntity()->GetPosition().y, player->GetEntity()->GetPosition().z);
+
 	m_Player->GetTransform().position = player->GetEntity()->GetPosition();
 	m_Player->GetTransform().velocity = glm::dvec3();
 	m_Player->GetTransform().acceleration = glm::dvec3();
 	m_Player->GetTransform().orientation = player->GetEntity()->GetYaw() * 3.14159f / 180.0f;
+
+	Log::Print("Player position 2: %f, %f, %f", m_Player->GetTransform().position.x, m_Player->GetTransform().position.y, m_Player->GetTransform().position.z);
 }
 
 void CSceneMinecraft::HandlePacket(in::UpdateHealthPacket* packet)
@@ -261,7 +394,7 @@ void CSceneMinecraft::Initialize()
 
 		SetCameraController(MakeShared(CFreeCameraController));
 		GetCameraController()->SetCamera(cameraNode->GetComponentT<ICameraComponent3D>());
-		GetCameraController()->GetCamera()->SetPerspectiveProjection(75.0f, static_cast<float>(GetRenderWindow().GetWindowWidth()) / static_cast<float>(GetRenderWindow().GetWindowHeight()), 1.0f, 500.0f);
+		GetCameraController()->GetCamera()->SetPerspectiveProjection(75.0f, static_cast<float>(GetRenderWindow().GetWindowWidth()) / static_cast<float>(GetRenderWindow().GetWindowHeight()), 0.1f, 1000.0f);
 		GetCameraController()->GetCamera()->SetPosition(glm::vec3(0.0f));
 		GetCameraController()->GetCamera()->SetYaw(225);
 		GetCameraController()->GetCamera()->SetPitch(-45);
@@ -277,12 +410,15 @@ void CSceneMinecraft::Initialize()
 
 	BlockRegistry::GetInstance()->RegisterVanillaBlocks();
 
+
 	std::string server = "127.0.0.1";
 	uint16 port = 25565;
 	std::string username = "Bouzi71";
 	std::string password = "";
+	
 
 	g_AssetCache = std::make_unique<terra::AssetCache>(GetBaseManager());
+
 
 	terra::AssetLoader asset_loader(*g_AssetCache);
 	if (false == asset_loader.LoadArchive("1.12.2.jar"))
@@ -330,12 +466,69 @@ void CSceneMinecraft::OnUpdate(UpdateEventArgs & e)
 
 bool CSceneMinecraft::OnMousePressed(const MouseButtonEventArgs & e, const Ray& RayToWorld)
 {
+	auto& world = *m_NetworkClient.GetWorld();
+	glm::dvec3 position(GetCameraController()->GetCamera()->GetPosition().x, GetCameraController()->GetCamera()->GetPosition().y, GetCameraController()->GetCamera()->GetPosition().z);
+	glm::dvec3 forward(GetCameraController()->GetCamera()->GetDirection().x, GetCameraController()->GetCamera()->GetDirection().y, GetCameraController()->GetCamera()->GetDirection().z);
+	glm::dvec3 hit;
+	glm::dvec3 normal;
+	Face face;
+
+	if (e.Button == MouseButton::Left && e.State == ButtonState::Pressed)
+	{
+		if (RayCast(world, position, forward, 5.0, hit, normal, face))
+		{
+
+			{
+				out::PlayerDiggingPacket::Status status = out::PlayerDiggingPacket::Status::StartedDigging;
+				out::PlayerDiggingPacket packet(status, glm::ivec3(hit + forward * 0.1), Face::West);
+
+				m_NetworkClient.GetConnection()->SendPacket(&packet);
+			}
+
+			{
+				out::PlayerDiggingPacket::Status status = out::PlayerDiggingPacket::Status::FinishedDigging;
+				out::PlayerDiggingPacket packet(status, glm::ivec3(hit + forward * 0.1), Face::West);
+
+				m_NetworkClient.GetConnection()->SendPacket(&packet);
+			}
+		}
+
+		out::AnimationPacket animation;
+		m_NetworkClient.GetConnection()->SendPacket(&animation);
+
+	}
+	else if (e.Button == MouseButton::Right && e.State == ButtonState::Pressed)
+	{
+		if (RayCast(world, position, forward, 5.0, hit, normal, face))
+		{
+			Inventory& inventory = *m_NetworkClient.GetInventoryManager()->GetPlayerInventory();
+
+			auto& hotbar = m_NetworkClient.GetHotbar();
+			int32 slot_id = hotbar.GetSelectedSlot() + Inventory::HOTBAR_SLOT_START;
+
+			Slot slot = inventory.GetItem(slot_id);
+
+			// Item ids are separate from block ids.
+			const uint32 draw_block = 9;
+
+			if (slot.GetItemId() != draw_block)
+			{
+				out::CreativeInventoryActionPacket packet(slot_id, Slot(draw_block, 1, 0));
+				m_NetworkClient.GetConnection()->SendPacket(&packet);
+			}
+
+			glm::ivec3 target = glm::ivec3(hit + forward * 0.1);
+
+			out::PlayerBlockPlacementPacket packet(target, face, Hand::Main, glm::vec3(1.0f, 0.0f, 0.0f));
+			m_NetworkClient.GetConnection()->SendPacket(&packet);
+		}
+	}
+
 	return false;
 }
 
 void CSceneMinecraft::OnMouseMoved(const MouseMotionEventArgs & e, const Ray & RayToWorld)
-{
-}
+{}
 
 
 
@@ -344,44 +537,6 @@ void CSceneMinecraft::OnMouseMoved(const MouseMotionEventArgs & e, const Ray & R
 //
 bool CSceneMinecraft::OnWindowKeyPressed(KeyEventArgs & e)
 {
-	/*if (e.Key == KeyCode::W)
-	{
-		direction += front;
-
-		if (e.Control)
-		{
-			m_Sprinting = true;
-		}
-		return true;
-	}
-	else if (e.Key == KeyCode::S)
-	{
-		direction -= front;
-		m_Sprinting = false;
-		return true;
-	}
-	else if (e.Key == KeyCode::A)
-	{
-		glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
-
-		direction -= right;
-		return true;
-	}
-	else if (e.Key == KeyCode::D)
-	{
-		glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
-
-		direction += right;
-		return true;
-	}
-	else */if (e.Key == KeyCode::Space)
-	{
-		if (m_Player->OnGround())
-		{
-			m_Player->GetTransform().input_acceleration += glm::dvec3(0, 6 / m_DeltaTime, 0);
-		}
-	}
-
 	return SceneBase::OnWindowKeyPressed(e);
 }
 
@@ -400,57 +555,54 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 {
 	UpdateClient();
 
-	if (GetNetworkClient().GetConnection()->GetProtocolState() != State::Play)
-		return;
-
 	float current_frame = (e.TotalTime / 1000.0f);
-	if (current_frame - m_LastFrame < 1.0f / 60.0f)
+	if ((current_frame - m_LastFrame) < (1.0f / 60.0f))
 		return;
 
 	m_DeltaTime = current_frame - m_LastFrame;
 	m_LastFrame = current_frame;
+
 
 	glm::dvec3 front(
 		std::cos(glm::radians(GetCameraController()->GetCamera()->GetYaw())) * std::cos(0),
 		std::sin(0),
 		std::sin(glm::radians(GetCameraController()->GetCamera()->GetYaw())) * std::cos(0)
 	);
+	glm::dvec3 direction(0.0);
 
-	glm::dvec3 direction;
-
-	/*if (m_Window)
+	if (IsKeyPressed(KeyCode::W))
 	{
+		direction += front;
+		if (IsKeyControlPressed())
+			m_Sprinting = true;
+	}
 
-		if (m_Window->IsKeyDown(GLFW_KEY_W))
+	if (IsKeyPressed(KeyCode::S))
+	{
+		direction -= front;
+		m_Sprinting = false;
+	}
+
+	if (IsKeyPressed(KeyCode::A))
+	{
+		glm::dvec3 right = glm::normalize(glm::cross(front, glm::dvec3(0, 1, 0)));
+		direction -= right;
+	}
+
+	if (IsKeyPressed(KeyCode::D))
+	{
+		glm::dvec3 right = glm::normalize(glm::cross(front, glm::dvec3(0, 1, 0)));
+		direction += right;
+	}
+
+	if (IsKeyPressed(KeyCode::Space))
+	{
+		if (m_Player->OnGround())
 		{
-			direction += front;
-
-			if (m_Window->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
-			{
-				m_Sprinting = true;
-			}
+			m_Player->GetTransform().input_acceleration += glm::dvec3(0, 6 / m_DeltaTime, 0);
 		}
+	}
 
-		if (m_Window->IsKeyDown(GLFW_KEY_S))
-		{
-			direction -= front;
-			m_Sprinting = false;
-		}
-
-		if (m_Window->IsKeyDown(GLFW_KEY_A))
-		{
-			glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
-
-			direction -= right;
-		}
-
-		if (m_Window->IsKeyDown(GLFW_KEY_D))
-		{
-			glm::dvec3 right = Vector3Normalize(front.Cross(glm::dvec3(0, 1, 0)));
-
-			direction += right;
-		}
-	}*/
 
 	if (false == m_Player->OnGround())
 	{
@@ -476,21 +628,19 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 		//m_Camera.SetFov(glm::radians(80.0f));
 	}
 
-	/*if (m_Window)
-	{
-		if (m_Window->IsKeyDown(GLFW_KEY_SPACE) && m_Player->OnGround())
-		{
-			m_Player->GetTransform().input_acceleration += glm::dvec3(0, 6 / m_DeltaTime, 0);
-		}
-	}*/
-
 	m_Player->GetTransform().max_speed = 4.3f + (int)m_Sprinting * 1.3f;
 	m_Player->GetTransform().input_acceleration += glm::vec3(direction) * 85.0f;
 
+	//Sleep(1);
+
+	//Log::Info("Player pos BFORE %f, %f, %f", m_Player->GetTransform().position.x, m_Player->GetTransform().position.y, m_Player->GetTransform().position.z);
+
 	m_Player->Update(m_DeltaTime);
 
-	glm::vec3 eye = VecToGLM(m_Player->GetTransform().position) + glm::vec3(0, 1.6, 0);
-	//GetCameraController()->GetCamera()->SetPosition(eye);
+	//Log::Info("Player pos AFTER %f, %f, %f", m_Player->GetTransform().position.x, m_Player->GetTransform().position.y, m_Player->GetTransform().position.z);
+
+	glm::vec3 eye = glm::vec3(m_Player->GetTransform().position) + glm::vec3(0.0f, 1.6f, 0.0f);
+	GetCameraController()->GetCamera()->SetPosition(eye);
 
 	constexpr float kTickTime = 1000.0f / 20.0f / 1000.0f;
 
@@ -499,25 +649,25 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 		float yaw = glm::radians(GetCameraController()->GetCamera()->GetYaw()) - glm::radians(90.0f);
 		float pitch = -(glm::radians(GetCameraController()->GetCamera()->GetPitch()));
 
-		//out::PlayerPositionAndLookPacket response(m_Player->GetTransform().position, yaw * 180.0f / 3.14159f, pitch * 180.0f / 3.14159f, m_Player->OnGround());
-		//m_NetworkClient.GetConnection()->SendPacket(&response);
+		out::PlayerPositionAndLookPacket response(m_Player->GetTransform().position, yaw * 180.0f / 3.14159f, pitch * 180.0f / 3.14159f, m_Player->OnGround());
+		m_NetworkClient.GetConnection()->SendPacket(&response);
 
 		m_LastPositionTime = current_frame;
 
-		/*if (m_Player->IsSneaking() && m_Window && !m_Window->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+		if (m_Player->IsSneaking() && false == IsKeyShiftPressed())
 		{
 			out::EntityActionPacket packet(0, out::EntityActionPacket::Action::StopSneak);
 			m_NetworkClient.GetConnection()->SendPacket(&packet);
 
 			m_Player->SetSneaking(false);
 		}
-		else if (!m_Player->IsSneaking() && m_Window && m_Window->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+		else if (!m_Player->IsSneaking() && IsKeyShiftPressed())
 		{
 			out::EntityActionPacket packet(0, out::EntityActionPacket::Action::StartSneak);
 			m_NetworkClient.GetConnection()->SendPacket(&packet);
 
 			m_Player->SetSneaking(true);
-		}*/
+		}
 	}
 
 	m_MeshGen->ProcessChunks();

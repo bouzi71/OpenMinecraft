@@ -4,10 +4,8 @@
 #include <core/Connection.h>
 #include <protocol/PacketHandler.h>
 
-
-#include <functional>
-
-class ForgeHandler : public PacketHandler
+class ForgeHandler 
+	: public PacketHandler
 {
 public:
 	struct ModInfo

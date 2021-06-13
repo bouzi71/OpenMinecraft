@@ -27,7 +27,7 @@ public:
 		//_ASSERT(false == name.empty());
 	}
 
-	explicit CMinecraftBlock(const std::string& name, uint32 ID, bool IsTransperent, bool IsSolid, const CMinecraftAABB& bounds)
+	explicit CMinecraftBlock(const std::string& name, uint32 ID, bool IsTransperent, bool IsSolid, const BoundingBox& bounds)
 		: m_Name(name)
 		, m_ID(ID)
 		, m_IsTransperent(IsTransperent)
@@ -82,40 +82,35 @@ public:
 
 	bool IsOpaque() const noexcept
 	{
-		return m_BoundingBox.min != glm::dvec3(0, 0, 0) || m_BoundingBox.max != glm::dvec3(0, 0, 0);
+		return m_BoundingBox.getMin() != glm::vec3(0, 0, 0) || m_BoundingBox.getMax() != glm::vec3(0, 0, 0);
 	}
 
-	virtual CMinecraftAABB GetBoundingBox() const noexcept
+	virtual BoundingBox GetBoundingBox() const noexcept
 	{
 		return m_BoundingBox;
 	}
 
-	virtual CMinecraftAABB GetBoundingBox(glm::ivec3 at) const // at is the world position of this block. Used to get the world bounding box
+	virtual BoundingBox GetBoundingBox(glm::ivec3 at) const // at is the world position of this block. Used to get the world bounding box
 	{
 		glm::dvec3 atd = at;
-		CMinecraftAABB bounds = m_BoundingBox;
-		bounds.min += atd;
-		bounds.max += atd;
+		BoundingBox bounds = m_BoundingBox;
+		bounds.setMin(bounds.getMin() + glm::vec3(atd));
+		bounds.setMax(bounds.getMax() + glm::vec3(atd));
 		return bounds;
 	}
 
-	virtual CMinecraftAABB GetBoundingBox(glm::dvec3 at) const
+	virtual std::pair<bool, BoundingBox> CollidesWith(glm::ivec3 at, const BoundingBox& other) const
 	{
-		return GetBoundingBox(at);
-	}
-
-	virtual std::pair<bool, CMinecraftAABB> CollidesWith(glm::ivec3 at, const CMinecraftAABB& other) const
-	{
-		CMinecraftAABB boundingBox = GetBoundingBox() + at;
+		BoundingBox boundingBox = GetBoundingBox() + glm::vec3(at);
 		return std::make_pair(boundingBox.Intersects(other), boundingBox);
 	}
 
-	virtual std::vector<CMinecraftAABB> GetBoundingBoxes() const // Returns the raw unmodified-by-position bounding boxes.
+	virtual std::vector<BoundingBox> GetBoundingBoxes() const // Returns the raw unmodified-by-position bounding boxes.
 	{
-		return std::vector<CMinecraftAABB>(1, m_BoundingBox);
+		return std::vector<BoundingBox>(1, m_BoundingBox);
 	}
 
-	void SetBoundingBox(const CMinecraftAABB& bound) noexcept
+	void SetBoundingBox(const BoundingBox& bound) noexcept
 	{
 		m_BoundingBox = bound;
 	}
@@ -179,7 +174,7 @@ protected:
 	uint32 m_ID;
 	bool m_IsTransperent;
 	bool m_Solid;
-	CMinecraftAABB m_BoundingBox;
+	BoundingBox m_BoundingBox;
 	std::vector<std::string> m_Variables;
 	std::map<uint32, const CMinecraftBlock*> m_Blockmetas;
 };

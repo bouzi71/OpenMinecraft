@@ -110,7 +110,7 @@ const CMinecraftBlock* BlockRegistry::GetBlock(uint16 type, uint16 meta) const
 
 void BlockRegistry::RegisterVanillaBlocks()
 {
-	const CMinecraftAABB FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
+	const BoundingBox FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
 
 	BlockInfos();
 
@@ -184,8 +184,8 @@ void BlockRegistry::RegisterVanillaBlocks()
 
 				CMinecraftBlock* blockMeta = new CMinecraftBlock(blockState, blockId, metaID, isTransperent, isSolid);
 
-				CMinecraftAABB bounds = blockMeta->GetBoundingBox();
-				if (blockMeta->IsSolid() && glm::length(bounds.max - bounds.min) == 0)
+				BoundingBox bounds = blockMeta->GetBoundingBox();
+				if (blockMeta->IsSolid() && glm::length(bounds.getMax() - bounds.getMin()) == 0)
 					blockMeta->SetBoundingBox(FullSolidBounds);
 
 				if (variablesJSON.is_array())
@@ -212,15 +212,15 @@ void BlockRegistry::RegisterVanillaBlocks()
 
 		registry->RegisterBlock(block);
 
-		CMinecraftAABB bounds = block->GetBoundingBox();
-		if (block->IsSolid() && glm::length(bounds.max - bounds.min) == 0)
+		BoundingBox bounds = block->GetBoundingBox();
+		if (block->IsSolid() && glm::length(bounds.getMax() - bounds.getMin()) == 0)
 			block->SetBoundingBox(FullSolidBounds);
 	}
 }
 
 void BlockRegistry::RegisterVanillaBlocks2()
 {
-	const CMinecraftAABB FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
+	const BoundingBox FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
 
 	BlockInfos();
 
@@ -291,8 +291,8 @@ void BlockRegistry::RegisterVanillaBlocks2()
 
 			registry->RegisterBlock(block);
 
-			CMinecraftAABB bounds = block->GetBoundingBox();
-			if (block->IsSolid() && glm::length(bounds.max - bounds.min) == 0)
+			BoundingBox bounds = block->GetBoundingBox();
+			if (block->IsSolid() && glm::length(bounds.getMax() - bounds.getMin()) == 0)
 				block->SetBoundingBox(FullSolidBounds);
 		}
 

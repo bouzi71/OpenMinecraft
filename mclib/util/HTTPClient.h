@@ -4,9 +4,6 @@
 
 #include <common/JsonFwd.h>
 
-
-
-
 typedef std::map<std::string, std::string> Headers;
 
 

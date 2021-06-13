@@ -1,16 +1,9 @@
 #ifndef MCLIB_UTIL_OBSERVER_SUBJECT_H_
 #define MCLIB_UTIL_OBSERVER_SUBJECT_H_
 
-#include <functional>
-
-#include <algorithm>
-
 template <typename T>
 class ObserverSubject
 {
-protected:
-	std::vector<T*> m_Listeners;
-
 public:
 	void RegisterListener(T* listener)
 	{
@@ -30,6 +23,9 @@ public:
 		for (T* listener : m_Listeners)
 			std::bind(f, listener, args...)();
 	}
+
+protected:
+	std::vector<T*> m_Listeners;
 };
 
 #endif

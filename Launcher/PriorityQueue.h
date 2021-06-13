@@ -1,19 +1,12 @@
 #ifndef TERRACOTTA_PRIORITY_QUEUE_H_
 #define TERRACOTTA_PRIORITY_QUEUE_H_
 
-#include <algorithm>
-
 
 namespace terra
 {
-
 	template <typename T, typename Comparator, typename Container = std::vector<T>>
 	class PriorityQueue
 	{
-	private:
-		Container m_Container;
-		Comparator m_Comp;
-
 	public:
 		PriorityQueue() = default;
 		PriorityQueue(const Comparator& cmp) : m_Comp(cmp) {}
@@ -39,6 +32,10 @@ namespace terra
 
 		bool Empty() const { return m_Container.empty(); }
 		Container& GetData() { return m_Container; }
+
+	private:
+		Container m_Container;
+		Comparator m_Comp;
 	};
 
 } // ns terra
