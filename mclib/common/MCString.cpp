@@ -12,13 +12,19 @@ MCString::MCString()
 
 }
 
-MCString::MCString(const std::string& str) : m_UTF16(str.begin(), str.end())
+MCString::MCString(const std::string& str) 
+	: m_UTF16(str.begin(), str.end())
 {}
 
-MCString::MCString(const std::wstring& str) : m_UTF16(str)
+MCString::MCString(const std::wstring& str) 
+	: m_UTF16(str)
 {}
 
-std::wstring MCString::GetUTF16() const { return m_UTF16; }
+std::wstring MCString::GetUTF16() const 
+{ 
+	return m_UTF16; 
+}
+
 std::string MCString::GetUTF8() const
 {
 	return utf16to8(m_UTF16);
@@ -51,6 +57,7 @@ DataBuffer& operator>>(DataBuffer& in, MCString& str)
 
 	return in;
 }
+
 
 std::string utf16to8(std::wstring str)
 {

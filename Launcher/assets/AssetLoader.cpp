@@ -111,7 +111,7 @@ bool AssetLoader::LoadArchive(const std::string& archive_path)
 	m_Cache.GetTextures().Generate();
 
 	// Fancy graphics mode seems to do something different than using cullface.
-	for (auto& model : m_Cache.GetBlockModels("leaves"))
+	/*for (auto& model : m_Cache.GetBlockModels("leaves"))
 	{
 		for (auto& element : model->GetElements())
 		{
@@ -121,7 +121,7 @@ bool AssetLoader::LoadArchive(const std::string& archive_path)
 				face.tint_index = 1;
 			}
 		}
-	}
+	}*/
 
 	return true;
 }

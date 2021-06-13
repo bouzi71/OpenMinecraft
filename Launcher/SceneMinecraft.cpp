@@ -6,6 +6,10 @@
 // Additional
 #include "Passes/MinecraftCubePass.h"
 
+#include <core/Client.h>
+
+#include "world/PlayerController.h"
+
 #include <iostream>
 #include <iterator>
 #include <fstream>
@@ -22,7 +26,7 @@
 #include <util/Utility.h>
 
 #include <world/World.h>
-#include <common/AABB.h>
+
 #include <inventory/Inventory.h>
 #include <protocol/packets/Packet.h>
 
@@ -351,6 +355,8 @@ void CSceneMinecraft::HandlePacket(in::SpawnPositionPacket* packet)
 	int64 x = packet->GetLocation().GetX();
 	int64 y = packet->GetLocation().GetY();
 	int64 z = packet->GetLocation().GetZ();
+
+	GetCameraController()->GetCamera()->SetPosition(glm::vec3(x, y, z));
 }
 
 

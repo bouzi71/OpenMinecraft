@@ -384,7 +384,7 @@ bool Connection::Login(const std::string& username, AuthToken token)
 
 void Connection::HandlePacket(status::in::ResponsePacket* packet)
 {
-	std::string response = to_string(packet->GetResponse());
+	std::string response = utf16to8(packet->GetResponse());
 
 	json data;
 

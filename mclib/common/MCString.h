@@ -1,10 +1,7 @@
 #ifndef MCLIB_COMMON_MC_STRING_H_
 #define MCLIB_COMMON_MC_STRING_H_
 
-
-#include <common/Types.h>
-
-
+#include "common/Types.h"
 
 class DataBuffer;
 

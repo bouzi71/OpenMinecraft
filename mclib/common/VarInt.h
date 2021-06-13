@@ -10,9 +10,6 @@ class DataBuffer;
 
 class CVarInt
 {
-private:
-	int64 m_Value;
-
 public:
 	MCLIB_API CVarInt() noexcept;
 	MCLIB_API CVarInt(int8 val) noexcept;
@@ -30,6 +27,9 @@ public:
 
 	friend MCLIB_API DataBuffer& operator<<(DataBuffer& out, const CVarInt& pos);
 	friend MCLIB_API DataBuffer& operator>>(DataBuffer& in, CVarInt& pos);
+
+private:
+	int64 m_Value;
 };
 
 typedef CVarInt VarLong;

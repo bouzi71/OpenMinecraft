@@ -1,9 +1,8 @@
 #ifndef MCLIB_BLOCK_BLOCK_H_
 #define MCLIB_BLOCK_BLOCK_H_
 
-#include <common/AABB.h>
-#include <common/Types.h>
-#include <protocol/ProtocolState.h>
+#include "common/Types.h"
+#include "protocol/ProtocolState.h"
 
 class CMinecraftBlock
 {

@@ -40,10 +40,11 @@
     <ClInclude Include="block\specific\ShulkerBox.h" />
     <ClInclude Include="block\specific\Sign.h" />
     <ClInclude Include="block\specific\Skull.h" />
-    <ClInclude Include="common\AABB.h" />
     <ClInclude Include="common\Common.h" />
     <ClInclude Include="common\DataBuffer.h" />
     <ClInclude Include="common\DyeColor.h" />
+    <ClInclude Include="common\internal\json.hpp" />
+    <ClInclude Include="common\internal\json_fwd.hpp" />
     <ClInclude Include="common\Json.h" />
     <ClInclude Include="common\JsonFwd.h" />
     <ClInclude Include="common\MCString.h" />
@@ -93,6 +94,7 @@
     <ClInclude Include="protocol\Protocol.h" />
     <ClInclude Include="protocol\ProtocolState.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="util\Console.h" />
     <ClInclude Include="util\Forge.h" />
     <ClInclude Include="util\Hash.h" />
     <ClInclude Include="util\HTTPClient.h" />
@@ -102,6 +104,8 @@
     <ClInclude Include="util\VersionFetcher.h" />
     <ClInclude Include="util\Yggdrasil.h" />
     <ClInclude Include="world\Chunk.h" />
+    <ClInclude Include="world\PlayerController.h" />
+    <ClInclude Include="world\PlayerFollower.h" />
     <ClInclude Include="world\World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +174,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="util\Console.cpp" />
     <ClCompile Include="util\Forge.cpp" />
     <ClCompile Include="util\Hash.cpp" />
     <ClCompile Include="util\HTTPClient.cpp" />
@@ -177,6 +182,8 @@
     <ClCompile Include="util\VersionFetcher.cpp" />
     <ClCompile Include="util\Yggdrasil.cpp" />
     <ClCompile Include="world\Chunk.cpp" />
+    <ClCompile Include="world\PlayerController.cpp" />
+    <ClCompile Include="world\PlayerFollower.cpp" />
     <ClCompile Include="world\World.cpp" />
   </ItemGroup>
   <ItemGroup>

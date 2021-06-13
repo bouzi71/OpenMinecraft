@@ -5,8 +5,6 @@
 
 #include "BlockFace.h"
 
-#include <glm/glm/glm.hpp>
-
 using TextureHandle = uint32_t;
 
 struct RenderableFace

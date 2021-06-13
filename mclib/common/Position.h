@@ -8,17 +8,17 @@
 
 class DataBuffer;
 
+
 class Position
 {
-private:
-	int64 m_X;
-	int64 m_Y;
-	int64 m_Z;
-
 public:
-	Position() noexcept : m_X(0), m_Y(0), m_Z(0) {}
+	Position() noexcept 
+		: m_X(0)
+		, m_Y(0)
+		, m_Z(0) 
+	{}
 	MCLIB_API Position(int32 x, int32 y, int32 z) noexcept;
-	int64 MCLIB_API Encode64() const noexcept;
+	MCLIB_API int64 Encode64() const noexcept;
 
 	int64 GetX() const { return m_X; }
 	int64 GetY() const { return m_Y; }
@@ -26,6 +26,11 @@ public:
 
 	friend MCLIB_API DataBuffer& operator<<(DataBuffer& out, const Position& pos);
 	friend MCLIB_API DataBuffer& operator>>(DataBuffer& in, Position& pos);
+
+private:
+	int64 m_X;
+	int64 m_Y;
+	int64 m_Z;
 };
 
 MCLIB_API DataBuffer& operator<<(DataBuffer& out, const Position& pos);

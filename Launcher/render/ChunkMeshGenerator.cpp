@@ -311,7 +311,7 @@ bool ChunkMeshGenerator::IsOccluding(BlockVariant* from_variant, BlockFace face,
 	//if (from_variant->HasRotation()) 
 	//	return false;
 
-	BlockModel* fromVariantModel = from_variant->GetModel();
+	const BlockModel* fromVariantModel = from_variant->GetModel();
 
 	for (const auto& element : from_variant->GetModel()->GetElements())
 	{
@@ -328,7 +328,7 @@ bool ChunkMeshGenerator::IsOccluding(BlockVariant* from_variant, BlockFace face,
 	//if (variant->HasRotation())
 	//	return false;
 
-	BlockModel* model = variant->GetModel();
+	const BlockModel* model = variant->GetModel();
 	if (model == nullptr)
 		return false;
 
@@ -453,7 +453,7 @@ void ChunkMeshGenerator::GenerateMesh(ChunkMeshBuildContext& context)
 				if (currentVariant == nullptr)
 					continue;
 
-				BlockModel* currentVariantModel = currentVariant->GetModel();
+				const BlockModel* currentVariantModel = currentVariant->GetModel();
 				if (currentVariantModel == nullptr)
 					continue;
 

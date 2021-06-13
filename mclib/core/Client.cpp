@@ -1,10 +1,12 @@
 #include "stdafx.h"
 
-#include <core/Client.h>
+// General
+#include "Client.h"
 
-#include <util/Utility.h>
+// Additional
+#include "util/Utility.h"
+#include "world/PlayerController.h"
 
-#include <iostream>
 
 // These were changed in MSVC 2015. Redefine them so the old lib files link correctly.
 // legacy_stdio_definitions.lib is supposed to define these but it doesn't seem to work.
@@ -51,7 +53,8 @@ void CMinecraftClient::Update()
 	}
 	catch (std::exception& e)
 	{
-		std::wcout << e.what() << std::endl;
+		Log::Error("CMinecraftClient::Update: Error '%s'.", e.what());
+		throw e;
 	}
 
 	EntityPtr playerEntity = m_EntityManager.GetPlayerEntity();

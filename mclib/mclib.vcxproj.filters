@@ -43,6 +43,9 @@
     <Filter Include="protocol\packets">
       <UniqueIdentifier>{ce3356b2-1d9f-4861-869f-c921e936ec17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\internal">
+      <UniqueIdentifier>{52f2cac2-eba7-49b9-906c-13de6436ba81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block\Block.h">
@@ -113,9 +116,6 @@
     </ClInclude>
     <ClInclude Include="block\specific\Skull.h">
       <Filter>block\specific</Filter>
-    </ClInclude>
-    <ClInclude Include="common\AABB.h">
-      <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="common\Common.h">
       <Filter>common</Filter>
@@ -320,6 +320,21 @@
     </ClInclude>
     <ClInclude Include="mclib.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\internal\json.hpp">
+      <Filter>common\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="common\internal\json_fwd.hpp">
+      <Filter>common\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="world\PlayerController.h">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="world\PlayerFollower.h">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Console.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -532,6 +547,15 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="world\PlayerController.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="world\PlayerFollower.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Console.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

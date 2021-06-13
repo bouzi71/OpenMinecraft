@@ -9,7 +9,7 @@
 class BlockModel
 {
 public:
-	std::vector<BlockElement>& GetElements() { return m_Elements; }
+	const std::vector<BlockElement>& GetElements() const noexcept { return m_Elements; }
 	void AddElement(BlockElement element) { m_Elements.push_back(element); }
 
 private:

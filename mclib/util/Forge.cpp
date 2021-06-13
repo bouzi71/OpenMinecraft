@@ -190,7 +190,7 @@ bool ForgeHandler::HasModInfo() const
 
 void ForgeHandler::HandlePacket(status::in::ResponsePacket* packet)
 {
-	std::string response = to_string(packet->GetResponse());
+	std::string response = utf16to8(packet->GetResponse());
 
 	json data;
 

@@ -4,7 +4,6 @@
 #define TERRACOTTA_TRANSFORM_H_
 
 #include <common/Vector.h>
-#include <common/AABB.h>
 
 struct Transform
 {
