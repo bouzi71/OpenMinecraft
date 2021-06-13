@@ -426,12 +426,8 @@ void CSceneMinecraft::Initialize()
 	g_AssetCache = std::make_unique<terra::AssetCache>(GetBaseManager());
 
 
-	terra::AssetLoader asset_loader(*g_AssetCache);
-	if (false == asset_loader.LoadArchive("1.12.2.jar"))
-	{
-		std::cout << "Failed to load assets." << std::endl;
-		return;
-	}
+	terra::AssetLoader asset_loader(GetBaseManager(), *g_AssetCache);
+	asset_loader.Initialize();
 
 	try
 	{

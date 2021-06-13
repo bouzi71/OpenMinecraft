@@ -13,6 +13,9 @@
     <Filter Include="Passes">
       <UniqueIdentifier>{fcdea860-c3ba-4638-9ad5-2b299b708ea4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FilesStorage">
+      <UniqueIdentifier>{d05b0974-a955-426e-9ab3-528efb4fae86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\ChunkMesh.h">
@@ -36,9 +39,6 @@
     <ClInclude Include="assets\zip\miniz.h">
       <Filter>assets\zip</Filter>
     </ClInclude>
-    <ClInclude Include="assets\zip\ZipArchive.h">
-      <Filter>assets\zip</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ChatWindow.h" />
     <ClInclude Include="Collision.h" />
@@ -52,6 +52,9 @@
       <Filter>Passes</Filter>
     </ClInclude>
     <ClInclude Include="SceneMinecraft.h" />
+    <ClInclude Include="FilesStorage\ZipArchiveStorage.h">
+      <Filter>FilesStorage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\ChunkMesh.cpp">
@@ -72,9 +75,6 @@
     <ClCompile Include="assets\zip\miniz.cpp">
       <Filter>assets\zip</Filter>
     </ClCompile>
-    <ClCompile Include="assets\zip\ZipArchive.cpp">
-      <Filter>assets\zip</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ChatWindow.cpp" />
     <ClCompile Include="Collision.cpp" />
@@ -88,5 +88,8 @@
       <Filter>Passes</Filter>
     </ClCompile>
     <ClCompile Include="SceneMinecraft.cpp" />
+    <ClCompile Include="FilesStorage\ZipArchiveStorage.cpp">
+      <Filter>FilesStorage</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

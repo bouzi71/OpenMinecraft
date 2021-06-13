@@ -2,8 +2,6 @@
 
 #include "AssetCache.h"
 
-#include "zip/ZipArchive.h"
-
 #include <common/Json.h>
 #include <block/Block.h>
 

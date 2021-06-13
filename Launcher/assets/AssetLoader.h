@@ -39,32 +39,32 @@ struct IntermediateElement
 };
 
 
-class ZipArchive;
 class AssetCache;
 
 
 class AssetLoader
 {
 public:
-	AssetLoader(AssetCache& cache);
+	AssetLoader(const IBaseManager& BaseManager, AssetCache& cache);
 
-	bool LoadArchive(const std::string& archive_path);
+	void Initialize();
 
 private:
 	using TextureMap = std::unordered_map<std::string, std::string>;
 
-	bool LoadTexture(terra::ZipArchive& archive, const std::string& path, TextureHandle* handle);
+	bool LoadTexture(const std::string& path, TextureHandle* handle);
 
-	std::unique_ptr<BlockModel> LoadBlockModel(terra::ZipArchive& archive, const std::string& path, TextureMap& texture_map, std::vector<IntermediateElement>& intermediates);
-	BlockModel* LoadBlockModel(terra::ZipArchive& archive, const std::string& ModelPath);
+	std::unique_ptr<BlockModel> LoadBlockModel(const std::string& path, TextureMap& texture_map, std::vector<IntermediateElement>& intermediates);
+	BlockModel* LoadBlockModel(const std::string& ModelPath);
 
-	std::unique_ptr<BlockVariant> LoadDefaultVariantBlock(terra::ZipArchive& archive, const CMinecraftBlock * Block);
+	std::unique_ptr<BlockVariant> LoadDefaultVariantBlock(const CMinecraftBlock * Block);
 
-	std::unique_ptr<BlockVariant> LoadBlockVariant(terra::ZipArchive& archive, const CMinecraftBlock * Block, json VariantJSONObject);
-	void LoadBlockVariants(terra::ZipArchive& archive, const CMinecraftBlock* ForBlock);
-	void LoadBlockVariants(terra::ZipArchive& archive);
+	std::unique_ptr<BlockVariant> LoadBlockVariant(const CMinecraftBlock * Block, json VariantJSONObject);
+	void LoadBlockVariants(const CMinecraftBlock* ForBlock);
+	void LoadBlockVariants();
 
 private:
+	const IBaseManager& m_BaseManager;
 	AssetCache& m_Cache;
 };
 

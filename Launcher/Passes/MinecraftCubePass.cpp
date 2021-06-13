@@ -84,6 +84,7 @@ std::shared_ptr<IRenderPassPipelined> CMinecraftCubePass::ConfigurePipeline(std:
 	}
 
 	// PIPELINES
+	GetPipeline().GetBlendState()->SetBlendMode(disableBlending);
 	GetPipeline().GetDepthStencilState()->SetDepthMode(enableDepthWrites);
 	GetPipeline().GetRasterizerState()->SetCullMode(IRasterizerState::CullMode::Back);
 	GetPipeline().GetRasterizerState()->SetFillMode(IRasterizerState::FillMode::Solid, IRasterizerState::FillMode::Solid);

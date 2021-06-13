@@ -2,13 +2,17 @@
 
 // Additional
 #include "SceneMinecraft.h"
-
+#include "FilesStorage/ZipArchiveStorage.h"
 #include "BugTrap/BugTrap.h"
 
 
 void main_internal(int argumentCount, char* arguments[])
 {
 	CApplicationNative_PlatformWindows app;
+
+	app.GetBaseManager().GetManager<IFilesManager>()->AddStorage(EFilesStorageType::GAMEDATA, MakeShared(CLocalFilesStorage, "D:/OpenMinecraft/gamedata/"));
+	app.GetBaseManager().GetManager<IFilesManager>()->AddStorage(EFilesStorageType::GAMEDATA, MakeShared(CLocalFilesStorage, "D:/OpenMinecraft/gamedata/1.12.2/custom/"));
+	app.GetBaseManager().GetManager<IFilesManager>()->AddStorage(EFilesStorageType::GAMEDATA, MakeShared(CZipArchiveStorage, "D:/OpenMinecraft/gamedata/1.12.2.jar"));
 
 	IRenderDevice& renderDevice = app.CreateRenderDevice(RenderDeviceType::RenderDeviceType_DirectX11);
 

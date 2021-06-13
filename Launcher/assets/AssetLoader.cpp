@@ -4,14 +4,8 @@
 #include "AssetCache.h"
 
 #include <common/Json.h>
-#include "zip/ZipArchive.h"
 
 #include "stb_image.h"
-
-
-
-#include <iostream>
-#include <fstream>
 
 #include <block/Block.h>
 #include <block/BlockRegistry.h>
@@ -92,22 +86,14 @@ std::pair<glm::vec2, glm::vec2> GetUVFromJson(const json& node)
 
 
 
-AssetLoader::AssetLoader(AssetCache& cache)
-	: m_Cache(cache)
+AssetLoader::AssetLoader(const IBaseManager& BaseManager, AssetCache& cache)
+	: m_BaseManager(BaseManager)
+	, m_Cache(cache)
 {}
 
-bool AssetLoader::LoadArchive(const std::string& archive_path)
+void AssetLoader::Initialize()
 {
-	terra::ZipArchive archive;
-
-	if (!archive.Open(archive_path.c_str()))
-	{
-		std::cout << "Failed to open archive.\n";
-		return false;
-	}
-
-	LoadBlockVariants(archive);
-
+	LoadBlockVariants();
 	m_Cache.GetTextures().Generate();
 
 	// Fancy graphics mode seems to do something different than using cullface.
@@ -122,28 +108,24 @@ bool AssetLoader::LoadArchive(const std::string& archive_path)
 			}
 		}
 	}*/
-
-	return true;
 }
 
-bool AssetLoader::LoadTexture(terra::ZipArchive& archive, const std::string& path, TextureHandle* handle)
+bool AssetLoader::LoadTexture(const std::string& path, TextureHandle* handle)
 {
 	if (m_Cache.GetTextures().GetTexture(path, handle)) 
 		return true;
 
-	std::string texture_path = "assets/minecraft/textures/" + path;
+	std::string textureFileFullName = "assets/minecraft/textures/" + path;
 
-	std::size_t texture_size;
-	char* texture_raw = archive.ReadFile(texture_path.c_str(), &texture_size);
-
-	if (texture_raw == nullptr) 
+	auto blockStateFile = m_BaseManager.GetManager<IFilesManager>()->Open(textureFileFullName);
+	if (blockStateFile == nullptr)
+	{
+		Log::Error("AssetLoader::LoadTexture: Unable to open file '%s'.", textureFileFullName.c_str());
 		return false;
+	}
 
 	int width, height, channels;
-	unsigned char* image = stbi_load_from_memory(reinterpret_cast<unsigned char*>(texture_raw), (int)texture_size, &width, &height, &channels, STBI_rgb_alpha);
-
-	archive.FreeFileData(texture_raw);
-
+	unsigned char* image = stbi_load_from_memory(blockStateFile->getData(), blockStateFile->getSize(), &width, &height, &channels, STBI_rgb_alpha);
 	if (image == nullptr) 
 		return false;
 
@@ -161,40 +143,25 @@ bool AssetLoader::LoadTexture(terra::ZipArchive& archive, const std::string& pat
 
 
 
-std::unique_ptr<BlockModel> AssetLoader::LoadBlockModel(terra::ZipArchive& archive, const std::string& path /* block/sdfsdfsdf.json */, TextureMap& texture_map, std::vector<IntermediateElement>& intermediates)
+std::unique_ptr<BlockModel> AssetLoader::LoadBlockModel(const std::string& path /* block/sdfsdfsdf.json */, TextureMap& texture_map, std::vector<IntermediateElement>& intermediates)
 {
-	std::string blockStateFileContent = "";
+	std::string blockModelFileFullName = "assets/minecraft/models/" + path;
 
-	size_t size;
-	char* raw = archive.ReadFile(("assets/minecraft/models/" + path).c_str(), &size);
-	if (raw == nullptr)
+	auto blockStateFile = m_BaseManager.GetManager<IFilesManager>()->Open(blockModelFileFullName);
+	if (blockStateFile == nullptr)
 	{
-		std::ifstream t("1.12.2/custom/models/" + path);
-
-		if (false == t.is_open())
-		{
-			printf("AssetLoader::LoadBlockModel: File '%s' not found in archive.\r\n", path.c_str());
-			return nullptr;
-		}
-		else
-		{
-			blockStateFileContent = std::string((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-		}
-	}
-	else
-	{
-		blockStateFileContent = std::string(raw, size);
-		archive.FreeFileData(raw);
+		Log::Error("AssetLoader::LoadBlockModel: Unable to open file '%s'.", blockModelFileFullName.c_str());
+		return false;
 	}
 
 	json root;
 	try
 	{
-		root = json::parse(blockStateFileContent);
+		root = json::parse(std::string((char*)blockStateFile->getDataEx(), blockStateFile->getSize()));
 	}
 	catch (json::parse_error& e)
 	{
-		std::cout << e.what() << std::endl;
+		Log::Error("AssetLoader::LoadBlockModel: File '%s' parse error '%s'.", blockModelFileFullName.c_str(), e.what());
 		return nullptr;
 	}
 
@@ -202,8 +169,7 @@ std::unique_ptr<BlockModel> AssetLoader::LoadBlockModel(terra::ZipArchive& archi
 	if (parent_node.is_string())
 	{
 		std::string parent_path = parent_node.get<std::string>() + ".json";
-
-		LoadBlockModel(archive, parent_path, texture_map, intermediates);
+		LoadBlockModel(parent_path, texture_map, intermediates);
 	}
 
 	auto model = std::make_unique<BlockModel>();
@@ -265,7 +231,6 @@ std::unique_ptr<BlockModel> AssetLoader::LoadBlockModel(terra::ZipArchive& archi
 				std::string texture = texture_node.get<std::string>();
 
 				IntermediateFace renderable;
-
 				renderable.texture = texture;
 				renderable.face = face;
 				renderable.cull_face = face_from_string(face_node.value("cullface", ""));
@@ -283,12 +248,12 @@ std::unique_ptr<BlockModel> AssetLoader::LoadBlockModel(terra::ZipArchive& archi
 	return model;
 }
 
-BlockModel* AssetLoader::LoadBlockModel(terra::ZipArchive& archive, const std::string& ModelName)
+BlockModel* AssetLoader::LoadBlockModel(const std::string& ModelName)
 {
 	TextureMap texture_map;
 	std::vector<IntermediateElement> intermediates;
 
-	auto model = LoadBlockModel(archive, ModelName, texture_map, intermediates);
+	auto model = LoadBlockModel(ModelName, texture_map, intermediates);
 
 	for (const IntermediateElement& intermediate : intermediates)
 	{
@@ -306,7 +271,7 @@ BlockModel* AssetLoader::LoadBlockModel(terra::ZipArchive& archive, const std::s
 			}
 
 			TextureHandle handle;
-			if (LoadTexture(archive, texture + ".png", &handle))
+			if (LoadTexture(texture + ".png", &handle))
 			{
 				RenderableFace renderable;
 				renderable.face = intermediate_renderable.face;
@@ -329,15 +294,15 @@ BlockModel* AssetLoader::LoadBlockModel(terra::ZipArchive& archive, const std::s
 
 
 
-std::unique_ptr<BlockVariant> AssetLoader::LoadDefaultVariantBlock(terra::ZipArchive & archive, const CMinecraftBlock * Block)
+std::unique_ptr<BlockVariant> AssetLoader::LoadDefaultVariantBlock(const CMinecraftBlock * Block)
 {
 	BlockModel* model = m_Cache.GetBlockModel("block/bedrock.json");
 	if (model == nullptr)
 	{
-		model = LoadBlockModel(archive, "block/bedrock.json");
+		model = LoadBlockModel("block/bedrock.json");
 		if (model == nullptr)
 		{
-			std::cout << "AssetLoader::LoadBlockVariant: Could not find block model 'bedrock'." << std::endl;
+			Log::Error("AssetLoader::LoadBlockVariant: Could not find block model 'bedrock'.");
 			return nullptr;
 		}
 	}
@@ -346,7 +311,7 @@ std::unique_ptr<BlockVariant> AssetLoader::LoadDefaultVariantBlock(terra::ZipArc
 	return std::move(variant);
 }
 
-std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(terra::ZipArchive& archive, const CMinecraftBlock * Block, json VariantJSONObject)
+std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(const CMinecraftBlock * Block, json VariantJSONObject)
 {
 	json usedVariant;
 
@@ -365,7 +330,7 @@ std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(terra::ZipArchive& a
 	json model_node = usedVariant.value("model", json());
 	if (false == model_node.is_string())
 	{
-		std::cout << "AssetLoader::LoadBlockVariant: Variant don't contains 'model' json." << std::endl;
+		Log::Error("AssetLoader::LoadBlockVariant: Variant don't contains 'model'.");
 		return nullptr;
 	}
 
@@ -373,13 +338,13 @@ std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(terra::ZipArchive& a
 	BlockModel* model = m_Cache.GetBlockModel("block/" + modelName + ".json");
 	if (model == nullptr)
 	{
-		model = LoadBlockModel(archive, "block/" + modelName + ".json");
+		model = LoadBlockModel("block/" + modelName + ".json");
 		if (model == nullptr)
 		{
 			model = m_Cache.GetBlockModel("block/bedrock.json");
 			if (model == nullptr)
 			{
-				std::cout << "AssetLoader::LoadBlockVariant: Could not find block model '" << modelName << "'." << std::endl;
+				Log::Error("AssetLoader::LoadBlockVariant: Could not find block model '%s'.", modelName.c_str());
 				return nullptr;
 			}
 		}
@@ -389,50 +354,36 @@ std::unique_ptr<BlockVariant> AssetLoader::LoadBlockVariant(terra::ZipArchive& a
 	float x = usedVariant.value("x", 0.0f);
 	float y = usedVariant.value("y", 0.0f);
 	float z = usedVariant.value("z", 0.0f);
-	//variant->SetRotation(glm::vec3(x, y, z));
+	variant->SetRotation(glm::vec3(x, y, z));
 
 	//printf("Has rotation = %d. Rotation [%f, %f, %f].\r\n", variant->HasRotation(), variant->GetRotations().x, variant->GetRotations().y, variant->GetRotations().z);
 
 	return std::move(variant);
 }
 
-void AssetLoader::LoadBlockVariants(terra::ZipArchive& archive, const CMinecraftBlock * ForBlock)
+void AssetLoader::LoadBlockVariants(const CMinecraftBlock * ForBlock)
 {
+	if (ForBlock->GetName().empty())
+		return;
+
 	std::string blockStateFileFullName = "assets/minecraft/blockstates/" + ForBlock->GetName() + ".json";
 
-	// file
-	std::string blockStateFileContent = "";
-
-	size_t size = 0;
-	char* raw = archive.ReadFile(blockStateFileFullName.c_str(), &size);
-	if (raw == nullptr)
+	auto blockStateFile = m_BaseManager.GetManager<IFilesManager>()->Open(blockStateFileFullName);
+	if (blockStateFile == nullptr)
 	{
-		std::ifstream t("1.12.2/custom/blockstates/" + ForBlock->GetName() + ".json");
-		if (false == t.is_open())
-		{
-			std::cout << "AssetLoader: Blockstate file '" << blockStateFileFullName << "' don't found." << std::endl;
-			return;
-		}
-		else
-		{
-			blockStateFileContent = std::string((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-		}
-	}
-	else
-	{
-		blockStateFileContent = std::string(raw, size);
+		Log::Error("AssetLoader::LoadBlockVariants: Unable to open file '%s'.", blockStateFileFullName.c_str());
+		return;
 	}
 
 	// file content
-	
 	json blockStateRoot;
 	try
 	{
-		blockStateRoot = json::parse(blockStateFileContent);
+		blockStateRoot = json::parse(std::string((char*)blockStateFile->getDataEx(), blockStateFile->getSize()));
 	}
 	catch (json::parse_error& e)
 	{
-		std::cout << "AssetLoader: Blockstate file '" << blockStateFileFullName << "' parse error: '" << e.what() << "'." << std::endl;
+		Log::Error("AssetLoader::LoadBlockVariants: File '%s' parse error '%s'.", blockStateFileFullName.c_str(), e.what());
 		return;
 	}
 
@@ -440,9 +391,9 @@ void AssetLoader::LoadBlockVariants(terra::ZipArchive& archive, const CMinecraft
 	json variantsObject = blockStateRoot.value("variants", json());
 	if (false == variantsObject.is_object())
 	{
-		std::cout << "AssetLoader: Blockstate file '" << blockStateFileFullName << "' don't contains variant object." << std::endl;
+		Log::Error("AssetLoader: Blockstate file '%s' don't contains 'variants'.", blockStateFileFullName.c_str());
 		
-		auto blockVariant = LoadDefaultVariantBlock(archive, ForBlock);
+		auto blockVariant = LoadDefaultVariantBlock(ForBlock);
 		if (blockVariant != nullptr)
 			m_Cache.AddVariantModel(std::move(blockVariant));
 	}
@@ -454,11 +405,15 @@ void AssetLoader::LoadBlockVariants(terra::ZipArchive& archive, const CMinecraft
 	const auto& normalVariant = variantsMap.find("normal");
 	if (normalVariant != variantsMap.end())
 	{
-		auto blockVariant = LoadBlockVariant(archive, ForBlock, normalVariant->second);
+		auto blockVariant = LoadBlockVariant(ForBlock, normalVariant->second);
 		if (blockVariant != nullptr)
+		{
 			m_Cache.AddVariantModel(std::move(blockVariant));
+		}
 		else
-			std::cout << "ADD VARIANT ERROR! '" << ForBlock->GetName() << "'" << std::endl;
+		{
+			Log::Error("Add variant error 1. '%s'.", ForBlock->GetName().c_str());
+		}
 	}
 	else
 	{
@@ -468,24 +423,28 @@ void AssetLoader::LoadBlockVariants(terra::ZipArchive& archive, const CMinecraft
 			if (false == ForBlock->IsVariablesMatch(variantArray))
 				continue;
 
-			auto blockVariant = LoadBlockVariant(archive, ForBlock, variantMapIt.second);
+			auto blockVariant = LoadBlockVariant(ForBlock, variantMapIt.second);
 			if (blockVariant != nullptr)
+			{
 				m_Cache.AddVariantModel(std::move(blockVariant));
+			}
 			else
-				std::cout << "Add variant error! '" << ForBlock->GetName() << "'" << std::endl;
+			{
+				Log::Error("Add variant error 2. '%s'.", ForBlock->GetName().c_str());
+			}
 		}
 	}
 }
 
-void AssetLoader::LoadBlockVariants(terra::ZipArchive& archive)
+void AssetLoader::LoadBlockVariants()
 {
 	for (const auto& blockIt : BlockRegistry::GetInstance()->GetAllBlocks())
 	{
-		LoadBlockVariants(archive, blockIt.second);
+		LoadBlockVariants(blockIt.second);
 
 		for (const auto& metaBlockIt : blockIt.second->GetBlockmetas())
 		{
-			LoadBlockVariants(archive, metaBlockIt.second);
+			LoadBlockVariants(metaBlockIt.second);
 		}
 	}
 }

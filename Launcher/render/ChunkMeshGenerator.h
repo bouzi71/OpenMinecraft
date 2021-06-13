@@ -28,7 +28,7 @@ namespace terra
 namespace block
 {
 class BlockModel;
-} // ns block
+}
 
 namespace render
 {
@@ -50,6 +50,8 @@ struct Vertex
 	{}
 };
 
+
+
 struct ChunkMeshBuildContext
 {
 	const CMinecraftBlock* chunk_data[18 * 18 * 18];
@@ -64,6 +66,8 @@ struct ChunkMeshBuildContext
 		return chunk_data[(y * 18 * 18) + (z * 18) + x];
 	}
 };
+
+
 
 class ChunkMeshGenerator
 	: public WorldListener
