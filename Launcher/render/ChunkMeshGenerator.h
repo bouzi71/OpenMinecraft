@@ -16,24 +16,13 @@
 #include <assets/blocks/BlockModel.h>
 #include <assets/blocks/BlockVariant.h>
 
-#include <mutex>
-#include <thread>
-#include <condition_variable>
-#include <deque>
-
-
-namespace terra
-{
 
 namespace block
 {
 class BlockModel;
 }
 
-namespace render
-{
-
-struct Vertex
+struct CMinecraftBlockVertex
 {
 	glm::vec3 position;
 	glm::vec2 uv;
@@ -41,7 +30,7 @@ struct Vertex
 	glm::vec3 tint;
 	uint32 ambient_occlusion;
 
-	Vertex(glm::vec3 pos, glm::vec2 uv, uint32 tex_index, glm::vec3 tint, int ambient_occlusion)
+	CMinecraftBlockVertex(glm::vec3 pos, glm::vec2 uv, uint32 tex_index, glm::vec3 tint, int ambient_occlusion)
 		: position(pos)
 		, uv(uv)
 		, texture_index(tex_index)
@@ -52,12 +41,12 @@ struct Vertex
 
 
 
-struct ChunkMeshBuildContext
+struct CMinecraftChunkMeshBuildContext
 {
 	const CMinecraftBlock* chunk_data[18 * 18 * 18];
 	glm::ivec3 world_position;
 
-	const CMinecraftBlock* GetBlock(const glm::ivec3& world_pos)
+	const CMinecraftBlock* GetBlock(const glm::ivec3& world_pos) const
 	{
 		glm::ivec3::value_type x = world_pos.x - world_position.x + 1;
 		glm::ivec3::value_type y = world_pos.y - world_position.y + 1;
@@ -69,14 +58,14 @@ struct ChunkMeshBuildContext
 
 
 
-class ChunkMeshGenerator
+class CMinecraftChunkMeshGenerator
 	: public WorldListener
 {
 public:
-	using iterator = std::unordered_map<glm::ivec3, std::unique_ptr<terra::render::ChunkMesh>>::iterator;
+	using iterator = std::unordered_map<glm::ivec3, std::unique_ptr<CMinecraftChunkMesh>>::iterator;
 
-	ChunkMeshGenerator(IRenderDevice& RenderDevice, World* world, const glm::vec3& camera_position);
-	virtual ~ChunkMeshGenerator();
+	CMinecraftChunkMeshGenerator(IRenderDevice& RenderDevice, World* world, const glm::vec3& camera_position);
+	virtual ~CMinecraftChunkMeshGenerator();
 
 	// WorldListener
 	void OnBlockChange(glm::ivec3 position, const CMinecraftBlock* newBlock, const CMinecraftBlock* oldBlock) override;
@@ -84,7 +73,8 @@ public:
 	void OnChunkUnload(std::shared_ptr<ChunkColumn> chunk) override;
 
 	void GenerateMesh(int64 chunk_x, int64 chunk_y, int64 chunk_z);
-	void GenerateMesh(ChunkMeshBuildContext& context);
+	void GenerateMesh(CMinecraftChunkMeshBuildContext& context);
+
 	void DestroyChunk(int64 chunk_x, int64 chunk_y, int64 chunk_z);
 
 	iterator begin() { return m_ChunkMeshes.begin(); }
@@ -101,7 +91,7 @@ private:
 			: position(position) 
 		{}
 
-		bool operator()(const std::shared_ptr<ChunkMeshBuildContext>& first_ctx, const std::shared_ptr<ChunkMeshBuildContext>& second_ctx)
+		bool operator()(const std::shared_ptr<CMinecraftChunkMeshBuildContext>& first_ctx, const std::shared_ptr<CMinecraftChunkMeshBuildContext>& second_ctx)
 		{
 			glm::ivec3 first = first_ctx->world_position;
 			glm::ivec3 second = second_ctx->world_position;
@@ -119,15 +109,14 @@ private:
 	struct VertexPush
 	{
 		glm::ivec3 pos;
-		std::unique_ptr<std::vector<Vertex>> vertices;
+		std::unique_ptr<std::vector<CMinecraftBlockVertex>> vertices;
 
-		VertexPush(const glm::ivec3& pos, std::unique_ptr<std::vector<Vertex>> vertices) 
+		VertexPush(const glm::ivec3& pos, std::unique_ptr<std::vector<CMinecraftBlockVertex>> vertices) 
 			: pos(pos)
 			, vertices(std::move(vertices)) 
 		{}
 	};
 
-	int GetAmbientOcclusion(ChunkMeshBuildContext& context, const glm::ivec3& side1, const glm::ivec3& side2, const glm::ivec3& corner);
 	bool IsOccluding(BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block);
 	void WorkerUpdate();
 	void EnqueueBuildWork(long chunk_x, int chunk_y, long chunk_z);
@@ -136,7 +125,7 @@ private:
 	IRenderDevice& m_RenderDevice;
 
 	std::mutex m_QueueMutex;
-	PriorityQueue<std::shared_ptr<ChunkMeshBuildContext>, ChunkMeshBuildComparator> m_ChunkBuildQueue;
+	PriorityQueue<std::shared_ptr<CMinecraftChunkMeshBuildContext>, ChunkMeshBuildComparator> m_ChunkBuildQueue;
 	std::deque<glm::ivec3> m_ChunkPushQueue;
 	std::condition_variable m_BuildCV;
 
@@ -145,13 +134,10 @@ private:
 	std::mutex m_PushMutex;
 	std::vector<std::unique_ptr<VertexPush>> m_VertexPushes;
 
-	std::unordered_map<glm::ivec3, std::unique_ptr<terra::render::ChunkMesh>> m_ChunkMeshes;
+	std::unordered_map<glm::ivec3, std::unique_ptr<CMinecraftChunkMesh>> m_ChunkMeshes;
 
 	bool m_Working;
 	std::vector<std::thread> m_Workers;
 };
-
-} // ns render
-} // ns terra
 
 #endif

@@ -13,15 +13,12 @@ public:
 	TextureArray(const IBaseManager& BaseManager);
 
 	TextureHandle Append(const std::string& filename, const std::string& texture);
-
-
 	std::shared_ptr<ITexture> GetTexture();
 
 	bool GetTexture(const std::string& filename, TextureHandle* handle);
 	bool IsTransparent(TextureHandle handle) const;
 
 	void Generate();
-	void Bind();
 
 private:
 	const IBaseManager& m_BaseManager;

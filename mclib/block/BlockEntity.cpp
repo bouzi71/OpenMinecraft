@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include <block/BlockEntity.h>
+#include "BlockEntity.h"
 
 #include <block/specific/Banner.h>
 #include <block/specific/Beacon.h>

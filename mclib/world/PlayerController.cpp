@@ -4,6 +4,7 @@
 #include "PlayerController.h"
 
 // Additional
+#include "core/Connection.h"
 #include "util/Utility.h"
 
 PlayerController::PlayerController(Connection* connection, World& world, PlayerManager& playerManager)

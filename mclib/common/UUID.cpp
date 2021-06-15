@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
-#include <common/UUID.h>
+// General
+#include "UUID.h"
 
-#include <common/DataBuffer.h>
+// Addtional
+#include "common/DataBuffer.h"
 
 #include <iomanip>
-#include <sstream>
-#include <cassert>
 
 std::string CUUID::ToString(bool dashes) const
 {

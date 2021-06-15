@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
+// General
 #include "BlockFace.h"
-
-#include <algorithm>
-#include <cctype>
 
 const std::string face_strings[] = {
 	"North", "East", "South", "West", "Up", "Down"

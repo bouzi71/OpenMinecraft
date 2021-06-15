@@ -51,7 +51,7 @@ public:
 	CSceneMinecraft(IBaseManager& BaseManager, IRenderWindow& RenderWindow);
 	virtual ~CSceneMinecraft();
 
-	std::shared_ptr<terra::render::ChunkMeshGenerator> GetMeshGen();
+	std::shared_ptr<CMinecraftChunkMeshGenerator> GetMeshGen();
 
 	// PlayerListener
 	void OnClientSpawn(PlayerPtr player);
@@ -90,7 +90,7 @@ private:
 	CMinecraftClient m_NetworkClient;
 	World world;
 
-	std::shared_ptr<terra::render::ChunkMeshGenerator> m_MeshGen;
+	std::shared_ptr<CMinecraftChunkMeshGenerator> m_MeshGen;
 
 private:
 	
@@ -99,7 +99,4 @@ private:
 	float m_LastFrame;
 	float m_LastPositionTime;
 	bool m_Sprinting;
-
-
-
 };

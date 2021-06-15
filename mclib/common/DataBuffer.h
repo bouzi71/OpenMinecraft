@@ -1,11 +1,7 @@
 #ifndef MCLIB_COMMON_DATA_BUFFER_H_
 #define MCLIB_COMMON_DATA_BUFFER_H_
 
-#include <common/Common.h>
-
-#include <algorithm>
-#include <cstring>
-#include <cassert>
+#include "common/Common.h"
 
 class MCString;
 class CVarInt;

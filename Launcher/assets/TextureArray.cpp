@@ -80,12 +80,6 @@ void BoxFilterMipmap(std::vector<unsigned char>& previous, std::vector<unsigned 
 TextureArray::TextureArray(const IBaseManager& BaseManager)
 	: m_BaseManager(BaseManager)
 {
-	
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glGenTextures(1, &m_TextureId);
-	//glBindTexture(GL_TEXTURE_2D_ARRAY, m_TextureId);
-
 	memset(m_Transparency, 0, sizeof(m_Transparency));
 }
 
@@ -120,24 +114,6 @@ void TextureArray::Generate()
 {
 	m_TextureId = m_BaseManager.GetApplication().GetRenderDevice().GetObjectsFactory().CreateEmptyTexture();
 
-	//glBindTexture(GL_TEXTURE_2D_ARRAY, m_TextureId);
-
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	int levels = 5;
-
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, levels - 1);
-
-	//
-
-	//glTexStorage3D(GL_TEXTURE_2D_ARRAY, levels, GL_RGBA8, 16, 16, size);
-	//glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, 16, 16, size, GL_RGBA, GL_UNSIGNED_BYTE, &m_TextureData[0]);
-
 	std::vector<std::vector<uint8>> bytesArrays;
 	for (const auto& texture : m_TextureData)
 		bytesArrays.push_back(texture.second);
@@ -164,12 +140,6 @@ void TextureArray::Generate()
 	}*/
 
 	m_TextureData.clear();
-	//std::vector<unsigned char>().swap(m_TextureData);
-}
-
-void TextureArray::Bind()
-{
-	//glBindTexture(GL_TEXTURE_2D_ARRAY, m_TextureId);
 }
 
 std::shared_ptr<ITexture> TextureArray::GetTexture()

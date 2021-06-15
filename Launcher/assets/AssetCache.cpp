@@ -5,10 +5,6 @@
 #include <common/Json.h>
 #include <block/Block.h>
 
-#include <fstream>
-#include <iostream>
-#include <algorithm>
-
 #include "stb_image.h"
 
 
@@ -67,7 +63,7 @@ void AssetCache::AddVariantModel(std::unique_ptr<BlockVariant> variant)
 		throw std::exception("AssetCache: Block is nullptr.");
 
 	if (m_BlockVariants.find(variant->GetBlock()->GetID()) != m_BlockVariants.end())
-		std::cout << "AssetCache: Variant block '" << variant->GetBlock()->GetName() << "' already exists in m_BlockVariants." << std::endl;
+		Log::Warn("AssetCache: Variant block '%s' already exists in m_BlockVariants.", variant->GetBlock()->GetName().c_str());
 
 	m_BlockVariants[variant->GetBlock()->GetID()] = std::move(variant);
 }

@@ -4,8 +4,6 @@
 
 #include <common/DataBuffer.h>
 
-#include <algorithm>
-
 Chunk::Chunk()
 {
 	m_BitsPerBlock = 4;

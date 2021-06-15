@@ -1,9 +1,7 @@
 #ifndef MCLIB_COMMON_POSITION_H_
 #define MCLIB_COMMON_POSITION_H_
 
-
 #include <common/Types.h>
-#include <iosfwd>
 
 
 class DataBuffer;
@@ -37,7 +35,6 @@ MCLIB_API DataBuffer& operator<<(DataBuffer& out, const Position& pos);
 MCLIB_API DataBuffer& operator>>(DataBuffer& in, Position& pos);
 
 MCLIB_API std::string to_string(const Position& data);
-
 
 MCLIB_API std::ostream& operator<<(std::ostream& out, const Position& pos);
 MCLIB_API std::wostream& operator<<(std::wostream& out, const Position& pos);

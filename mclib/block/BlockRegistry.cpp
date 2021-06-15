@@ -6,69 +6,22 @@
 // Additional
 #include <common/Json.h>
 
-// Additional
-#include <fstream>
-#include <streambuf>
-#include <iostream>
+std::shared_ptr<BlockRegistry> registry;
 
-namespace
+void BlockRegistry::CreateInstance(const IBaseManager& BaseManager)
 {
-struct SBlockInfo
-{
-	SBlockInfo(bool IsTransperent, bool IsSolid)
-		: IsTransperent(IsTransperent)
-		, IsSolid(IsSolid)
-	{}
-
-	bool IsTransperent;
-	bool IsSolid;
-};
-
-std::map<std::string, SBlockInfo> blockInfos;
-
-void BlockInfos()
-{
-	std::ifstream t("1.12.2/custom/Blocks_info.json");
-	if (false == t.is_open())
-		throw std::exception("Unable to open 'Blocks_info.json'.");
-
-	std::string contents((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-
-	json root;
-	try
-	{
-		root = json::parse(contents);
-	}
-	catch (json::parse_error& e)
-	{
-		std::cout << e.what() << std::endl;
-		return;
-	}
-
-	if (false == root.is_array())
-	{
-		printf("Blocks_info.json root is not array.");
-		return;
-	}
-
-	for (const auto& blockInfoJSONIt : root.items())
-	{
-		json blockInfoJSON = blockInfoJSONIt.value();
-
-		std::string minecraftName = blockInfoJSON.value("name", "<unknown>");
-		bool isTransperent = blockInfoJSON.value("transparent", false);
-		bool isSolid = blockInfoJSON.value("solid", false);
-
-		blockInfos.insert(std::make_pair(minecraftName, SBlockInfo(isTransperent, isSolid)));
-	}
+	registry = MakeShared(BlockRegistry, BaseManager);
 }
-
-} // ns
 
 BlockRegistry* BlockRegistry::GetInstance()
 {
-	static BlockRegistry registry;
-	return &registry;
+	return registry.get();
+}
+
+BlockRegistry::BlockRegistry(const IBaseManager& BaseManager)
+	: m_BaseManager(BaseManager)
+{
+
 }
 
 BlockRegistry::~BlockRegistry()
@@ -108,22 +61,56 @@ const CMinecraftBlock* BlockRegistry::GetBlock(uint16 type, uint16 meta) const
 	return GetBlock(type << 4 | (meta & 15));
 }
 
-void BlockRegistry::RegisterVanillaBlocks()
+void BlockRegistry::RegisterBlockInfos()
 {
-	const BoundingBox FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
-
-	BlockInfos();
-
-	std::ifstream t("1.12.2/custom/Blocks.json");
-	if (false == t.is_open())
-		throw std::exception("Unable to open 'Blocks.json'.");
-
-	std::string contents((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+	auto blockInfosFile = m_BaseManager.GetManager<IFilesManager>()->Open("Blocks_info.json");
+	if (blockInfosFile == nullptr)
+		return;
 
 	json root;
 	try
 	{
-		root = json::parse(contents);
+		root = json::parse(std::string((char*)blockInfosFile->getData(), blockInfosFile->getSize()));
+	}
+	catch (json::parse_error& e)
+	{
+		Log::Error("BlockInfos: Parse error '%s'.", e.what());
+		return;
+	}
+
+	if (false == root.is_array())
+	{
+		printf("Blocks_info.json root is not array.");
+		return;
+	}
+
+	for (const auto& blockInfoJSONIt : root.items())
+	{
+		json blockInfoJSON = blockInfoJSONIt.value();
+
+		std::string minecraftName = blockInfoJSON.value("name", "<unknown>");
+		bool isTransperent = blockInfoJSON.value("transparent", false);
+		bool isSolid = blockInfoJSON.value("solid", false);
+
+		m_BlockInfos.insert(std::make_pair(minecraftName, SBlockInfo(isTransperent, isSolid)));
+	}
+
+}
+
+void BlockRegistry::RegisterVanillaBlocks()
+{
+	const BoundingBox FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
+
+	RegisterBlockInfos();
+
+	auto blocksFile = m_BaseManager.GetManager<IFilesManager>()->Open("Blocks.json");
+	if (blocksFile == nullptr)
+		return;
+
+	json root;
+	try
+	{
+		root = json::parse(std::string((char*)blocksFile->getData(), blocksFile->getSize()));
 	}
 	catch (json::parse_error& e)
 	{
@@ -152,8 +139,8 @@ void BlockRegistry::RegisterVanillaBlocks()
 		bool isTransperent = false;
 		bool isSolid = false;
 
-		auto blockInfoIt = blockInfos.find(minecraftName);
-		if (blockInfoIt != blockInfos.end())
+		auto blockInfoIt = m_BlockInfos.find(minecraftName);
+		if (blockInfoIt != m_BlockInfos.end())
 		{
 			isTransperent = blockInfoIt->second.IsTransperent;
 			isSolid = blockInfoIt->second.IsSolid;
@@ -222,7 +209,7 @@ void BlockRegistry::RegisterVanillaBlocks2()
 {
 	const BoundingBox FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
 
-	BlockInfos();
+	RegisterBlockInfos();
 
 	std::ifstream t("1.13.2/custom/Blocks.json");
 	if (false == t.is_open())
@@ -255,8 +242,8 @@ void BlockRegistry::RegisterVanillaBlocks2()
 		bool isTransperent = false;
 		bool isSolid = false;
 
-		auto blockInfoIt = blockInfos.find(blockName);
-		if (blockInfoIt != blockInfos.end())
+		auto blockInfoIt = m_BlockInfos.find(blockName);
+		if (blockInfoIt != m_BlockInfos.end())
 		{
 			isTransperent = blockInfoIt->second.IsTransperent;
 			isSolid = blockInfoIt->second.IsSolid;
@@ -361,9 +348,6 @@ const std::map<uint32, CMinecraftBlock*>& BlockRegistry::GetAllBlocks() const no
 //
 // Private
 //
-BlockRegistry::BlockRegistry()
-{}
-
 void BlockRegistry::RegisterBlock(CMinecraftBlock* block)
 {
 	if (block == nullptr)
@@ -377,7 +361,6 @@ void BlockRegistry::RegisterBlock(CMinecraftBlock* block)
 	}
 	else
 	{
-		//std::cout << "BlockRegistry: CMinecraftBlock '" << block->GetName() << "' already registered in m_Blocks with ID: '" << block->GetID() << "'. Type '" << block->GetType() << "'. Meta: '" << block->GetMeta() << "'." << std::endl;
-		std::cout << "BlockRegistry: CMinecraftBlock '" << block->GetName() << "' already registered in m_Blocks with ID: '" << block->GetID() << "'." << std::endl;
+		Log::Error("BlockRegistry: CMinecraftBlock '%s' already registered in m_Blocks with ID: '%d'.", block->GetName().c_str(), block->GetID());
 	}
 }

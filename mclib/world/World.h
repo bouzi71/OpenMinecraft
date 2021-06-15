@@ -6,9 +6,6 @@
 #include <protocol/PacketDispatcher.h>
 #include <util/ObserverSubject.h>
 
-
-
-
 class MCLIB_API WorldListener
 {
 public:

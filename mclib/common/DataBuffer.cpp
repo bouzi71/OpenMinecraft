@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
-#include <common/DataBuffer.h>
+// General
+#include "DataBuffer.h"
 
+// Additional
 #include <common/VarInt.h>
 
 #include <iomanip>

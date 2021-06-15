@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
-#include <common/MCString.h>
+// General
+#include "MCString.h"
 
+// Additional
 #include <common/DataBuffer.h>
 #include <common/VarInt.h>
 #include <codecvt>

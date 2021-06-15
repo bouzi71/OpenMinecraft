@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include <block/InventoryBlock.h>
+// General
+#include "InventoryBlock.h"
 
 bool InventoryBlock::ImportNBT(NBT* nbt)
 {

@@ -10,7 +10,4 @@
 
 #include "mclib.h"
 
-
-
-
 #include <array>

@@ -3,9 +3,10 @@
 #include "BlockState.h"
 
 #include <common/Json.h>
-#include <algorithm>
+
 
 static const std::string kNullProperty = "";
+
 
 const std::string& BlockState::GetProperty(const std::string& property) const
 {

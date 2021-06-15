@@ -10,10 +10,6 @@
 
 #include "world/PlayerController.h"
 
-#include <iostream>
-#include <iterator>
-#include <fstream>
-
 #include <core/Client.h>
 #include <util/Utility.h>
 
@@ -64,7 +60,7 @@ void GetConnectionParams()
 		}
 		catch (json::parse_error& e)
 		{
-			std::cout << e.what() << std::endl;
+			Log::Error("GetConnectionParams: JSon parse error '%s'.", e.what());
 			return;
 		}
 
@@ -183,7 +179,8 @@ bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, 
 
 				if (bounds.Intersects(ray, &distance))
 				{
-					if (distance < 0 || distance > range) continue;
+					if (distance < 0 || distance > range) 
+						continue;
 
 					if (distance < closest_distance)
 					{
@@ -311,7 +308,7 @@ CSceneMinecraft::~CSceneMinecraft()
 	Log::Info("Scene destroyed.");
 }
 
-std::shared_ptr<terra::render::ChunkMeshGenerator> CSceneMinecraft::GetMeshGen()
+std::shared_ptr<CMinecraftChunkMeshGenerator> CSceneMinecraft::GetMeshGen()
 {
 	return m_MeshGen;
 }
@@ -345,7 +342,7 @@ void CSceneMinecraft::HandlePacket(in::EntityVelocityPacket* packet)
 	{
 		glm::dvec3 newVelocity = glm::dvec3(packet->GetVelocity()) * 20.0 / 8000.0;
 
-		std::cout << "Applying new velocity " << newVelocity << std::endl;
+		Log::Print("Applying new velocity (%f, %f, %f)", newVelocity.x, newVelocity.y, newVelocity.z);
 		m_Player->GetTransform().velocity = newVelocity;
 	}
 }
@@ -413,7 +410,7 @@ void CSceneMinecraft::Initialize()
 
 
 
-
+	BlockRegistry::CreateInstance(GetBaseManager());
 	BlockRegistry::GetInstance()->RegisterVanillaBlocks();
 
 
@@ -431,10 +428,10 @@ void CSceneMinecraft::Initialize()
 
 	try
 	{
-		std::cout << "Logging in." << std::endl;
+		Log::Print("Logging in.");
 		if (false == GetNetworkClient().Login(server, port, username, password, UpdateMethod::Manual))
 		{
-			std::cout << "Failed to login." << std::endl;
+			Log::Error("Failed to login.");
 			return;
 		}
 
@@ -442,11 +439,11 @@ void CSceneMinecraft::Initialize()
 	}
 	catch (std::exception& e)
 	{
-		std::wcout << e.what() << std::endl;
+		Log::Error("Exception while loggin '%s'.", e.what());
 		return;
 	}
 
-	m_MeshGen = std::make_shared<terra::render::ChunkMeshGenerator>(GetRenderDevice(), &world, GetCameraController()->GetCamera()->GetPosition());
+	m_MeshGen = std::make_shared<CMinecraftChunkMeshGenerator>(GetRenderDevice(), &world, GetCameraController()->GetCamera()->GetPosition());
 
 	terra::ChatWindow chat(GetNetworkClient().GetDispatcher(), GetNetworkClient().GetConnection());
 
@@ -683,7 +680,7 @@ void CSceneMinecraft::UpdateClient()
 	}
 	catch (std::exception& e)
 	{
-		std::wcout << e.what() << std::endl;
+		Log::Error("Exceptiong while update client '%s'.", e.what());
 	}
 }
 

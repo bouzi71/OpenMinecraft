@@ -172,7 +172,7 @@ int main2(int argc, char* argvp[])
 		return 1;
 	}
 
-	auto mesh_gen = std::make_shared<terra::render::ChunkMeshGenerator>(&world, camera.GetPosition());
+	auto mesh_gen = std::make_shared<terra::render::CMinecraftChunkMeshGenerator>(&world, camera.GetPosition());
 
 	terra::ChatWindow chat(game.GetNetworkClient().GetDispatcher(), game.GetNetworkClient().GetConnection());
 
@@ -204,7 +204,7 @@ int main2(int argc, char* argvp[])
 		{
 			for (auto&& kv : *mesh_gen)
 			{
-				terra::render::ChunkMesh* mesh = kv.second.get();
+				terra::render::CMinecraftChunkMesh* mesh = kv.second.get();
 				glm::ivec3 chunk_base = kv.first;
 
 				glm::dvec3 min = ToVector3d(chunk_base);

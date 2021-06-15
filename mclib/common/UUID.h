@@ -1,13 +1,11 @@
 #ifndef MCLIB_COMMON_UUID_H_
 #define MCLIB_COMMON_UUID_H_
 
-
 #include <common/Types.h>
-
-#include <iosfwd>
 
 
 class DataBuffer;
+
 
 class CUUID
 {

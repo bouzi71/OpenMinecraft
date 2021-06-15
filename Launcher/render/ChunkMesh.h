@@ -1,23 +1,15 @@
 #ifndef TERRACOTTA_RENDER_CHUNKMESH_H_
 #define TERRACOTTA_RENDER_CHUNKMESH_H_
 
-namespace terra
-{
-namespace render
-{
-
-class ChunkMesh
+class CMinecraftChunkMesh
 {
 public:
-	ChunkMesh(IRenderDevice& RenderDevice, std::shared_ptr<IBuffer> buffer, size_t vertex_count);
-	ChunkMesh(const ChunkMesh& other);
+	CMinecraftChunkMesh(IRenderDevice& RenderDevice, std::shared_ptr<IBuffer> buffer, size_t vertex_count);
+	CMinecraftChunkMesh(const CMinecraftChunkMesh& other);
 
-	ChunkMesh& operator=(const ChunkMesh& other);
+	CMinecraftChunkMesh& operator=(const CMinecraftChunkMesh& other);
 
 	const IGeometry& GetGeometry() const;
-
-	void Render(unsigned int model_uniform);
-	void Destroy();
 
 private:
 	size_t m_VertexCount;
@@ -26,8 +18,5 @@ private:
 	std::shared_ptr<IGeometry> m_Geometry;
 	std::shared_ptr<IBuffer> m_Buffer;
 };
-
-} // ns render
-} // ns terra
 
 #endif

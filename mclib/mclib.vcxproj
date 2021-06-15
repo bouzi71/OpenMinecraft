@@ -95,6 +95,8 @@
     <ClInclude Include="protocol\ProtocolState.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="util\Console.h" />
+    <ClInclude Include="util\CreativeCreator.h" />
+    <ClInclude Include="util\EventLogger.h" />
     <ClInclude Include="util\Forge.h" />
     <ClInclude Include="util\Hash.h" />
     <ClInclude Include="util\HTTPClient.h" />
@@ -175,6 +177,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="util\Console.cpp" />
+    <ClCompile Include="util\CreativeCreator.cpp" />
+    <ClCompile Include="util\EventLogger.cpp" />
     <ClCompile Include="util\Forge.cpp" />
     <ClCompile Include="util\Hash.cpp" />
     <ClCompile Include="util\HTTPClient.cpp" />

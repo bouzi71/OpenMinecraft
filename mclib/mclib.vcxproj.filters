@@ -336,6 +336,12 @@
     <ClInclude Include="util\Console.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="util\EventLogger.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\CreativeCreator.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="block\Block.cpp">
@@ -555,6 +561,12 @@
       <Filter>world</Filter>
     </ClCompile>
     <ClCompile Include="util\Console.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\EventLogger.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\CreativeCreator.cpp">
       <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>

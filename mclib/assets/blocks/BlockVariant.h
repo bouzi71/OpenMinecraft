@@ -3,10 +3,8 @@
 #ifndef TERRACOTTA_BLOCK_BLOCKVARIANT_H_
 #define TERRACOTTA_BLOCK_BLOCKVARIANT_H_
 
-#include "BlockModel.h"
-
-#include <block/Block.h>
-#include <assets/blocks/BlockModel.h>
+#include "block/Block.h"
+#include "assets/blocks/BlockModel.h"
 
 class BlockVariant
 {
