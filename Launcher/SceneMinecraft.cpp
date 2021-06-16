@@ -137,7 +137,7 @@ std::pair<glm::dvec3, Face> GetClosestNormal(const glm::dvec3& pos, BoundingBox 
 }
 
 // TODO: Temporary fun code
-bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, const CMinecraftBlock ** Block, glm::ivec3 * BlockPosition, glm::dvec3 * hit, glm::dvec3 * normal, Face * face)
+bool RayCast(World * world, glm::dvec3 from, glm::dvec3 direction, double range, const CMinecraftBlock ** Block, glm::ivec3 * BlockPosition, glm::dvec3 * hit, glm::dvec3 * normal, Face * face)
 {
 	/*static const std::vector<glm::dvec3> directions = {
 		glm::dvec3(0, 0, 0),
@@ -174,7 +174,7 @@ bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, 
 				{
 					glm::dvec3 checkPos = position /*+ glm::dvec3(x, y, z)*/;
 
-					const CMinecraftBlock* block = world.GetBlock(checkPos);
+					const CMinecraftBlock* block = world->GetBlock(checkPos);
 					if (block == nullptr)
 						continue;
 
@@ -303,7 +303,6 @@ CSceneMinecraft::CSceneMinecraft(IBaseManager& BaseManager, IRenderWindow& Rende
 	: SceneBase(BaseManager, RenderWindow)
 	, PacketHandler(&m_PacketDispatcher)
 	, m_NetworkClient(&m_PacketDispatcher, Version::Minecraft_1_12_2)
-	, m_World(&m_PacketDispatcher)
 	, m_Sprinting(false)
 	, m_LastPositionTime(0)
 
@@ -390,7 +389,7 @@ void CSceneMinecraft::HandlePacket(in::SpawnPositionPacket* packet)
 	int64 y = packet->GetLocation().GetY();
 	int64 z = packet->GetLocation().GetZ();
 
-	GetCameraController()->GetCamera()->SetPosition(glm::vec3(x, y, z));
+	//GetCameraController()->GetCamera()->SetPosition(glm::vec3(x, y, z));
 }
 
 
@@ -434,8 +433,8 @@ void CSceneMinecraft::Initialize()
 
 		SetCameraController(MakeShared(CFreeCameraController));
 		GetCameraController()->SetCamera(cameraNode->GetComponentT<ICameraComponent3D>());
-		GetCameraController()->GetCamera()->SetPerspectiveProjection(75.0f, static_cast<float>(GetRenderWindow().GetWindowWidth()) / static_cast<float>(GetRenderWindow().GetWindowHeight()), 0.1f, 1000.0f);
-		GetCameraController()->GetCamera()->SetPosition(glm::vec3(0.0f));
+		GetCameraController()->GetCamera()->SetPerspectiveProjection(75.0f, static_cast<float>(GetRenderWindow().GetWindowWidth()) / static_cast<float>(GetRenderWindow().GetWindowHeight()), 0.1f, 5000.0f);
+		GetCameraController()->GetCamera()->SetPosition(glm::vec3(2043, 64, -11011));
 		GetCameraController()->GetCamera()->SetYaw(225);
 		GetCameraController()->GetCamera()->SetPitch(-45);
 	}
@@ -484,11 +483,11 @@ void CSceneMinecraft::Initialize()
 		return;
 	}
 
-	m_MeshGen = std::make_shared<CMinecraftChunkMeshGenerator>(GetRenderDevice(), *m_AssetCahce, &m_World, GetCameraController()->GetCamera());
+	m_MeshGen = std::make_shared<CMinecraftChunkMeshGenerator>(GetRenderDevice(), *m_AssetCahce, m_NetworkClient.GetWorld(), GetCameraController()->GetCamera());
 
 	terra::ChatWindow chat(GetNetworkClient().GetDispatcher(), GetNetworkClient().GetConnection());
 
-	CreatePlayer(&m_World);
+	CreatePlayer(m_NetworkClient.GetWorld());
 
 }
 
@@ -520,7 +519,7 @@ bool CSceneMinecraft::OnMousePressed(const MouseButtonEventArgs & e, const Ray& 
 	if (e.Button == MouseButton::Left && e.State == ButtonState::Pressed)
 	{
 		
-		if (RayCast(m_World, GetCameraController()->GetCamera()->GetPosition(), forward, 5.0, &block, &blockPosition, &hit, &normal, &face))
+		if (RayCast(m_NetworkClient.GetWorld(), GetCameraController()->GetCamera()->GetPosition(), forward, 5.0, &block, &blockPosition, &hit, &normal, &face))
 		{
 
 			{
@@ -540,7 +539,7 @@ bool CSceneMinecraft::OnMousePressed(const MouseButtonEventArgs & e, const Ray& 
 	}
 	else if (e.Button == MouseButton::Right && e.State == ButtonState::Pressed)
 	{
-		if (RayCast(m_World, GetCameraController()->GetCamera()->GetPosition(), forward, 5.0, &block, &blockPosition, &hit, &normal, &face))
+		if (RayCast(m_NetworkClient.GetWorld(), GetCameraController()->GetCamera()->GetPosition(), forward, 5.0, &block, &blockPosition, &hit, &normal, &face))
 		{
 			Inventory& inventory = *m_NetworkClient.GetInventoryManager()->GetPlayerInventory();
 
@@ -676,7 +675,7 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 	m_Player->Update(m_DeltaTime);
 
 	glm::vec3 eye = glm::vec3(m_Player->GetTransform().position) + glm::vec3(0.0f, 1.6f, 0.0f);
-	GetCameraController()->GetCamera()->SetPosition(eye);
+	//GetCameraController()->GetCamera()->SetPosition(eye);
 
 	constexpr float kTickTime = 1000.0f / 20.0f / 1000.0f;
 
@@ -685,8 +684,8 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 		float yaw = glm::radians(GetCameraController()->GetCamera()->GetYaw()) - glm::radians(90.0f);
 		float pitch = -(glm::radians(GetCameraController()->GetCamera()->GetPitch()));
 
-		out::PlayerPositionAndLookPacket response(m_Player->GetTransform().position, yaw * 180.0f / 3.14159f, pitch * 180.0f / 3.14159f, m_Player->OnGround());
-		m_NetworkClient.GetConnection()->SendPacket(&response);
+		//out::PlayerPositionAndLookPacket response(m_Player->GetTransform().position, yaw * 180.0f / 3.14159f, pitch * 180.0f / 3.14159f, m_Player->OnGround());
+		//m_NetworkClient.GetConnection()->SendPacket(&response);
 
 		m_LastPositionTime = current_frame;
 
@@ -729,7 +728,7 @@ void CSceneMinecraft::UpdateSelectedBlock()
 	glm::dvec3 normal;
 	Face face;
 
-	if (RayCast(m_World, GetCameraController()->GetCamera()->GetPosition(), GetCameraController()->GetCamera()->GetDirection(), 5.0, &block, &blockPosition, &hit, &normal, &face))
+	if (RayCast(m_NetworkClient.GetWorld(), GetCameraController()->GetCamera()->GetPosition(), GetCameraController()->GetCamera()->GetDirection(), 5.0, &block, &blockPosition, &hit, &normal, &face))
 	{
 		m_SelectedBlock = block;
 		m_SelectedBlockPosition = blockPosition;

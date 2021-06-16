@@ -199,11 +199,13 @@ bool CMinecraftTexturesLoader::LoadTexture(const std::string& path, TextureHandl
 		return false;
 	}
 
-	if (width == 16)
+	if (width != 16)
 	{
-		std::size_t size = 16 * 16 * 4;
-		*handle = Append(path, std::string((char*)image, size));
+		Log::Warn("CMinecraftTexturesLoader::LoadTexture: Unable to load texture '%s'. Size (%d, %d, %d).", textureFileFullName.c_str(), width, height, channels);
 	}
+
+	std::size_t size = 16 * 16 * 4;
+	*handle = Append(path, std::string((char*)image, size));
 
 	stbi_image_free(image);
 

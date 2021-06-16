@@ -121,7 +121,7 @@ void CMinecraftBlockstatesLoader::LoadBlockstateByBlock(const CMinecraftBlock * 
 	auto blockStateFile = m_BaseManager.GetManager<IFilesManager>()->Open(blockStateFileFullName);
 	if (blockStateFile == nullptr)
 	{
-		Log::Error("AssetLoader::LoadBlockstateByBlock: Unable to open file '%s'.", blockStateFileFullName.c_str());
+		Log::Error("CMinecraftBlockstatesLoader::LoadBlockstateByBlock: Unable to open file '%s'.", blockStateFileFullName.c_str());
 		return;
 	}
 
@@ -133,7 +133,7 @@ void CMinecraftBlockstatesLoader::LoadBlockstateByBlock(const CMinecraftBlock * 
 	}
 	catch (json::parse_error& e)
 	{
-		Log::Error("AssetLoader::LoadBlockstateByBlock: File '%s' parse error '%s'.", blockStateFileFullName.c_str(), e.what());
+		Log::Error("CMinecraftBlockstatesLoader::LoadBlockstateByBlock: File '%s' parse error '%s'.", blockStateFileFullName.c_str(), e.what());
 		return;
 	}
 
@@ -151,15 +151,9 @@ void CMinecraftBlockstatesLoader::LoadBlockstateByBlock(const CMinecraftBlock * 
 		const auto& normalVariant = variantsMap.find("normal");
 		if (normalVariant != variantsMap.end())
 		{
-			auto blockVariant = LoadBlockVariant(ForBlock, normalVariant->second);
-			if (blockVariant != nullptr)
-			{
-				m_AssetCache.GetBlockstatesLoader().AddVariant(std::move(blockVariant));
-			}
-			else
-			{
-				Log::Error("Add variant error 1. '%s'.", ForBlock->GetName().c_str());
-			}
+			std::unique_ptr<BlockVariant> variant = LoadBlockstateArray(ForBlock, normalVariant->second);
+			if (variant != nullptr)
+				m_AssetCache.GetBlockstatesLoader().AddVariant(std::move(variant));
 		}
 		else
 		{
@@ -169,15 +163,9 @@ void CMinecraftBlockstatesLoader::LoadBlockstateByBlock(const CMinecraftBlock * 
 				if (false == ForBlock->IsVariablesMatch(variantArray))
 					continue;
 
-				auto blockVariant = LoadBlockVariant(ForBlock, variantMapIt.second);
-				if (blockVariant != nullptr)
-				{
-					m_AssetCache.GetBlockstatesLoader().AddVariant(std::move(blockVariant));
-				}
-				else
-				{
-					Log::Error("Add variant error 2. '%s'.", ForBlock->GetName().c_str());
-				}
+				std::unique_ptr<BlockVariant> variant = LoadBlockstateArray(ForBlock, variantMapIt.second);
+				if (variant != nullptr)
+					m_AssetCache.GetBlockstatesLoader().AddVariant(std::move(variant));
 			}
 		}
 
@@ -191,16 +179,8 @@ void CMinecraftBlockstatesLoader::LoadBlockstateByBlock(const CMinecraftBlock * 
 			//json whenPredicateObject = kv.value("when", json());
 			//if (false == whenPredicateObject.is_object())
 			{
-				auto blockVariant = LoadBlockVariant(ForBlock, kv.value("apply", json()));
-				if (blockVariant != nullptr)
-				{
-					m_AssetCache.GetBlockstatesLoader().AddVariant(std::move(blockVariant));
-					return;
-				}
-				else
-				{
-					Log::Error("Add variant error 1. '%s'.", ForBlock->GetName().c_str());
-				}
+				m_AssetCache.GetBlockstatesLoader().AddVariant(std::move(LoadBlockstateArray(ForBlock, kv.value("apply", json()))));
+				return;
 			}
 		}
 
@@ -210,63 +190,68 @@ void CMinecraftBlockstatesLoader::LoadBlockstateByBlock(const CMinecraftBlock * 
 
 	Log::Error("AssetLoader: Blockstate file '%s' don't contains 'variants'.", blockStateFileFullName.c_str());
 
-	auto blockVariant = LoadDefaultVariantBlock(ForBlock);
+	auto blockVariant = LoadDefaultBlockstate(ForBlock);
 	if (blockVariant != nullptr)
 		m_AssetCache.GetBlockstatesLoader().AddVariant(std::move(blockVariant));
 }
 
-std::unique_ptr<BlockVariant> CMinecraftBlockstatesLoader::LoadBlockVariant(const CMinecraftBlock * Block, json VariantJSONObject)
+std::unique_ptr<BlockVariant> CMinecraftBlockstatesLoader::LoadBlockstateArray(const CMinecraftBlock * Block, json VariantJSONObject)
 {
-	json usedVariant;
-
 	if (VariantJSONObject.is_array())
 	{
+		std::unique_ptr<BlockVariant> variantRoot = std::make_unique<BlockVariant>(Block);
+
 		for (const auto& modelIt : VariantJSONObject)
 		{
-			usedVariant = modelIt;
+			variantRoot->AddSubvariant(std::move(LoadBlockstateModel(Block, modelIt)));
 		}
+
+		return std::move(variantRoot);
 	}
 	else
 	{
-		usedVariant = VariantJSONObject;
+		return std::move(LoadBlockstateModel(Block, VariantJSONObject));
 	}
+}
 
-	json model_node = usedVariant.value("model", json());
-	if (false == model_node.is_string())
+std::unique_ptr<BlockVariant> CMinecraftBlockstatesLoader::LoadBlockstateModel(const CMinecraftBlock * Block, json ModelJSONObject)
+{
+	json modelJSONValue = ModelJSONObject.value("model", json());
+	if (false == modelJSONValue.is_string())
 	{
-		Log::Error("AssetLoader::LoadBlockVariant: Variant don't contains 'model'.");
-		return nullptr;
+		Log::Error("CMinecraftBlockstatesLoader::LoadBlockstate: Variant don't contains 'model'.");
+		return std::move(LoadDefaultBlockstate(Block));
 	}
 
-	std::string modelName = model_node.get<std::string>();
+	std::string modelName = modelJSONValue.get<std::string>();
 	const BlockModel* model = m_AssetCache.GetModelsLoader().GetBlockModel("block/" + modelName + ".json");
 	if (model == nullptr)
 	{
-		return std::move(LoadDefaultVariantBlock(Block));
+		Log::Error("CMinecraftBlockstatesLoader::LoadBlockstate: Unable to find BlockModel '%s'.", modelName.c_str());
+		return std::move(LoadDefaultBlockstate(Block));
 	}
 
-	std::unique_ptr<BlockVariant> variant = std::make_unique<BlockVariant>(model, Block);
-	float x = usedVariant.value("x", 0.0f);
-	float y = usedVariant.value("y", 0.0f);
-	float z = usedVariant.value("z", 0.0f);
+	std::unique_ptr<BlockVariant> variant = std::make_unique<BlockVariant>(Block);
+	variant->SetModel(model);
+
+	float x = ModelJSONObject.value("x", 0.0f);
+	float y = ModelJSONObject.value("y", 0.0f);
+	float z = ModelJSONObject.value("z", 0.0f);
 	variant->SetRotation(glm::vec3(x, y, z));
 
 	return std::move(variant);
 }
 
-std::unique_ptr<BlockVariant> CMinecraftBlockstatesLoader::LoadDefaultVariantBlock(const CMinecraftBlock * Block)
+std::unique_ptr<BlockVariant> CMinecraftBlockstatesLoader::LoadDefaultBlockstate(const CMinecraftBlock * Block)
 {
-	const BlockModel* model = m_AssetCache.GetModelsLoader().GetBlockModel("block/bedrock.json");
-	if (model == nullptr)
+	const BlockModel* bedrockModel = m_AssetCache.GetModelsLoader().GetBlockModel("block/bedrock.json");
+	if (bedrockModel == nullptr)
 	{
-		model = m_AssetCache.GetModelsLoader().GetBlockModel("block/bedrock.json");
-		if (model == nullptr)
-		{
-			Log::Error("AssetLoader::LoadBlockVariant: Could not find block model 'bedrock'.");
-			return nullptr;
-		}
+		Log::Error("CMinecraftBlockstatesLoader::LoadDefaultBlockstate: Could not find block model 'bedrock'.");
+		return nullptr;
 	}
 
-	std::unique_ptr<BlockVariant> variant = std::make_unique<BlockVariant>(model, Block);
+	std::unique_ptr<BlockVariant> variant = std::make_unique<BlockVariant>(Block);
+	variant->SetModel(bedrockModel);
 	return std::move(variant);
 }

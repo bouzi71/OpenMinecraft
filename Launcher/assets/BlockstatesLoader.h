@@ -21,10 +21,10 @@ public:
 	void AddVariant(std::unique_ptr<BlockVariant> variant);
 
 private:
-	std::unique_ptr<BlockVariant> LoadDefaultVariantBlock(const CMinecraftBlock * Block);
-
-	std::unique_ptr<BlockVariant> LoadBlockVariant(const CMinecraftBlock * Block, json VariantJSONObject);
 	void LoadBlockstateByBlock(const CMinecraftBlock* ForBlock);
+	std::unique_ptr<BlockVariant> LoadBlockstateArray(const CMinecraftBlock * Block, json VariantJSONObject);
+	std::unique_ptr<BlockVariant> LoadBlockstateModel(const CMinecraftBlock * Block, json ModelJSONObject);
+	std::unique_ptr<BlockVariant> LoadDefaultBlockstate(const CMinecraftBlock * Block);
 
 private:
 	const IBaseManager& m_BaseManager;

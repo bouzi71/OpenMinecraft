@@ -40,9 +40,6 @@ public:
 	CMinecraftModelsLoader(const IBaseManager& BaseManager, AssetCache& AssetCache);
 	virtual ~CMinecraftModelsLoader();
 
-	void Initialize();
-
-	std::vector<const BlockModel*> GetBlockModels(const std::string& find) const;
 	const BlockModel* GetBlockModel(const std::string& path);
 	void AddBlockModel(const std::string& path, std::unique_ptr<BlockModel> model);
 

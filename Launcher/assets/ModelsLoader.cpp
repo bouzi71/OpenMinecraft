@@ -68,24 +68,6 @@ CMinecraftModelsLoader::CMinecraftModelsLoader(const IBaseManager & BaseManager,
 CMinecraftModelsLoader::~CMinecraftModelsLoader()
 {}
 
-void CMinecraftModelsLoader::Initialize()
-{}
-
-
-std::vector<const BlockModel*> CMinecraftModelsLoader::GetBlockModels(const std::string& find) const
-{
-	std::vector<const BlockModel*> result;
-	for (const auto& kv : m_BlockModels)
-	{
-		if (kv.first.find(find) != std::string::npos)
-		{
-			result.push_back(kv.second.get());
-		}
-	}
-
-	return result;
-}
-
 const BlockModel* CMinecraftModelsLoader::GetBlockModel(const std::string& path)
 {
 	auto iter = m_BlockModels.find(path);

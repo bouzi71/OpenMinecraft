@@ -94,7 +94,6 @@ private:
 private:
 	PacketDispatcher m_PacketDispatcher;
 	CMinecraftClient m_NetworkClient;
-	World m_World;
 
 	std::shared_ptr<AssetCache> m_AssetCahce;
 	std::shared_ptr<CMinecraftChunkMeshGenerator> m_MeshGen;

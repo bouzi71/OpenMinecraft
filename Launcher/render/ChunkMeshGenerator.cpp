@@ -21,7 +21,7 @@ struct SFacePlusVertex
 
 	glm::vec3 Pos;
 	BlockFace Face;
-} verticesPlusFaces[] = 
+} verticesPlusFaces[] =
 {
 	SFacePlusVertex(glm::vec3(0,  1, 0), BlockFace::Up),
 	SFacePlusVertex(glm::vec3(0, -1, 0), BlockFace::Down),
@@ -32,6 +32,23 @@ struct SFacePlusVertex
 	SFacePlusVertex(glm::vec3(1,  0, 0), BlockFace::East),
 	SFacePlusVertex(glm::vec3(-1, 0, 0), BlockFace::West),
 };
+
+
+template<typename Iter, typename RandomGenerator>
+Iter select_randomly(Iter start, Iter end, RandomGenerator& g)
+{
+	std::uniform_int_distribution<> dis(0, std::distance(start, end) - 1);
+	std::advance(start, dis(g));
+	return start;
+}
+
+template<typename Iter>
+Iter select_randomly(Iter start, Iter end)
+{
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	return select_randomly(start, end, gen);
+}
 
 
 
@@ -157,7 +174,7 @@ void CMinecraftChunkMeshGenerator::WorkerUpdate()
 
 		{
 			std::lock_guard<std::mutex> lock(m_QueueMutex);
-			if (m_ChunkBuildQueue.Empty()) 
+			if (m_ChunkBuildQueue.Empty())
 				continue;
 
 			ctx = m_ChunkBuildQueue.Pop();
@@ -256,7 +273,7 @@ void CMinecraftChunkMeshGenerator::ProcessChunks()
 		DestroyChunk(push->pos.x / 16, push->pos.y / 16, push->pos.z / 16);
 
 		auto&& vertices = push->vertices;
-		if (vertices->empty()) 
+		if (vertices->empty())
 			continue;
 
 		std::shared_ptr<IBuffer> verticesB = m_RenderDevice.GetObjectsFactory().CreateVertexBuffer(*vertices);
@@ -270,7 +287,7 @@ void CMinecraftChunkMeshGenerator::ProcessChunks()
 
 bool CMinecraftChunkMeshGenerator::IsOccluding(const BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block)
 {
-	if (test_block == nullptr) 
+	if (test_block == nullptr)
 		return false;
 
 	//if (from_variant->HasRotation()) 
@@ -287,7 +304,7 @@ bool CMinecraftChunkMeshGenerator::IsOccluding(const BlockVariant* from_variant,
 	}
 
 	const BlockVariant* variant = m_AssetCache.GetBlockstatesLoader().GetVariant(test_block);
-	if (variant == nullptr) 
+	if (variant == nullptr)
 		return false;
 
 	//if (variant->HasRotation())
@@ -321,20 +338,20 @@ void ApplyRotations(glm::vec3& bottom_left, glm::vec3& bottom_right, glm::vec3& 
 	glm::quat quat(1.0f, 0.0f, 0.0f, 0.0f);
 
 	if (rotations.z != 0)
-		quat = glm::rotate(quat, glm::radians( rotations.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		quat = glm::rotate(quat, glm::radians(rotations.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	if (rotations.y != 0)
 		quat = glm::rotate(quat, glm::radians(-rotations.y), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	if (rotations.x != 0)
-		quat = glm::rotate(quat, glm::radians( rotations.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		quat = glm::rotate(quat, glm::radians(rotations.x), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	if (rotations.x != 0 || rotations.y != 0 || rotations.z != 0)
 	{
-		bottom_left  = glm::vec3(quat * glm::vec4(bottom_left  - offset, 1.0)) + offset;
+		bottom_left = glm::vec3(quat * glm::vec4(bottom_left - offset, 1.0)) + offset;
 		bottom_right = glm::vec3(quat * glm::vec4(bottom_right - offset, 1.0)) + offset;
-		top_left     = glm::vec3(quat * glm::vec4(top_left     - offset, 1.0)) + offset;
-		top_right    = glm::vec3(quat * glm::vec4(top_right    - offset, 1.0)) + offset;
+		top_left = glm::vec3(quat * glm::vec4(top_left - offset, 1.0)) + offset;
+		top_right = glm::vec3(quat * glm::vec4(top_right - offset, 1.0)) + offset;
 	}
 }
 
@@ -380,18 +397,6 @@ void ApplyRotations(glm::vec3& bottom_left, glm::vec3& bottom_right, glm::vec3& 
 
 void RotateCube(std::vector<SFacePlusVertex>& Vector, const glm::vec3& Rotations)
 {
-	Vector.clear();
-
-	Vector.push_back(SFacePlusVertex(glm::vec3( 1, 0, 0), BlockFace::East));
-	Vector.push_back(SFacePlusVertex(glm::vec3(-1, 0, 0), BlockFace::West));
-
-	Vector.push_back(SFacePlusVertex(glm::vec3(0,  1, 0), BlockFace::Up));
-	Vector.push_back(SFacePlusVertex(glm::vec3(0, -1, 0), BlockFace::Down));
-
-	Vector.push_back(SFacePlusVertex(glm::vec3(0, 0,  1), BlockFace::South));
-	Vector.push_back(SFacePlusVertex(glm::vec3(0, 0, -1), BlockFace::North));
-
-
 	glm::quat quat(1.0f, 0.0f, 0.0f, 0.0f);
 
 	if (Rotations.z != 0)
@@ -414,7 +419,7 @@ BlockFace GetFaceFromCoord(std::vector<SFacePlusVertex>& Vector, const glm::vec3
 	if (Vector.empty())
 		throw CException("Incorrect usage!");
 
-	const auto& faceIt = std::find_if(Vector.begin(), Vector.end(), [&Coord](const SFacePlusVertex& _Item) -> bool{
+	const auto& faceIt = std::find_if(Vector.begin(), Vector.end(), [&Coord](const SFacePlusVertex& _Item) -> bool {
 		return glm::abs(_Item.Pos.x - Coord.x) < 0.1f && glm::abs(_Item.Pos.y - Coord.y) < 0.1f && glm::abs(_Item.Pos.z - Coord.z) < 0.1f;
 	});
 	if (faceIt == Vector.end())
@@ -476,7 +481,57 @@ int GetAmbientOcclusion(const CMinecraftChunkMeshBuildContext& context, const gl
 	return 3 - (value1 + value2 + value_corner);
 }
 
-void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMinecraftChunkMeshBuildContext& context, const glm::ivec3& BlockPosition, const BlockVariant * BlockVariant, const BlockModel * BlockModel, BlockFace Face)
+void OB(const CMinecraftChunkMeshBuildContext& context, const glm::ivec3& BlockPosition, const BlockVariant * BlockVariant, BlockFace Face, int * obl, int * obr, int * otl, int * otr)
+{
+	// Render the top face of the current block.
+	*obl = 3, *obr = 3, *otl = 3, *otr = 3;
+
+	if (Face == BlockFace::Up)
+	{
+		*obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(-1, 1, -1));
+		*obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(-1, 1, 1));
+		*otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(1, 1, -1));
+		*otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(1, 1, 1));
+	}
+	else if (Face == BlockFace::Down)
+	{
+		*obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(1, -1, -1));
+		*obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(1, -1, 1));
+		*otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(-1, -1, -1));
+		*otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(-1, -1, 1));
+	}
+	else if (Face == BlockFace::North)
+	{
+		*obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(1, -1, -1));
+		*obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, -1, -1));
+		*otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(1, 1, -1));
+		*otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, 1, -1));
+	}
+	else if (Face == BlockFace::South)
+	{
+		*obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(-1, -1, 1));
+		*obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(1, -1, 1));
+		*otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(-1, 1, 1));
+		*otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, 1, 1));
+	}
+	else if (Face == BlockFace::East)
+	{
+
+		*obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(1, -1, 1));
+		*obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(1, -1, -1));
+		*otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, 1, 1));
+		*otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(1, 1, -1));
+	}
+	else if (Face == BlockFace::West)
+	{
+		*obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, -1, -1));
+		*obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(-1, -1, 1));
+		*otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, 1, -1));
+		*otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(-1, 1, 1));
+	}
+}
+
+void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMinecraftChunkMeshBuildContext& context, const glm::ivec3& BlockPosition, const BlockVariant * BlockVariant, const BlockModel * BlockModel, BlockFace RotatedFace, BlockFace OriginalFace)
 {
 	static const glm::vec3 kTints[] = {
 		glm::vec3(1.0, 1.0, 1.0),
@@ -485,378 +540,315 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 	};
 
 
-	if (Face == BlockFace::Up)
+	int obl, obr, otl, otr;
+	OB(context, BlockPosition, nullptr, OriginalFace, &obl, &obr, &otl, &otr);
+
+	if (RotatedFace == BlockFace::Up)
 	{
-		// Render the top face of the current block.
-		int obl = 3, obr = 3, otl = 3, otr = 3;
-
-		if (false == BlockVariant->HasRotation())
-		{
-			obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(-1, 1, -1));
-			obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(-1, 1, 1));
-			otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(1, 1, -1));
-			otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(1, 1, 1));
-		}
-
 		for (const auto& element : BlockModel->GetElements())
 		{
-			RenderableFace renderable = element.GetFace(Face);
-			if (renderable.face == Face)
+			RenderableFace renderable = element.GetFace(RotatedFace);
+			if (renderable.face != RotatedFace)
+				continue;
+
+			TextureHandle texture = renderable.texture;
+
+			const auto& from = element.GetFrom();
+			const auto& to = element.GetTo();
+
+			glm::vec3 bottom_left = glm::vec3(from.x, to.y, from.z);
+			glm::vec3 bottom_right = glm::vec3(from.x, to.y, to.z);
+			glm::vec3 top_left = glm::vec3(to.x, to.y, from.z);
+			glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
+
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+
+			bottom_left += BlockPosition;
+			bottom_right += BlockPosition;
+			top_left += BlockPosition;
+			top_right += BlockPosition;
+
+			const glm::vec3& tint = kTints[renderable.tint_index + 1];
+
+			glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_from.y);
+			glm::vec2 br_uv(renderable.uv_from.x, renderable.uv_to.y);
+			glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_to.y);
+			glm::vec2 tl_uv(renderable.uv_to.x, renderable.uv_from.y);
+
+			int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
+			if (element.ShouldShade())
 			{
-				TextureHandle texture = renderable.texture;
-
-				const auto& from = element.GetFrom();
-				const auto& to = element.GetTo();
-
-				glm::vec3 bottom_left = glm::vec3(from.x, to.y, from.z);
-				glm::vec3 bottom_right = glm::vec3(from.x, to.y, to.z);
-				glm::vec3 top_left = glm::vec3(to.x, to.y, from.z);
-				glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
-
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
-
-				bottom_left += BlockPosition;
-				bottom_right += BlockPosition;
-				top_left += BlockPosition;
-				top_right += BlockPosition;
-
-				const glm::vec3& tint = kTints[renderable.tint_index + 1];
-
-				glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_from.y);
-				glm::vec2 br_uv(renderable.uv_from.x, renderable.uv_to.y);
-				glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_to.y);
-				glm::vec2 tl_uv(renderable.uv_to.x, renderable.uv_from.y);
-
-				int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
-				if (element.ShouldShade())
-				{
-					cobl = obl;
-					cobr = obr;
-					cotl = otl;
-					cotr = otr;
-				}
-
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
-				Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-				Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+				cobl = obl;
+				cobr = obr;
+				cotl = otl;
+				cotr = otr;
 			}
+
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+			Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+			Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
 		}
 	}
-	else if (Face == BlockFace::Down)
+	else if (RotatedFace == BlockFace::Down)
 	{
-		// Render the bottom face of the current block.
-		int obl = 3, obr = 3, otl = 3, otr = 3;
-
-		if (false == BlockVariant->HasRotation())
-		{
-			obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(1, -1, -1));
-			obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(1, -1, 1));
-			otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(-1, -1, -1));
-			otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(-1, -1, 1));
-		}
-
 		for (const auto& element : BlockModel->GetElements())
 		{
-			RenderableFace renderable = element.GetFace(Face);
-			if (renderable.face == Face)
+			RenderableFace renderable = element.GetFace(RotatedFace);
+			if (renderable.face != RotatedFace)
+				continue;
+
+			const auto& from = element.GetFrom();
+			const auto& to = element.GetTo();
+
+			glm::vec3 bottom_left = glm::vec3(to.x, from.y, from.z);
+			glm::vec3 bottom_right = glm::vec3(to.x, from.y, to.z);
+			glm::vec3 top_left = glm::vec3(from.x, from.y, from.z);
+			glm::vec3 top_right = glm::vec3(from.x, from.y, to.z);
+
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+
+			bottom_left += BlockPosition;
+			bottom_right += BlockPosition;
+			top_left += BlockPosition;
+			top_right += BlockPosition;
+
+			const glm::vec3& tint = kTints[renderable.tint_index + 1];
+
+			glm::vec2 bl_uv(renderable.uv_to.x, renderable.uv_to.y);
+			glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_from.y);
+			glm::vec2 tr_uv(renderable.uv_from.x, renderable.uv_from.y);
+			glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_to.y);
+
+			int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
+			if (element.ShouldShade())
 			{
-				const auto& from = element.GetFrom();
-				const auto& to = element.GetTo();
-
-				glm::vec3 bottom_left = glm::vec3(to.x, from.y, from.z);
-				glm::vec3 bottom_right = glm::vec3(to.x, from.y, to.z);
-				glm::vec3 top_left = glm::vec3(from.x, from.y, from.z);
-				glm::vec3 top_right = glm::vec3(from.x, from.y, to.z);
-
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
-
-				bottom_left += BlockPosition;
-				bottom_right += BlockPosition;
-				top_left += BlockPosition;
-				top_right += BlockPosition;
-
-				const glm::vec3& tint = kTints[renderable.tint_index + 1];
-
-				glm::vec2 bl_uv(renderable.uv_to.x, renderable.uv_to.y);
-				glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_from.y);
-				glm::vec2 tr_uv(renderable.uv_from.x, renderable.uv_from.y);
-				glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_to.y);
-
-				int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
-				if (element.ShouldShade())
-				{
-					cobl = obl;
-					cobr = obr;
-					cotl = otl;
-					cotr = otr;
-				}
-
-				TextureHandle texture = renderable.texture;
-
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
-				Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-				Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+				cobl = obl;
+				cobr = obr;
+				cotl = otl;
+				cotr = otr;
 			}
+
+			TextureHandle texture = renderable.texture;
+
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+			Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+			Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
 		}
 	}
-	else if (Face == BlockFace::North)
+	else if (RotatedFace == BlockFace::North)
 	{
-		// Render the north face of the current block.
-		int obl = 3, obr = 3, otl = 3, otr = 3;
-
-		if (false == BlockVariant->HasRotation())
-		{
-			obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(1, -1, -1));
-			obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, -1, -1), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, -1, -1));
-			otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(1, 1, -1));
-			otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, -1), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, 1, -1));
-		}
-
 		for (const auto& element : BlockModel->GetElements())
 		{
-			RenderableFace renderable = element.GetFace(Face);
-			if (renderable.face == Face)
+			RenderableFace renderable = element.GetFace(RotatedFace);
+			if (renderable.face != RotatedFace)
+				continue;
+
+			const auto& from = element.GetFrom();
+			const auto& to = element.GetTo();
+
+			glm::vec3 bottom_left = glm::vec3(to.x, from.y, from.z);
+			glm::vec3 bottom_right = glm::vec3(from.x, from.y, from.z);
+			glm::vec3 top_left = glm::vec3(to.x, to.y, from.z);
+			glm::vec3 top_right = glm::vec3(from.x, to.y, from.z);
+
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+
+			bottom_left += BlockPosition;
+			bottom_right += BlockPosition;
+			top_left += BlockPosition;
+			top_right += BlockPosition;
+
+			const glm::vec3& tint = kTints[renderable.tint_index + 1];
+
+			glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
+			glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
+			glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
+			glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
+
+			int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
+			if (element.ShouldShade())
 			{
-				TextureHandle texture = renderable.texture;
-
-				const auto& from = element.GetFrom();
-				const auto& to = element.GetTo();
-
-				glm::vec3 bottom_left = glm::vec3(to.x, from.y, from.z);
-				glm::vec3 bottom_right = glm::vec3(from.x, from.y, from.z);
-				glm::vec3 top_left = glm::vec3(to.x, to.y, from.z);
-				glm::vec3 top_right = glm::vec3(from.x, to.y, from.z);
-
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
-
-				bottom_left += BlockPosition;
-				bottom_right += BlockPosition;
-				top_left += BlockPosition;
-				top_right += BlockPosition;
-
-				const glm::vec3& tint = kTints[renderable.tint_index + 1];
-
-				glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
-				glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
-				glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
-				glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
-
-				int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
-				if (element.ShouldShade())
-				{
-					cobl = obl;
-					cobr = obr;
-					cotl = otl;
-					cotr = otr;
-				}
-
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
-				Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-				Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+				cobl = obl;
+				cobr = obr;
+				cotl = otl;
+				cotr = otr;
 			}
+
+			TextureHandle texture = renderable.texture;
+
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+			Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+			Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
 		}
 	}
-	else if (Face == BlockFace::South)
+	else if (RotatedFace == BlockFace::South)
 	{
-		// Render the south face of the current block.
-		int obl = 3, obr = 3, otl = 3, otr = 3;
-
-		if (false == BlockVariant->HasRotation())
-		{
-			obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(-1, -1, 1));
-			obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(0, -1, 1), BlockPosition + glm::ivec3(1, -1, 1));
-			otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(-1, 1, 1));
-			otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(0, 1, 1), BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, 1, 1));
-		}
-
 		for (const auto& element : BlockModel->GetElements())
 		{
-			RenderableFace renderable = element.GetFace(Face);
-			if (renderable.face == Face)
+			RenderableFace renderable = element.GetFace(RotatedFace);
+			if (renderable.face != RotatedFace)
+				continue;
+
+			const auto& from = element.GetFrom();
+			const auto& to = element.GetTo();
+
+			glm::vec3 bottom_left = glm::vec3(from.x, from.y, to.z);
+			glm::vec3 bottom_right = glm::vec3(to.x, from.y, to.z);
+			glm::vec3 top_left = glm::vec3(from.x, to.y, to.z);
+			glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
+
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+
+			bottom_left += BlockPosition;
+			bottom_right += BlockPosition;
+			top_left += BlockPosition;
+			top_right += BlockPosition;
+
+			const glm::vec3& tint = kTints[renderable.tint_index + 1];
+
+			glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
+			glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
+			glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
+			glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
+
+			int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
+			if (element.ShouldShade())
 			{
-				TextureHandle texture = renderable.texture;
-
-				const auto& from = element.GetFrom();
-				const auto& to = element.GetTo();
-
-				glm::vec3 bottom_left = glm::vec3(from.x, from.y, to.z);
-				glm::vec3 bottom_right = glm::vec3(to.x, from.y, to.z);
-				glm::vec3 top_left = glm::vec3(from.x, to.y, to.z);
-				glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
-
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
-
-				bottom_left += BlockPosition;
-				bottom_right += BlockPosition;
-				top_left += BlockPosition;
-				top_right += BlockPosition;
-
-				const glm::vec3& tint = kTints[renderable.tint_index + 1];
-
-				glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
-				glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
-				glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
-				glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
-
-				int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
-				if (element.ShouldShade())
-				{
-					cobl = obl;
-					cobr = obr;
-					cotl = otl;
-					cotr = otr;
-				}
-
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
-				Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-				Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+				cobl = obl;
+				cobr = obr;
+				cotl = otl;
+				cotr = otr;
 			}
+
+			TextureHandle texture = renderable.texture;
+
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+			Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+			Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
 		}
 	}
-	else if (Face == BlockFace::East)
+	else if (RotatedFace == BlockFace::East)
 	{
-		// Render the east face of the current block.
-		int obl = 3, obr = 3, otl = 3, otr = 3;
-
-		if (false == BlockVariant->HasRotation())
-		{
-			obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(1, -1, 1));
-			obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(1, -1, -1));
-			otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, 1, 1));
-			otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(1, 1, -1));
-		}
-
 		for (const auto& element : BlockModel->GetElements())
 		{
-			RenderableFace renderable = element.GetFace(Face);
-			if (renderable.face == Face)
+			RenderableFace renderable = element.GetFace(RotatedFace);
+			if (renderable.face != RotatedFace)
+				continue;
+
+			const auto& from = element.GetFrom();
+			const auto& to = element.GetTo();
+
+			glm::vec3 bottom_left = glm::vec3(to.x, from.y, to.z);
+			glm::vec3 bottom_right = glm::vec3(to.x, from.y, from.z);
+			glm::vec3 top_left = glm::vec3(to.x, to.y, to.z);
+			glm::vec3 top_right = glm::vec3(to.x, to.y, from.z);
+
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+
+			bottom_left += BlockPosition;
+			bottom_right += BlockPosition;
+			top_left += BlockPosition;
+			top_right += BlockPosition;
+
+			const glm::vec3& tint = kTints[renderable.tint_index + 1];
+
+			glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
+			glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
+			glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
+			glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
+
+			int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
+			if (element.ShouldShade())
 			{
-				TextureHandle texture = renderable.texture;
-
-				const auto& from = element.GetFrom();
-				const auto& to = element.GetTo();
-
-				glm::vec3 bottom_left = glm::vec3(to.x, from.y, to.z);
-				glm::vec3 bottom_right = glm::vec3(to.x, from.y, from.z);
-				glm::vec3 top_left = glm::vec3(to.x, to.y, to.z);
-				glm::vec3 top_right = glm::vec3(to.x, to.y, from.z);
-
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
-
-				bottom_left += BlockPosition;
-				bottom_right += BlockPosition;
-				top_left += BlockPosition;
-				top_right += BlockPosition;
-
-				const glm::vec3& tint = kTints[renderable.tint_index + 1];
-
-				glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
-				glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
-				glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
-				glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
-
-				int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
-				if (element.ShouldShade())
-				{
-					cobl = obl;
-					cobr = obr;
-					cotl = otl;
-					cotr = otr;
-				}
-
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
-				Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-				Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+				cobl = obl;
+				cobr = obr;
+				cotl = otl;
+				cotr = otr;
 			}
+
+			TextureHandle texture = renderable.texture;
+
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+			Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+			Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
 		}
 	}
-	else if (Face == BlockFace::West)
+	else if (RotatedFace == BlockFace::West)
 	{
-		// Render the west face of the current block.
-		int obl = 3, obr = 3, otl = 3, otr = 3;
-
-		if (false == BlockVariant->HasRotation())
-		{
-			obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, -1, -1));
-			obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, -1, 0), BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(-1, -1, 1));
-			otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(-1, 0, -1), BlockPosition + glm::ivec3(-1, 1, -1));
-			otr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(-1, 1, 0), BlockPosition + glm::ivec3(-1, 0, 1), BlockPosition + glm::ivec3(-1, 1, 1));
-		}
-
 		for (const auto& element : BlockModel->GetElements())
 		{
-			RenderableFace renderable = element.GetFace(Face);
-			if (renderable.face == Face)
+			RenderableFace renderable = element.GetFace(RotatedFace);
+			if (renderable.face != RotatedFace)
+				continue;
+
+			const auto& from = element.GetFrom();
+			const auto& to = element.GetTo();
+
+			glm::vec3 bottom_left = glm::vec3(from.x, from.y, from.z);
+			glm::vec3 bottom_right = glm::vec3(from.x, from.y, to.z);
+			glm::vec3 top_left = glm::vec3(from.x, to.y, from.z);
+			glm::vec3 top_right = glm::vec3(from.x, to.y, to.z);
+
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
+			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+
+			bottom_left += BlockPosition;
+			bottom_right += BlockPosition;
+			top_left += BlockPosition;
+			top_right += BlockPosition;
+
+			const glm::vec3& tint = kTints[renderable.tint_index + 1];
+
+			glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
+			glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
+			glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
+			glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
+
+			int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
+			if (element.ShouldShade())
 			{
-				TextureHandle texture = renderable.texture;
-
-				const auto& from = element.GetFrom();
-				const auto& to = element.GetTo();
-
-				glm::vec3 bottom_left = glm::vec3(from.x, from.y, from.z);
-				glm::vec3 bottom_right = glm::vec3(from.x, from.y, to.z);
-				glm::vec3 top_left = glm::vec3(from.x, to.y, from.z);
-				glm::vec3 top_right = glm::vec3(from.x, to.y, to.z);
-
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
-
-				bottom_left += BlockPosition;
-				bottom_right += BlockPosition;
-				top_left += BlockPosition;
-				top_right += BlockPosition;
-
-				const glm::vec3& tint = kTints[renderable.tint_index + 1];
-
-				glm::vec2 bl_uv(renderable.uv_from.x, renderable.uv_to.y);
-				glm::vec2 br_uv(renderable.uv_to.x, renderable.uv_to.y);
-				glm::vec2 tr_uv(renderable.uv_to.x, renderable.uv_from.y);
-				glm::vec2 tl_uv(renderable.uv_from.x, renderable.uv_from.y);
-
-				int cobl = 3, cobr = 3, cotl = 3, cotr = 3;
-				if (element.ShouldShade())
-				{
-					cobl = obl;
-					cobr = obr;
-					cotl = otl;
-					cotr = otr;
-				}
-
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
-				Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-
-				Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
-				Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
-				Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+				cobl = obl;
+				cobr = obr;
+				cotl = otl;
+				cotr = otr;
 			}
+
+			TextureHandle texture = renderable.texture;
+
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
+			Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+
+			Vertices.emplace_back(top_right, tr_uv, texture, tint, cotr);
+			Vertices.emplace_back(top_left, tl_uv, texture, tint, cotl);
+			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
 		}
-		
+
 	}
 }
 
@@ -888,6 +880,13 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext&
 				if (currentVariant == nullptr)
 					continue;
 
+				const auto& subvariants = currentVariant->GetSubvariants();
+				if (false == subvariants.empty())
+				{
+					const auto& randomSubvariant = select_randomly(subvariants.begin(), subvariants.end());
+					//currentVariant = randomSubvariant->get();
+				}
+
 				const BlockModel* currentVariantModel = currentVariant->GetModel();
 				if (currentVariantModel == nullptr)
 					continue;
@@ -895,8 +894,11 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext&
 				if (currentVariantModel->GetElements().empty())
 					continue;
 
-				std::vector<SFacePlusVertex> vertices2;
-				RotateCube(vertices2, currentVariant->GetRotations());
+				std::vector<SFacePlusVertex> facePlusVertexRotated;
+				for (size_t i = 0; i < sizeof(verticesPlusFaces) / sizeof(SFacePlusVertex); i++)
+					facePlusVertexRotated.push_back(verticesPlusFaces[i]);
+
+				RotateCube(facePlusVertexRotated, currentVariant->GetRotations());
 
 				for (size_t i = 0; i < sizeof(verticesPlusFaces) / sizeof(SFacePlusVertex); i++)
 				{
@@ -905,8 +907,8 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext&
 					const CMinecraftBlock* block = context.GetBlock(BlockPosition + glm::ivec3(facePlusVertex.Pos));
 					if (false == IsOccluding(currentVariant, facePlusVertex.Face, block))
 					{
-						const BlockFace aboveFace = GetFaceFromRotation(vertices2, facePlusVertex.Face);
-						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, aboveFace);
+						const BlockFace rotatedFace = GetFaceFromRotation(facePlusVertexRotated, facePlusVertex.Face);
+						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, rotatedFace, facePlusVertex.Face);
 					}
 				}
 			}
@@ -943,7 +945,7 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(int64 chunk_x, int64 chunk_y, in
 
 void CMinecraftChunkMeshGenerator::OnChunkUnload(std::shared_ptr<ChunkColumn> chunk)
 {
-	if (chunk == nullptr) 
+	if (chunk == nullptr)
 		return;
 
 	for (int y = 0; y < 16; ++y)

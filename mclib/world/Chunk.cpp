@@ -191,7 +191,8 @@ const CMinecraftBlock* ChunkColumn::GetBlock(glm::ivec3 position)
 BlockEntityPtr ChunkColumn::GetBlockEntity(glm::ivec3 worldPos)
 {
 	auto iter = m_BlockEntities.find(worldPos);
-	if (iter == m_BlockEntities.end()) return nullptr;
+	if (iter == m_BlockEntities.end()) 
+		return nullptr;
 	return iter->second;
 }
 
