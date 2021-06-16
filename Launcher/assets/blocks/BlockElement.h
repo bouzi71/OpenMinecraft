@@ -57,11 +57,11 @@ public:
 
 	bool IsFullExtent() const { return m_FullExtent; }
 
-	void SetShouldShade(bool shade) { m_Shade = shade; }
 	bool ShouldShade() const { return m_Shade; }
+	void SetShouldShade(bool shade) { m_Shade = shade; }
 
-	ElementRotation& GetRotation() { return m_Rotation; }
 	const ElementRotation& GetRotation() const { return m_Rotation; }
+	void SetRotation(const ElementRotation& ElementRotation) { m_Rotation = ElementRotation; }
 
 private:
 	std::vector<RenderableFace> m_Faces;

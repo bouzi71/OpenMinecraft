@@ -4,7 +4,7 @@
 #include "BlockFace.h"
 
 const std::string face_strings[] = {
-	"North", "East", "South", "West", "Up", "Down"
+	"North", "East", "South", "West", "Up", "Down", "None"
 };
 
 const std::string& to_string(BlockFace face)

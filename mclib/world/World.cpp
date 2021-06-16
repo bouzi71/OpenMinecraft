@@ -1,59 +1,26 @@
 #include "stdafx.h"
 
-#include <world/World.h>
+// General
+#include "World.h"
+
+// Additional
+#include "block/BlocksLoaderPtr.h"
 
 World::World(PacketDispatcher* dispatcher)
 	: PacketHandler(dispatcher)
 {
-	dispatcher->RegisterHandler(State::Play, play::MultiBlockChange, this);
-	dispatcher->RegisterHandler(State::Play, play::BlockChange, this);
-	dispatcher->RegisterHandler(State::Play, play::ChunkData, this);
-	dispatcher->RegisterHandler(State::Play, play::UnloadChunk, this);
-	dispatcher->RegisterHandler(State::Play, play::Explosion, this);
-	dispatcher->RegisterHandler(State::Play, play::UpdateBlockEntity, this);
-	dispatcher->RegisterHandler(State::Play, play::Respawn, this);
+	GetDispatcher()->RegisterHandler(State::Play, play::MultiBlockChange, this);
+	GetDispatcher()->RegisterHandler(State::Play, play::BlockChange, this);
+	GetDispatcher()->RegisterHandler(State::Play, play::ChunkData, this);
+	GetDispatcher()->RegisterHandler(State::Play, play::UnloadChunk, this);
+	GetDispatcher()->RegisterHandler(State::Play, play::Explosion, this);
+	GetDispatcher()->RegisterHandler(State::Play, play::UpdateBlockEntity, this);
+	GetDispatcher()->RegisterHandler(State::Play, play::Respawn, this);
 }
 
 World::~World()
 {
 	GetDispatcher()->UnregisterHandler(this);
-}
-
-bool World::SetBlock(glm::ivec3 position, uint32 blockData)
-{
-	std::shared_ptr<ChunkColumn> chunk = GetChunk(position);
-	if (!chunk) 
-		return false;
-
-	glm::ivec3 relative(position);
-
-	relative.x %= 16;
-	relative.y %= 16;
-	relative.z %= 16;
-
-	if (relative.x < 0)
-		relative.x += 16;
-
-	if (relative.z < 0)
-		relative.z += 16;
-
-	std::size_t index = (std::size_t)position.y / 16;
-	if ((*chunk)[index] == nullptr)
-	{
-		ChunkPtr section = std::make_shared<Chunk>();
-
-		(*chunk)[index] = section;
-	}
-
-	const CMinecraftBlock* block = BlockRegistry::GetInstance()->GetBlock(blockData);
-	//if (block == nullptr)
-	//{
-	//	printf("World::SetBlock: CMinecraftBlock ID not found '%d'.\r\n", blockData);
-	//	return false;
-	//}
-
-	(*chunk)[index]->SetBlock(relative, block);
-	return true;
 }
 
 void World::HandlePacket(in::ExplosionPacket* packet)
@@ -69,7 +36,7 @@ void World::HandlePacket(in::ExplosionPacket* packet)
 		// Set all affected blocks to air
 		SetBlock(glm::ivec3(absolute), 0);
 
-		const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock(0);
+		const CMinecraftBlock* newBlock = g_BlocksLoader->GetBlock(0);
 		NotifyListeners(&WorldListener::OnBlockChange, glm::ivec3(absolute), newBlock, oldBlock);
 	}
 }
@@ -134,7 +101,7 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 		chunk->RemoveBlockEntity(chunkStart + relative);
 
 		std::size_t index = change.y / 16;
-		const CMinecraftBlock* oldBlock = BlockRegistry::GetInstance()->GetBlock(0);
+		const CMinecraftBlock* oldBlock = g_BlocksLoader->GetBlock(0);
 		if ((*chunk)[index] == nullptr)
 		{
 			(*chunk)[index] = std::make_shared<Chunk>();
@@ -144,7 +111,7 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 			oldBlock = chunk->GetBlock(relative);
 		}
 
-		const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock(change.blockData);
+		const CMinecraftBlock* newBlock = g_BlocksLoader->GetBlock(change.blockData);
 		if (newBlock == nullptr)
 			printf("World::MultiBlockChangePacket: CMinecraftBlock ID not found '%d'.\r\n", change.blockData);
 
@@ -158,7 +125,7 @@ void World::HandlePacket(in::MultiBlockChangePacket* packet)
 
 void World::HandlePacket(in::BlockChangePacket* packet)
 {
-	const CMinecraftBlock* newBlock = BlockRegistry::GetInstance()->GetBlock((uint16)packet->GetBlockId());
+	const CMinecraftBlock* newBlock = g_BlocksLoader->GetBlock((uint16)packet->GetBlockId());
 	const CMinecraftBlock* oldBlock = GetBlock(packet->GetPosition());
 
 	SetBlock(packet->GetPosition(), packet->GetBlockId());
@@ -221,8 +188,8 @@ std::shared_ptr<ChunkColumn> World::GetChunk(glm::ivec3 pos) const
 	ChunkCoord key(x, z);
 
 	auto iter = m_Chunks.find(key);
-
-	if (iter == m_Chunks.end()) return nullptr;
+	if (iter == m_Chunks.end()) 
+		return nullptr;
 
 	return iter->second;
 }
@@ -240,8 +207,8 @@ const CMinecraftBlock* World::GetBlock(glm::dvec3 pos) const
 const CMinecraftBlock* World::GetBlock(glm::ivec3 pos) const
 {
 	std::shared_ptr<ChunkColumn> col = GetChunk(pos);
-	if (!col) 
-		return BlockRegistry::GetInstance()->GetBlock(0);
+	if (col == nullptr) 
+		return g_BlocksLoader->GetBlock(0);
 
 	int64 x = pos.x % 16;
 	int64 z = pos.z % 16;
@@ -276,4 +243,46 @@ std::vector<BlockEntityPtr> World::GetBlockEntities() const
 	}
 
 	return blockEntities;
+}
+
+
+
+//
+// Private
+//
+bool World::SetBlock(glm::ivec3 position, uint32 blockData)
+{
+	std::shared_ptr<ChunkColumn> chunk = GetChunk(position);
+	if (!chunk)
+		return false;
+
+	glm::ivec3 relative(position);
+
+	relative.x %= 16;
+	relative.y %= 16;
+	relative.z %= 16;
+
+	if (relative.x < 0)
+		relative.x += 16;
+
+	if (relative.z < 0)
+		relative.z += 16;
+
+	std::size_t index = (std::size_t)position.y / 16;
+	if ((*chunk)[index] == nullptr)
+	{
+		ChunkPtr section = std::make_shared<Chunk>();
+
+		(*chunk)[index] = section;
+	}
+
+	const CMinecraftBlock* block = g_BlocksLoader->GetBlock(blockData);
+	//if (block == nullptr)
+	//{
+	//	printf("World::SetBlock: CMinecraftBlock ID not found '%d'.\r\n", blockData);
+	//	return false;
+	//}
+
+	(*chunk)[index]->SetBlock(relative, block);
+	return true;
 }

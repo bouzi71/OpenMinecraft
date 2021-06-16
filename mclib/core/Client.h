@@ -39,7 +39,7 @@ class CMinecraftClient
 {
 public:
 	MCLIB_API CMinecraftClient(PacketDispatcher* dispatcher, Version version = Version::Minecraft_1_12_2);
-	MCLIB_API ~CMinecraftClient();
+	MCLIB_API virtual ~CMinecraftClient();
 
 	CMinecraftClient(const CMinecraftClient& rhs) = delete;
 	CMinecraftClient& operator=(const CMinecraftClient& rhs) = delete;

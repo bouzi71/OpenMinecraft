@@ -4,12 +4,13 @@
 #define TERRACOTTA_BLOCK_BLOCKVARIANT_H_
 
 #include "block/Block.h"
-#include "assets/blocks/BlockModel.h"
+
+#include "BlockModel.h"
 
 class BlockVariant
 {
 public:
-	BlockVariant(BlockModel* model, const CMinecraftBlock* block) 
+	BlockVariant(const BlockModel* model, const CMinecraftBlock* block) 
 		: m_Model(model)
 		, m_Block(block)
 		, m_Rotations(0.0f, 0.0f, 0.0f)
@@ -43,7 +44,7 @@ public:
 	}
 
 private:
-	BlockModel* m_Model;
+	const BlockModel* m_Model;
 	const CMinecraftBlock* m_Block;
 	glm::vec3 m_Rotations;
 	bool m_HasRotation;

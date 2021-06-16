@@ -2,7 +2,6 @@
 #define MCLIB_WORLD_CHUNK_H_
 
 #include "block/Block.h"
-#include "block/BlockRegistry.h"
 #include "block/BlockEntity.h"
 #include "common/Types.h"
 #include "nbt/NBT.h"
@@ -26,11 +25,6 @@ struct ChunkColumnMetadata
  */
 class Chunk
 {
-private:
-	std::vector<uint32> m_Palette;
-	std::vector<uint64> m_Data;
-	uint8 m_BitsPerBlock;
-
 public:
 	MCLIB_API Chunk();
 
@@ -50,6 +44,11 @@ public:
 	 * chunkIndex is the index (0-16) of this chunk in the ChunkColumn
 	 */
 	MCLIB_API void Load(DataBuffer& in, ChunkColumnMetadata* meta, int32 chunkIndex);
+
+private:
+	std::vector<uint32> m_Palette;
+	std::vector<uint64> m_Data;
+	uint8 m_BitsPerBlock;
 };
 
 typedef std::shared_ptr<Chunk> ChunkPtr;
@@ -68,13 +67,11 @@ public:
 	typedef std::array<ChunkPtr, ChunksPerColumn>::const_iterator const_iterator;
 	typedef std::array<ChunkPtr, ChunksPerColumn>::const_reference const_reference;
 
-private:
-	std::array<ChunkPtr, ChunksPerColumn> m_Chunks;
-	ChunkColumnMetadata m_Metadata;
-	std::unordered_map<glm::ivec3, BlockEntityPtr> m_BlockEntities;
-
 public:
 	MCLIB_API ChunkColumn(ChunkColumnMetadata metadata);
+	MCLIB_API virtual ~ChunkColumn();
+
+	MCLIB_API void Load(DataBuffer& in);
 
 	ChunkColumn(const ChunkColumn& rhs) = default;
 	ChunkColumn& operator=(const ChunkColumn& rhs) = default;
@@ -130,9 +127,10 @@ public:
 	MCLIB_API BlockEntityPtr GetBlockEntity(glm::ivec3 worldPos);
 	std::vector<BlockEntityPtr> MCLIB_API GetBlockEntities();
 
-	friend MCLIB_API DataBuffer& operator>>(DataBuffer& in, ChunkColumn& column);
+private:
+	std::array<ChunkPtr, ChunksPerColumn> m_Chunks;
+	ChunkColumnMetadata m_Metadata;
+	std::unordered_map<glm::ivec3, BlockEntityPtr> m_BlockEntities;
 };
-
-MCLIB_API DataBuffer& operator>>(DataBuffer& in, ChunkColumn& column);
 
 #endif

@@ -1,13 +1,8 @@
 #ifndef MCLIB_NBT_NBT_H_
 #define MCLIB_NBT_NBT_H_
 
-
 #include <common/Types.h>
 #include <nbt/Tag.h>
-
-
-
-
 
 
 class DataBuffer;

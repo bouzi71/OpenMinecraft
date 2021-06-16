@@ -1,7 +1,7 @@
 #ifndef MCLIB_WORLD_WORLD_H_
 #define MCLIB_WORLD_WORLD_H_
 
-#include <world/Chunk.h>
+#include "Chunk.h"
 #include <protocol/PacketHandler.h>
 #include <protocol/PacketDispatcher.h>
 #include <util/ObserverSubject.h>
@@ -16,16 +16,13 @@ public:
 };
 
 
+
 class World 
 	: public PacketHandler
 	, public ObserverSubject<WorldListener>
 {
-private:
+public:
 	typedef std::pair<int32, int32> ChunkCoord;
-
-	std::map<ChunkCoord, std::shared_ptr<ChunkColumn>> m_Chunks;
-
-	bool MCLIB_API SetBlock(glm::ivec3 position, uint32 blockData);
 
 public:
 	MCLIB_API World(PacketDispatcher* dispatcher);
@@ -59,6 +56,12 @@ public:
 
 	const std::map<ChunkCoord, std::shared_ptr<ChunkColumn>>::const_iterator begin() const { return m_Chunks.begin(); }
 	const std::map<ChunkCoord, std::shared_ptr<ChunkColumn>>::const_iterator end() const { return m_Chunks.end(); }
+
+private:
+	bool MCLIB_API SetBlock(glm::ivec3 position, uint32 blockData);
+
+private:
+	std::map<ChunkCoord, std::shared_ptr<ChunkColumn>> m_Chunks;
 };
 
 #endif

@@ -16,6 +16,9 @@
     <Filter Include="FilesStorage">
       <UniqueIdentifier>{d05b0974-a955-426e-9ab3-528efb4fae86}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets\blocks">
+      <UniqueIdentifier>{3e74d682-4b91-42c3-8e6a-77f611a94b72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\ChunkMesh.h">
@@ -27,13 +30,7 @@
     <ClInclude Include="assets\AssetCache.h">
       <Filter>assets</Filter>
     </ClInclude>
-    <ClInclude Include="assets\AssetLoader.h">
-      <Filter>assets</Filter>
-    </ClInclude>
     <ClInclude Include="assets\stb_image.h">
-      <Filter>assets</Filter>
-    </ClInclude>
-    <ClInclude Include="assets\TextureArray.h">
       <Filter>assets</Filter>
     </ClInclude>
     <ClInclude Include="assets\zip\miniz.h">
@@ -55,6 +52,36 @@
     <ClInclude Include="FilesStorage\ZipArchiveStorage.h">
       <Filter>FilesStorage</Filter>
     </ClInclude>
+    <ClInclude Include="Passes\MinecraftEntityPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockElement.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockFace.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockModel.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\blocks\BlockVariant.h">
+      <Filter>assets\blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\ModelsLoader.h">
+      <Filter>assets</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\TexturesLoader.h">
+      <Filter>assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\MinecraftSelectionPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\BlockstatesLoader.h">
+      <Filter>assets</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\BlocksLoader.h">
+      <Filter>assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\ChunkMesh.cpp">
@@ -66,21 +93,13 @@
     <ClCompile Include="assets\AssetCache.cpp">
       <Filter>assets</Filter>
     </ClCompile>
-    <ClCompile Include="assets\AssetLoader.cpp">
-      <Filter>assets</Filter>
-    </ClCompile>
-    <ClCompile Include="assets\TextureArray.cpp">
-      <Filter>assets</Filter>
-    </ClCompile>
     <ClCompile Include="assets\zip\miniz.cpp">
       <Filter>assets\zip</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ChatWindow.cpp" />
     <ClCompile Include="Collision.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="main2.cpp" />
     <ClCompile Include="Passes\MinecraftCubePass.cpp">
       <Filter>Passes</Filter>
     </ClCompile>
@@ -90,6 +109,31 @@
     <ClCompile Include="SceneMinecraft.cpp" />
     <ClCompile Include="FilesStorage\ZipArchiveStorage.cpp">
       <Filter>FilesStorage</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\MinecraftEntityPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="assets\blocks\BlockFace.cpp">
+      <Filter>assets\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\blocks\BlockModel.cpp">
+      <Filter>assets\blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\ModelsLoader.cpp">
+      <Filter>assets</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\TexturesLoader.cpp">
+      <Filter>assets</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\MinecraftSelectionPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\BlockstatesLoader.cpp">
+      <Filter>assets</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\BlocksLoader.cpp">
+      <Filter>assets</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

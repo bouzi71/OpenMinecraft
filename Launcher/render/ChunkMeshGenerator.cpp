@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
+// General
 #include "ChunkMeshGenerator.h"
 
+// Additional
 #include "../assets/AssetCache.h"
 
 #define _USE_MATH_DEFINES
@@ -10,17 +12,39 @@
 
 namespace
 {
+struct SFacePlusVertex
+{
+	SFacePlusVertex(const glm::vec3& Pos, BlockFace Face)
+		: Pos(Pos)
+		, Face(Face)
+	{}
+
+	glm::vec3 Pos;
+	BlockFace Face;
+} verticesPlusFaces[] = 
+{
+	SFacePlusVertex(glm::vec3(0,  1, 0), BlockFace::Up),
+	SFacePlusVertex(glm::vec3(0, -1, 0), BlockFace::Down),
+
+	SFacePlusVertex(glm::vec3(0, 0,  1), BlockFace::South),
+	SFacePlusVertex(glm::vec3(0, 0, -1), BlockFace::North),
+
+	SFacePlusVertex(glm::vec3(1,  0, 0), BlockFace::East),
+	SFacePlusVertex(glm::vec3(-1, 0, 0), BlockFace::West),
+};
+
 
 
 }
 
 
-CMinecraftChunkMeshGenerator::CMinecraftChunkMeshGenerator(IRenderDevice& RenderDevice, World* world, const glm::vec3& camera_position)
+CMinecraftChunkMeshGenerator::CMinecraftChunkMeshGenerator(IRenderDevice& RenderDevice, AssetCache& AssetCache, World* world, std::shared_ptr<ICameraComponent3D> CameraComponent)
 	: m_RenderDevice(RenderDevice)
+	, m_AssetCache(AssetCache)
 	, m_World(world)
-	, m_ChunkBuildQueue(ChunkMeshBuildComparator(camera_position))
+	, m_ChunkBuildQueue(ChunkMeshBuildComparator(CameraComponent))
 {
-	world->RegisterListener(this);
+	m_World->RegisterListener(this);
 
 	m_Working = true;
 	unsigned int count = std::thread::hardware_concurrency() - 1;
@@ -237,14 +261,14 @@ void CMinecraftChunkMeshGenerator::ProcessChunks()
 
 		std::shared_ptr<IBuffer> verticesB = m_RenderDevice.GetObjectsFactory().CreateVertexBuffer(*vertices);
 
-		std::unique_ptr<CMinecraftChunkMesh> mesh = std::make_unique<CMinecraftChunkMesh>(m_RenderDevice, verticesB, vertices->size());
+		std::unique_ptr<CMinecraftChunkMesh> mesh = std::make_unique<CMinecraftChunkMesh>(m_RenderDevice, verticesB);
 		m_ChunkMeshes[push->pos] = std::move(mesh);
 	}
 }
 
 
 
-bool CMinecraftChunkMeshGenerator::IsOccluding(BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block)
+bool CMinecraftChunkMeshGenerator::IsOccluding(const BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block)
 {
 	if (test_block == nullptr) 
 		return false;
@@ -262,7 +286,7 @@ bool CMinecraftChunkMeshGenerator::IsOccluding(BlockVariant* from_variant, Block
 		}
 	}
 
-	const BlockVariant* variant = g_AssetCache->GetVariant(test_block);
+	const BlockVariant* variant = m_AssetCache.GetBlockstatesLoader().GetVariant(test_block);
 	if (variant == nullptr) 
 		return false;
 
@@ -276,7 +300,7 @@ bool CMinecraftChunkMeshGenerator::IsOccluding(BlockVariant* from_variant, Block
 	bool is_full = false;
 
 	BlockFace opposite = get_opposite_face(face);
-	auto& textures = g_AssetCache->GetTextures();
+	const auto& textures = m_AssetCache.GetTexturesLoader();
 	for (auto& element : model->GetElements())
 	{
 		auto opposite_face = element.GetFace(opposite);
@@ -315,7 +339,7 @@ void ApplyRotations(glm::vec3& bottom_left, glm::vec3& bottom_right, glm::vec3& 
 }
 
 // TODO: Rescaling?
-/*void ApplyRotations(glm::vec3& bottom_left, glm::vec3& bottom_right, glm::vec3& top_left, glm::vec3& top_right, const glm::vec3& variant_rotation, const ElementRotation& rotation)
+void ApplyRotations(glm::vec3& bottom_left, glm::vec3& bottom_right, glm::vec3& top_left, glm::vec3& top_right, const glm::vec3& variant_rotation, const ElementRotation& rotation)
 {
 	glm::vec3 rotations(rotation.angle, rotation.angle, rotation.angle);
 
@@ -347,20 +371,11 @@ void ApplyRotations(glm::vec3& bottom_left, glm::vec3& bottom_right, glm::vec3& 
 	rotations = rotations * (quat * rotation.axis);
 
 	ApplyRotations(bottom_left, bottom_right, top_left, top_right, rotations, quat * (rotation.origin - glm::vec3(0.5, 0.5, 0.5)) + glm::vec3(0.5, 0.5, 0.5));
-}*/
+}
 
 
 
-struct SFacePlusVertex
-{
-	SFacePlusVertex(const glm::vec3& Pos, BlockFace Face)
-		: Pos(Pos)
-		, Face(Face)
-	{}
 
-	glm::vec3 Pos;
-	BlockFace Face;
-};
 
 
 void RotateCube(std::vector<SFacePlusVertex>& Vector, const glm::vec3& Rotations)
@@ -499,7 +514,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 				glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
 
 				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				//ApplyRotations(bottom_left, bottom_right, top_left, top_right, currentVariant->GetRotations(), element.GetRotation());
+				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 				bottom_left += BlockPosition;
 				bottom_right += BlockPosition;
@@ -559,7 +574,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 				glm::vec3 top_right = glm::vec3(from.x, from.y, to.z);
 
 				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				//ApplyRotations(bottom_left, bottom_right, top_left, top_right, currentVariant->GetRotations(), element.GetRotation());
+				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 				bottom_left += BlockPosition;
 				bottom_right += BlockPosition;
@@ -623,7 +638,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 				glm::vec3 top_right = glm::vec3(from.x, to.y, from.z);
 
 				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 				bottom_left += BlockPosition;
 				bottom_right += BlockPosition;
@@ -685,7 +700,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 				glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
 
 				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 				bottom_left += BlockPosition;
 				bottom_right += BlockPosition;
@@ -747,7 +762,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 				glm::vec3 top_right = glm::vec3(to.x, to.y, from.z);
 
 				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 				bottom_left += BlockPosition;
 				bottom_right += BlockPosition;
@@ -809,7 +824,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 				glm::vec3 top_right = glm::vec3(from.x, to.y, to.z);
 
 				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-				//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+				ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 				bottom_left += BlockPosition;
 				bottom_right += BlockPosition;
@@ -854,10 +869,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext& context)
 {
 	std::unique_ptr<std::vector<CMinecraftBlockVertex>> vertices = std::make_unique<std::vector<CMinecraftBlockVertex>>();
-
 	vertices->reserve(12500);
-
-	
 
 	// Sweep through the blocks and generate vertices for the mesh
 	for (int y = 0; y < 16; ++y)
@@ -872,7 +884,7 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext&
 				if (currentBlock == nullptr)
 					continue;
 
-				BlockVariant* currentVariant = g_AssetCache->GetVariant(currentBlock);
+				const BlockVariant* currentVariant = m_AssetCache.GetBlockstatesLoader().GetVariant(currentBlock);
 				if (currentVariant == nullptr)
 					continue;
 
@@ -882,63 +894,19 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext&
 
 				if (currentVariantModel->GetElements().empty())
 					continue;
-				
 
 				std::vector<SFacePlusVertex> vertices2;
 				RotateCube(vertices2, currentVariant->GetRotations());
 
-
+				for (size_t i = 0; i < sizeof(verticesPlusFaces) / sizeof(SFacePlusVertex); i++)
 				{
-					const CMinecraftBlock* above = context.GetBlock(BlockPosition + glm::ivec3(0, 1, 0));
-					if (false == IsOccluding(currentVariant, BlockFace::Up, above))
+					const SFacePlusVertex& facePlusVertex = verticesPlusFaces[i];
+
+					const CMinecraftBlock* block = context.GetBlock(BlockPosition + glm::ivec3(facePlusVertex.Pos));
+					if (false == IsOccluding(currentVariant, facePlusVertex.Face, block))
 					{
-						const BlockFace aboveFace = GetFaceFromRotation(vertices2, BlockFace::Up);
+						const BlockFace aboveFace = GetFaceFromRotation(vertices2, facePlusVertex.Face);
 						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, aboveFace);
-					}
-				}
-
-				{
-					const CMinecraftBlock* below = context.GetBlock(BlockPosition + glm::ivec3(0, -1, 0));
-					if (false == IsOccluding(currentVariant, BlockFace::Down, below))
-					{
-						const BlockFace belowFace = GetFaceFromRotation(vertices2, BlockFace::Down);
-						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, belowFace);
-					}
-				}
-
-				{
-					const CMinecraftBlock* north = context.GetBlock(BlockPosition + glm::ivec3(0, 0, -1));
-					if (false == IsOccluding(currentVariant, BlockFace::North, north))
-					{
-						const BlockFace northFace = GetFaceFromRotation(vertices2, BlockFace::North);
-						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, northFace);
-					}
-				}
-
-				{
-					const CMinecraftBlock* south = context.GetBlock(BlockPosition + glm::ivec3(0, 0, 1));
-					if (false == IsOccluding(currentVariant, BlockFace::South, south))
-					{
-						const BlockFace southFace = GetFaceFromRotation(vertices2, BlockFace::South);
-						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, southFace);
-					}
-				}
-
-				{
-					const CMinecraftBlock* east = context.GetBlock(BlockPosition + glm::ivec3(1, 0, 0));
-					if (false == IsOccluding(currentVariant, BlockFace::East, east))
-					{
-						const BlockFace eastFace = GetFaceFromRotation(vertices2, BlockFace::East);
-						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, eastFace);
-					}
-				}
-
-				{
-					const CMinecraftBlock* west = context.GetBlock(BlockPosition + glm::ivec3(-1, 0, 0));
-					if (false == IsOccluding(currentVariant, BlockFace::West, west))
-					{
-						const BlockFace westFace = GetFaceFromRotation(vertices2, BlockFace::West);
-						FillVerticesForSide(*vertices, context, BlockPosition, currentVariant, currentVariantModel, westFace);
 					}
 				}
 			}
@@ -954,7 +922,6 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext&
 void CMinecraftChunkMeshGenerator::GenerateMesh(int64 chunk_x, int64 chunk_y, int64 chunk_z)
 {
 	CMinecraftChunkMeshBuildContext ctx;
-
 	ctx.world_position = glm::ivec3(chunk_x * 16, chunk_y * 16, chunk_z * 16);
 
 	for (int y = 0; y < 18; ++y)

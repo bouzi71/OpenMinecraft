@@ -1,8 +1,11 @@
 #include "stdafx.h"
 
-#include <world/Chunk.h>
+// General
+#include "Chunk.h"
 
+// Additional
 #include <common/DataBuffer.h>
+#include "block/BlocksLoaderPtr.h"
 
 Chunk::Chunk()
 {
@@ -66,7 +69,7 @@ const CMinecraftBlock* Chunk::GetBlock(glm::ivec3 chunkPosition) const
 {
 	if (chunkPosition.x < 0 || chunkPosition.x > 15 || chunkPosition.y < 0 || chunkPosition.y > 15 || chunkPosition.z < 0 || chunkPosition.z > 15)
 	{
-		return BlockRegistry::GetInstance()->GetBlock(0);
+		return g_BlocksLoader->GetBlock(0);
 	}
 
 	const std::size_t index = (std::size_t)(chunkPosition.y * 16 * 16 + chunkPosition.z * 16 + chunkPosition.x);
@@ -91,7 +94,7 @@ const CMinecraftBlock* Chunk::GetBlock(glm::ivec3 chunkPosition) const
 
 	const uint16 blockType = m_BitsPerBlock < 9 ? m_Palette[value] : value;
 
-	const CMinecraftBlock* block = BlockRegistry::GetInstance()->GetBlock(blockType);
+	const CMinecraftBlock* block = g_BlocksLoader->GetBlock(blockType);
 	//if (block == nullptr)
 	//	printf("World::GetBlock: CMinecraftBlock ID not found '%d'.\r\n", blockType);
 
@@ -151,13 +154,36 @@ ChunkColumn::ChunkColumn(ChunkColumnMetadata metadata)
 		m_Chunks[i] = nullptr;
 }
 
+ChunkColumn::~ChunkColumn()
+{}
+
+void ChunkColumn::Load(DataBuffer & in)
+{
+	ChunkColumnMetadata* meta = &m_Metadata;
+
+	for (int16 i = 0; i < ChunkColumn::ChunksPerColumn; ++i)
+	{
+		// The section mask says whether or not there is data in this chunk.
+		if (meta->sectionmask & (1 << i))
+		{
+			m_Chunks[i] = std::make_shared<Chunk>();
+			m_Chunks[i]->Load(in, meta, i);
+		}
+		else
+		{
+			// Air section, leave null
+			m_Chunks[i] = nullptr;
+		}
+	}
+}
+
 const CMinecraftBlock* ChunkColumn::GetBlock(glm::ivec3 position)
 {
 	int32 chunkIndex = (int32)(position.y / 16);
 	glm::ivec3 relativePosition(position.x, position.y % 16, position.z);
 
-	if (chunkIndex < 0 || chunkIndex > 15 || !m_Chunks[chunkIndex]) 
-		return BlockRegistry::GetInstance()->GetBlock(0);
+	if (chunkIndex < 0 || chunkIndex > 15 || false == m_Chunks[chunkIndex])
+		return g_BlocksLoader->GetBlock(0);
 
 	return m_Chunks[chunkIndex]->GetBlock(relativePosition);
 }
@@ -177,27 +203,4 @@ std::vector<BlockEntityPtr> ChunkColumn::GetBlockEntities()
 		blockEntities.push_back(iter->second);
 
 	return blockEntities;
-}
-
-DataBuffer& operator>>(DataBuffer& in, ChunkColumn& column)
-{
-	ChunkColumnMetadata* meta = &column.m_Metadata;
-
-	for (int16 i = 0; i < ChunkColumn::ChunksPerColumn; ++i)
-	{
-		// The section mask says whether or not there is data in this chunk.
-		if (meta->sectionmask & (1 << i))
-		{
-			column.m_Chunks[i] = std::make_shared<Chunk>();
-
-			column.m_Chunks[i]->Load(in, meta, i);
-		}
-		else
-		{
-			// Air section, leave null
-			column.m_Chunks[i] = nullptr;
-		}
-	}
-
-	return in;
 }

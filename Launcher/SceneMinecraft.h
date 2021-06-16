@@ -13,6 +13,8 @@
 
 #include <world/World.h>
 
+#include "assets/AssetCache.h"
+
 #include "render/ChunkMesh.h"
 #include "render/ChunkMeshGenerator.h"
 
@@ -51,7 +53,12 @@ public:
 	CSceneMinecraft(IBaseManager& BaseManager, IRenderWindow& RenderWindow);
 	virtual ~CSceneMinecraft();
 
-	std::shared_ptr<CMinecraftChunkMeshGenerator> GetMeshGen();
+	std::shared_ptr<CMinecraftChunkMeshGenerator> GetMeshGen() const;
+	std::shared_ptr<AssetCache> GetAssetCache() const;
+	CMinecraftClient& GetNetworkClient() { return m_NetworkClient; }
+
+	const CMinecraftBlock* GetSelectedBlock() const;
+	const glm::ivec3& GetSelectedBlockPosition() const;
 
 	// PlayerListener
 	void OnClientSpawn(PlayerPtr player);
@@ -79,17 +86,17 @@ public:
 private:
 	void Update(UpdateEventArgs& e);
 	void UpdateClient();
+	void UpdateSelectedBlock();
 
 	void CreatePlayer(World* world);
 	glm::dvec3 GetPosition();
-	CMinecraftClient& GetNetworkClient() { return m_NetworkClient; }
-
 
 private:
-	PacketDispatcher dispatcher;
+	PacketDispatcher m_PacketDispatcher;
 	CMinecraftClient m_NetworkClient;
-	World world;
+	World m_World;
 
+	std::shared_ptr<AssetCache> m_AssetCahce;
 	std::shared_ptr<CMinecraftChunkMeshGenerator> m_MeshGen;
 
 private:
@@ -99,4 +106,12 @@ private:
 	float m_LastFrame;
 	float m_LastPositionTime;
 	bool m_Sprinting;
+
+
+
+
+private:
+	const CMinecraftBlock* m_SelectedBlock;
+	glm::ivec3 m_SelectedBlockPosition;
+	std::shared_ptr<IUIControlText> m_SelectedBlockText;
 };

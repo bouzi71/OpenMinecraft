@@ -1,13 +1,11 @@
 #pragma once
 
-#include "../assets/AssetCache.h"
-
-class CMinecraftCubePass
+class CMinecraftEntityPass
 	: public RenderPassPipelined
 {
 public:
-	CMinecraftCubePass(IRenderDevice& RenderDevice, IScene& Scene);
-	virtual ~CMinecraftCubePass();
+	CMinecraftEntityPass(IRenderDevice& RenderDevice, IScene& Scene);
+	virtual ~CMinecraftEntityPass();
 
 	// IRenderPass
 	void Render(RenderEventArgs& e) override;
@@ -20,4 +18,6 @@ private:
 
 	std::shared_ptr<IConstantBuffer> m_PerObjectConstantBuffer;
 	IShaderParameter* m_PerObjectShaderParameter;
+
+	std::shared_ptr<IGeometry> m_EntityGeometry;
 };

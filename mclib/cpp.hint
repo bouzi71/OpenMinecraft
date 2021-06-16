@@ -7,3 +7,6 @@
 #define MCLIB_API __declspec(dllexport)
 #define MCLIB_API __declspec(dllimport)
 #define MCLIB_API __attribute__((visibility("default")))
+#define MCLIB_API __declspec(dllexport)
+#define MCLIB_API __declspec(dllimport)
+#define MCLIB_API __attribute__((visibility("default")))

@@ -5,6 +5,9 @@
 
 // Additional
 #include "Passes/MinecraftCubePass.h"
+#include "Passes/MinecraftEntityPass.h"
+#include "Passes/MinecraftSelectionPass.h"
+
 
 #include <core/Client.h>
 
@@ -27,9 +30,6 @@
 #include <protocol/packets/Packet.h>
 
 
-#include "assets/AssetCache.h"
-#include "assets/AssetLoader.h"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "assets/stb_image.h"
 
@@ -37,9 +37,6 @@
 #ifndef M_TAU
 #define M_TAU ((3.14159f) * (2.0f))
 #endif
-
-
-std::unique_ptr<terra::AssetCache> g_AssetCache;
 
 void GetConnectionParams()
 {
@@ -140,9 +137,9 @@ std::pair<glm::dvec3, Face> GetClosestNormal(const glm::dvec3& pos, BoundingBox 
 }
 
 // TODO: Temporary fun code
-bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, glm::dvec3& hit, glm::dvec3& normal, Face& face)
+bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, const CMinecraftBlock ** Block, glm::ivec3 * BlockPosition, glm::dvec3 * hit, glm::dvec3 * normal, Face * face)
 {
-	static const std::vector<glm::dvec3> directions = {
+	/*static const std::vector<glm::dvec3> directions = {
 		glm::dvec3(0, 0, 0),
 		glm::dvec3(1, 0, 0), glm::dvec3(-1, 0, 0),
 		glm::dvec3(0, 1, 0), glm::dvec3(0, -1, 0),
@@ -154,10 +151,12 @@ bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, 
 		glm::dvec3(0, -1, 1), glm::dvec3(0, -1, -1),
 		glm::dvec3(1, -1, 0), glm::dvec3(1, -1, 1), glm::dvec3(1, -1, -1),
 		glm::dvec3(-1, -1, 0), glm::dvec3(-1, -1, 1), glm::dvec3(-1, -1, -1)
-	};
+	};*/
 
 	Ray ray(from, direction);
 
+	const CMinecraftBlock * closestBlock = nullptr;
+	glm::ivec3 closestBlockPosition = glm::ivec3(0);
 	double closest_distance = std::numeric_limits<double>::max();
 	glm::dvec3 closest_pos;
 	BoundingBox closest_aabb;
@@ -167,23 +166,34 @@ bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, 
 	{
 		glm::dvec3 position = from + direction * i;
 
-		for (glm::dvec3 checkDirection : directions)
+		//for (int x = -1; x <= 2; x++)
 		{
-			glm::dvec3 checkPos = position + checkDirection;
-			const CMinecraftBlock* block = world.GetBlock(checkPos);
-
-			if (block && block->IsOpaque())
+			//for (int y = -1; y <= 2; y++)
 			{
-				BoundingBox bounds = block->GetBoundingBox(checkPos);
-				double distance;
-
-				if (bounds.Intersects(ray, &distance))
+				//for (int z = -1; z <= 2; z++)
 				{
-					if (distance < 0 || distance > range) 
+					glm::dvec3 checkPos = position /*+ glm::dvec3(x, y, z)*/;
+
+					const CMinecraftBlock* block = world.GetBlock(checkPos);
+					if (block == nullptr)
+						continue;
+
+					if (false == block->IsOpaque())
+						continue;
+
+					BoundingBox bounds = block->GetBoundingBox(checkPos);
+
+					double distance;
+					if (false == bounds.Intersects(ray, &distance))
+						continue;
+
+					if (distance < 0 || distance > range)
 						continue;
 
 					if (distance < closest_distance)
 					{
+						closestBlock = block;
+						closestBlockPosition = glm::ivec3((int64)glm::floor(checkPos.x), (int64)glm::floor(checkPos.y), (int64)glm::floor(checkPos.z));
 						closest_distance = distance;
 						closest_pos = from + direction * closest_distance;
 						closest_aabb = bounds;
@@ -192,12 +202,15 @@ bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, 
 				}
 			}
 		}
+
 	}
 
 	if (collided)
 	{
-		hit = closest_pos;
-		std::tie(normal, face) = GetClosestNormal(hit, closest_aabb);
+		*Block = closestBlock;
+		*BlockPosition = closestBlockPosition;
+		*hit = closest_pos;
+		std::tie(*normal, *face) = GetClosestNormal(*hit, closest_aabb);
 		return true;
 	}
 
@@ -210,7 +223,11 @@ bool RayCast(World& world, glm::dvec3 from, glm::dvec3 direction, double range, 
 
 
 
-CGamePlayer::CGamePlayer(World* world) : m_CollisionDetector(world), m_OnGround(false), m_Sneaking(false), m_Transform({})
+CGamePlayer::CGamePlayer(World* world) 
+	: m_CollisionDetector(world)
+	, m_OnGround(false)
+	, m_Sneaking(false)
+	, m_Transform({})
 {
 	m_Transform.bounding_box = BoundingBox(glm::dvec3(-0.3, 0, -0.3), glm::dvec3(0.3, 1.8, 0.3));
 	m_Transform.max_speed = 14.3f;
@@ -284,9 +301,9 @@ void CGamePlayer::Update(float dt)
 
 CSceneMinecraft::CSceneMinecraft(IBaseManager& BaseManager, IRenderWindow& RenderWindow)
 	: SceneBase(BaseManager, RenderWindow)
-	, PacketHandler(&dispatcher)
-	, m_NetworkClient(&dispatcher, Version::Minecraft_1_12_2)
-	, world(GetNetworkClient().GetDispatcher())
+	, PacketHandler(&m_PacketDispatcher)
+	, m_NetworkClient(&m_PacketDispatcher, Version::Minecraft_1_12_2)
+	, m_World(&m_PacketDispatcher)
 	, m_Sprinting(false)
 	, m_LastPositionTime(0)
 
@@ -298,9 +315,12 @@ CSceneMinecraft::CSceneMinecraft(IBaseManager& BaseManager, IRenderWindow& Rende
 
 	m_NetworkClient.GetPlayerManager()->RegisterListener(this);
 
-	dispatcher.RegisterHandler(State::Play, play::UpdateHealth, this);
-	dispatcher.RegisterHandler(State::Play, play::EntityVelocity, this);
-	dispatcher.RegisterHandler(State::Play, play::SpawnPosition, this);
+	m_PacketDispatcher.RegisterHandler(State::Play, play::UpdateHealth, this);
+	m_PacketDispatcher.RegisterHandler(State::Play, play::EntityVelocity, this);
+	m_PacketDispatcher.RegisterHandler(State::Play, play::SpawnPosition, this);
+
+	m_SelectedBlock = nullptr;
+	m_SelectedBlockPosition = glm::ivec3(0, 0, 0);
 }
 
 CSceneMinecraft::~CSceneMinecraft()
@@ -308,13 +328,30 @@ CSceneMinecraft::~CSceneMinecraft()
 	Log::Info("Scene destroyed.");
 }
 
-std::shared_ptr<CMinecraftChunkMeshGenerator> CSceneMinecraft::GetMeshGen()
+std::shared_ptr<CMinecraftChunkMeshGenerator> CSceneMinecraft::GetMeshGen() const
 {
 	return m_MeshGen;
 }
 
+std::shared_ptr<AssetCache> CSceneMinecraft::GetAssetCache() const
+{
+	return m_AssetCahce;
+}
 
 
+
+
+
+
+const CMinecraftBlock * CSceneMinecraft::GetSelectedBlock() const
+{
+	return m_SelectedBlock;
+}
+
+const glm::ivec3 & CSceneMinecraft::GetSelectedBlockPosition() const
+{
+	return m_SelectedBlockPosition;
+}
 
 void CSceneMinecraft::OnClientSpawn(PlayerPtr player)
 {
@@ -403,15 +440,22 @@ void CSceneMinecraft::Initialize()
 		GetCameraController()->GetCamera()->SetPitch(-45);
 	}
 
-	std::shared_ptr<CMinecraftCubePass> pass = MakeShared(CMinecraftCubePass, GetRenderDevice(), *this);
-	pass->ConfigurePipeline(GetRenderWindow().GetRenderTarget());
+	std::shared_ptr<CMinecraftCubePass> minecraftCubePass = MakeShared(CMinecraftCubePass, GetRenderDevice(), *this);
+	minecraftCubePass->ConfigurePipeline(GetRenderWindow().GetRenderTarget());
+	GetRenderer()->Add3DPass(minecraftCubePass);
 
-	GetRenderer()->Add3DPass(pass);
+	std::shared_ptr<CMinecraftEntityPass> minecraftEntityPass = MakeShared(CMinecraftEntityPass, GetRenderDevice(), *this);
+	minecraftEntityPass->ConfigurePipeline(GetRenderWindow().GetRenderTarget());
+	GetRenderer()->Add3DPass(minecraftEntityPass);
+
+	std::shared_ptr<CMinecraftSelectionPass> minecraftSelectionPass = MakeShared(CMinecraftSelectionPass, GetRenderDevice(), *this);
+	minecraftSelectionPass->ConfigurePipeline(GetRenderWindow().GetRenderTarget());
+	GetRenderer()->Add3DPass(minecraftSelectionPass);
 
 
-
-	BlockRegistry::CreateInstance(GetBaseManager());
-	BlockRegistry::GetInstance()->RegisterVanillaBlocks();
+	m_SelectedBlockText = CreateUIControlTCast<IUIControlText>();
+	m_SelectedBlockText->SetLocalPosition(glm::vec2(5.0f, 150.0f));
+	m_SelectedBlockText->GetProperties()->GetPropertyT<std::string>("Text")->Set("");
 
 
 	std::string server = "127.0.0.1";
@@ -420,11 +464,8 @@ void CSceneMinecraft::Initialize()
 	std::string password = "";
 	
 
-	g_AssetCache = std::make_unique<terra::AssetCache>(GetBaseManager());
-
-
-	terra::AssetLoader asset_loader(GetBaseManager(), *g_AssetCache);
-	asset_loader.Initialize();
+	m_AssetCahce = std::make_unique<AssetCache>(GetBaseManager());
+	m_AssetCahce->Initialize();
 
 	try
 	{
@@ -443,11 +484,11 @@ void CSceneMinecraft::Initialize()
 		return;
 	}
 
-	m_MeshGen = std::make_shared<CMinecraftChunkMeshGenerator>(GetRenderDevice(), &world, GetCameraController()->GetCamera()->GetPosition());
+	m_MeshGen = std::make_shared<CMinecraftChunkMeshGenerator>(GetRenderDevice(), *m_AssetCahce, &m_World, GetCameraController()->GetCamera());
 
 	terra::ChatWindow chat(GetNetworkClient().GetDispatcher(), GetNetworkClient().GetConnection());
 
-	CreatePlayer(&world);
+	CreatePlayer(&m_World);
 
 }
 
@@ -460,34 +501,35 @@ void CSceneMinecraft::OnUpdate(UpdateEventArgs & e)
 {
 	__super::OnUpdate(e);
 
+	UpdateClient();
+
 	Update(e);
+
+	UpdateSelectedBlock();
 }
 
 bool CSceneMinecraft::OnMousePressed(const MouseButtonEventArgs & e, const Ray& RayToWorld)
 {
-	auto& world = *m_NetworkClient.GetWorld();
-	glm::dvec3 position(GetCameraController()->GetCamera()->GetPosition().x, GetCameraController()->GetCamera()->GetPosition().y, GetCameraController()->GetCamera()->GetPosition().z);
-	glm::dvec3 forward(GetCameraController()->GetCamera()->GetDirection().x, GetCameraController()->GetCamera()->GetDirection().y, GetCameraController()->GetCamera()->GetDirection().z);
+	glm::dvec3 forward(GetCameraController()->GetCamera()->GetDirection());
+	const CMinecraftBlock * block = nullptr;
+	glm::ivec3 blockPosition = glm::ivec3(0, 0, 0);
 	glm::dvec3 hit;
 	glm::dvec3 normal;
 	Face face;
 
 	if (e.Button == MouseButton::Left && e.State == ButtonState::Pressed)
 	{
-		if (RayCast(world, position, forward, 5.0, hit, normal, face))
+		
+		if (RayCast(m_World, GetCameraController()->GetCamera()->GetPosition(), forward, 5.0, &block, &blockPosition, &hit, &normal, &face))
 		{
 
 			{
-				out::PlayerDiggingPacket::Status status = out::PlayerDiggingPacket::Status::StartedDigging;
-				out::PlayerDiggingPacket packet(status, glm::ivec3(hit + forward * 0.1), Face::West);
-
+				out::PlayerDiggingPacket packet(out::PlayerDiggingPacket::Status::StartedDigging, blockPosition/*glm::ivec3(hit + forward * 0.1)*/, face);
 				m_NetworkClient.GetConnection()->SendPacket(&packet);
 			}
 
 			{
-				out::PlayerDiggingPacket::Status status = out::PlayerDiggingPacket::Status::FinishedDigging;
-				out::PlayerDiggingPacket packet(status, glm::ivec3(hit + forward * 0.1), Face::West);
-
+				out::PlayerDiggingPacket packet(out::PlayerDiggingPacket::Status::FinishedDigging, blockPosition/*glm::ivec3(hit + forward * 0.1)*/, face);
 				m_NetworkClient.GetConnection()->SendPacket(&packet);
 			}
 		}
@@ -498,7 +540,7 @@ bool CSceneMinecraft::OnMousePressed(const MouseButtonEventArgs & e, const Ray& 
 	}
 	else if (e.Button == MouseButton::Right && e.State == ButtonState::Pressed)
 	{
-		if (RayCast(world, position, forward, 5.0, hit, normal, face))
+		if (RayCast(m_World, GetCameraController()->GetCamera()->GetPosition(), forward, 5.0, &block, &blockPosition, &hit, &normal, &face))
 		{
 			Inventory& inventory = *m_NetworkClient.GetInventoryManager()->GetPlayerInventory();
 
@@ -527,7 +569,9 @@ bool CSceneMinecraft::OnMousePressed(const MouseButtonEventArgs & e, const Ray& 
 }
 
 void CSceneMinecraft::OnMouseMoved(const MouseMotionEventArgs & e, const Ray & RayToWorld)
-{}
+{
+
+}
 
 
 
@@ -552,8 +596,6 @@ void CSceneMinecraft::OnWindowKeyReleased(KeyEventArgs & e)
 //
 void CSceneMinecraft::Update(UpdateEventArgs& e)
 {
-	UpdateClient();
-
 	float current_frame = (e.TotalTime / 1000.0f);
 	if ((current_frame - m_LastFrame) < (1.0f / 60.0f))
 		return;
@@ -630,13 +672,8 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 	m_Player->GetTransform().max_speed = 4.3f + (int)m_Sprinting * 1.3f;
 	m_Player->GetTransform().input_acceleration += glm::vec3(direction) * 85.0f;
 
-	//Sleep(1);
-
-	//Log::Info("Player pos BFORE %f, %f, %f", m_Player->GetTransform().position.x, m_Player->GetTransform().position.y, m_Player->GetTransform().position.z);
 
 	m_Player->Update(m_DeltaTime);
-
-	//Log::Info("Player pos AFTER %f, %f, %f", m_Player->GetTransform().position.x, m_Player->GetTransform().position.y, m_Player->GetTransform().position.z);
 
 	glm::vec3 eye = glm::vec3(m_Player->GetTransform().position) + glm::vec3(0.0f, 1.6f, 0.0f);
 	GetCameraController()->GetCamera()->SetPosition(eye);
@@ -681,6 +718,31 @@ void CSceneMinecraft::UpdateClient()
 	catch (std::exception& e)
 	{
 		Log::Error("Exceptiong while update client '%s'.", e.what());
+	}
+}
+
+void CSceneMinecraft::UpdateSelectedBlock()
+{
+	const CMinecraftBlock * block = nullptr;
+	glm::ivec3 blockPosition = glm::ivec3(0);
+	glm::dvec3 hit;
+	glm::dvec3 normal;
+	Face face;
+
+	if (RayCast(m_World, GetCameraController()->GetCamera()->GetPosition(), GetCameraController()->GetCamera()->GetDirection(), 5.0, &block, &blockPosition, &hit, &normal, &face))
+	{
+		m_SelectedBlock = block;
+		m_SelectedBlockPosition = blockPosition;
+
+
+		std::string selectedBlockText = "BlockName: " + m_SelectedBlock->GetName() + "\nBlock pos: " + std::to_string(blockPosition.x) + ", " + std::to_string(blockPosition.y) + ", " + std::to_string(blockPosition.z);
+		m_SelectedBlockText->GetProperties()->GetPropertyT<std::string>("Text")->Set(selectedBlockText);
+	}
+	else
+	{
+		m_SelectedBlock = nullptr;
+		m_SelectedBlockPosition = glm::ivec3(0, 0, 0);
+		m_SelectedBlockText->GetProperties()->GetPropertyT<std::string>("Text")->Set("<none selected>");
 	}
 }
 

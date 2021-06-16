@@ -1,9 +1,15 @@
 #include "stdafx.h"
 
-#include "TextureArray.h"
+// General
+#include "TexturesLoader.h"
 
-namespace terra
-{
+// Additional
+#include "AssetCache.h"
+
+#include "stb_image.h"
+
+
+#if 0
 
 struct Mipmap
 {
@@ -77,40 +83,41 @@ void BoxFilterMipmap(std::vector<unsigned char>& previous, std::vector<unsigned 
 	}
 }
 
-TextureArray::TextureArray(const IBaseManager& BaseManager)
+#endif
+
+
+CMinecraftTexturesLoader::CMinecraftTexturesLoader(const IBaseManager& BaseManager, AssetCache& AssetCache)
 	: m_BaseManager(BaseManager)
+	, m_AssetCache(AssetCache)
 {
-	memset(m_Transparency, 0, sizeof(m_Transparency));
 }
 
-TextureHandle TextureArray::Append(const std::string& filename, const std::string& texture)
+CMinecraftTexturesLoader::~CMinecraftTexturesLoader()
+{}
+
+bool CMinecraftTexturesLoader::GetTexture(const std::string& filename, TextureHandle* handle)
 {
-	auto iter = m_Textures.find(filename);
-	if (iter != m_Textures.end())
-	{
-		return iter->second;
-	}
+	if (filename.empty())
+		return false;
 
-	TextureHandle handle = static_cast<TextureHandle>(m_Textures.size());
+	const auto& iter = m_Textures.find(filename);
+	if (iter == m_Textures.end())
+		return LoadTexture(filename, handle);
 
-	m_Textures[filename] = handle;
-	m_TextureData[handle].assign((uint8*)texture.c_str(), (uint8*)(texture.c_str() + texture.size()));
-
-	for (std::size_t i = 4; i < texture.size(); i += 4)
-	{
-		char alpha = texture[i];
-
-		if (texture[i] == 0)
-		{
-			m_Transparency[handle] = true;
-			break;
-		}
-	}
-
-	return handle;
+	*handle = iter->second;
+	return true;
 }
 
-void TextureArray::Generate()
+bool CMinecraftTexturesLoader::IsTransparent(TextureHandle handle) const
+{
+	const auto& textureTransperencyIt = m_TextureTransperency.find(handle);
+	if (textureTransperencyIt == m_TextureTransperency.end())
+		return false;
+
+	return textureTransperencyIt->second;
+}
+
+void CMinecraftTexturesLoader::Generate()
 {
 	m_TextureId = m_BaseManager.GetApplication().GetRenderDevice().GetObjectsFactory().CreateEmptyTexture();
 
@@ -119,11 +126,9 @@ void TextureArray::Generate()
 		bytesArrays.push_back(texture.second);
 	m_TextureId->LoadTexture2DArrayFromBytes(bytesArrays, 16, 16, 4);
 
-	int size = static_cast<int>(m_Textures.size());
+	/*int size = static_cast<int>(m_Textures.size());
 	int dim = 16;
-
-
-	/*for (int i = 1; i < levels; ++i)
+	for (int i = 1; i < levels; ++i)
 	{
 		dim /= 2;
 
@@ -142,26 +147,66 @@ void TextureArray::Generate()
 	m_TextureData.clear();
 }
 
-std::shared_ptr<ITexture> TextureArray::GetTexture()
+std::shared_ptr<ITexture> CMinecraftTexturesLoader::GetTexture() const
 {
 	return m_TextureId;
 }
 
-bool TextureArray::GetTexture(const std::string& filename, TextureHandle* handle)
+
+
+//
+// Private
+//
+TextureHandle CMinecraftTexturesLoader::Append(const std::string& filename, const std::string& texture)
 {
-	auto iter = m_Textures.find(filename);
-	if (iter == m_Textures.end())
+	const auto& texturesIt = m_Textures.find(filename);
+	if (texturesIt != m_Textures.end())
+		return texturesIt->second;
+
+	TextureHandle handle = static_cast<TextureHandle>(m_Textures.size());
+
+	m_Textures[filename] = handle;
+	m_TextureData[handle].assign((uint8*)texture.c_str(), (uint8*)(texture.c_str() + texture.size()));
+
+	for (size_t i = 3; i < texture.size(); i += 4)
 	{
+		if (texture[i] == 0)
+		{
+			m_TextureTransperency[handle] = true;
+			break;
+		}
+	}
+
+	return handle;
+}
+
+bool CMinecraftTexturesLoader::LoadTexture(const std::string& path, TextureHandle * handle)
+{
+	std::string textureFileFullName = "assets/minecraft/textures/" + path + ".png";
+
+	auto blockStateFile = m_BaseManager.GetManager<IFilesManager>()->Open(textureFileFullName);
+	if (blockStateFile == nullptr)
+	{
+		Log::Error("CMinecraftTexturesLoader::LoadTexture: Unable to open file '%s'.", textureFileFullName.c_str());
 		return false;
 	}
 
-	*handle = iter->second;
+	int width, height, channels;
+	unsigned char* image = stbi_load_from_memory(blockStateFile->getData(), blockStateFile->getSize(), &width, &height, &channels, STBI_rgb_alpha);
+	if (image == nullptr)
+	{
+		Log::Error("CMinecraftTexturesLoader::LoadTexture: Image for file '%s' is nullptr.", textureFileFullName.c_str());
+		return false;
+	}
+
+	if (width == 16)
+	{
+		std::size_t size = 16 * 16 * 4;
+		*handle = Append(path, std::string((char*)image, size));
+	}
+
+	stbi_image_free(image);
+
 	return true;
 }
 
-bool TextureArray::IsTransparent(TextureHandle handle) const
-{
-	return m_Transparency[handle];
-}
-
-} // ns terra

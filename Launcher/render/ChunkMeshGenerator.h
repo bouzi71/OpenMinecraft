@@ -3,24 +3,17 @@
 
 #include "ChunkMesh.h"
 
-#include <utility>
-
-
-#include <common/Vector.h>
 #include <world/World.h>
 
 #include "../PriorityQueue.h"
 
-#include <assets/blocks/BlockFace.h>
-#include <assets/blocks/BlockElement.h>
-#include <assets/blocks/BlockModel.h>
-#include <assets/blocks/BlockVariant.h>
+#include "../assets/AssetCache.h"
 
+#include "../assets/blocks/BlockFace.h"
+#include "../assets/blocks/BlockElement.h"
+#include "../assets/blocks/BlockModel.h"
+#include "../assets/blocks/BlockVariant.h"
 
-namespace block
-{
-class BlockModel;
-}
 
 struct CMinecraftBlockVertex
 {
@@ -64,7 +57,7 @@ class CMinecraftChunkMeshGenerator
 public:
 	using iterator = std::unordered_map<glm::ivec3, std::unique_ptr<CMinecraftChunkMesh>>::iterator;
 
-	CMinecraftChunkMeshGenerator(IRenderDevice& RenderDevice, World* world, const glm::vec3& camera_position);
+	CMinecraftChunkMeshGenerator(IRenderDevice& RenderDevice, AssetCache& AssetCache, World* world, std::shared_ptr<ICameraComponent3D> CameraComponent);
 	virtual ~CMinecraftChunkMeshGenerator();
 
 	// WorldListener
@@ -83,12 +76,11 @@ public:
 	void ProcessChunks();
 
 private:
-	struct ChunkMeshBuildComparator
+	class ChunkMeshBuildComparator
 	{
-		const glm::vec3& position;
-
-		ChunkMeshBuildComparator(const glm::vec3& position) 
-			: position(position) 
+	public:
+		ChunkMeshBuildComparator(std::shared_ptr<ICameraComponent3D> CameraComponent) 
+			: m_CameraComponent(CameraComponent)
 		{}
 
 		bool operator()(const std::shared_ptr<CMinecraftChunkMeshBuildContext>& first_ctx, const std::shared_ptr<CMinecraftChunkMeshBuildContext>& second_ctx)
@@ -99,11 +91,14 @@ private:
 			glm::vec3 f(first.x, 0, first.z);
 			glm::vec3 s(second.x, 0, second.z);
 
-			glm::vec3 a = f - position;
-			glm::vec3 b = s - position;
+			glm::vec3 a = f - m_CameraComponent->GetPosition();
+			glm::vec3 b = s - m_CameraComponent->GetPosition();
 
 			return glm::dot(a, a) > glm::dot(b, b);
 		}
+
+	private:
+		std::shared_ptr<ICameraComponent3D> m_CameraComponent;
 	};
 
 	struct VertexPush
@@ -117,12 +112,13 @@ private:
 		{}
 	};
 
-	bool IsOccluding(BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block);
+	bool IsOccluding(const BlockVariant* from_variant, BlockFace face, const CMinecraftBlock* test_block);
 	void WorkerUpdate();
 	void EnqueueBuildWork(long chunk_x, int chunk_y, long chunk_z);
 
 private:
 	IRenderDevice& m_RenderDevice;
+	AssetCache& m_AssetCache;
 
 	std::mutex m_QueueMutex;
 	PriorityQueue<std::shared_ptr<CMinecraftChunkMeshBuildContext>, ChunkMeshBuildComparator> m_ChunkBuildQueue;

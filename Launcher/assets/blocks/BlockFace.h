@@ -1,19 +1,14 @@
 #ifndef TERRACOTTA_BLOCK_BLOCKFACE_H_
 #define TERRACOTTA_BLOCK_BLOCKFACE_H_
 
-
-
 enum class BlockFace
 {
 	North,
 	East,
 	South,
 	West,
-
-
 	Up,
 	Down,
-
 	None
 };
 

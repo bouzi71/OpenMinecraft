@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="assets">
-      <UniqueIdentifier>{cc96c1cf-b0d6-4bff-a77d-13819da852c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="assets\blocks">
-      <UniqueIdentifier>{517872fe-e873-4db5-8ae1-0b75e0e70eb3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="block">
       <UniqueIdentifier>{d7804bea-ef6d-4b8c-9d2e-60b34f905034}</UniqueIdentifier>
     </Filter>
@@ -49,9 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block\Block.h">
-      <Filter>block</Filter>
-    </ClInclude>
-    <ClInclude Include="block\BlockRegistry.h">
       <Filter>block</Filter>
     </ClInclude>
     <ClInclude Include="block\BlockEntity.h">
@@ -267,21 +258,6 @@
     <ClInclude Include="util\Yggdrasil.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="assets\blocks\BlockElement.h">
-      <Filter>assets\blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="assets\blocks\BlockFace.h">
-      <Filter>assets\blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="assets\blocks\BlockModel.h">
-      <Filter>assets\blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="assets\blocks\BlockState.h">
-      <Filter>assets\blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="assets\blocks\BlockVariant.h">
-      <Filter>assets\blocks</Filter>
-    </ClInclude>
     <ClInclude Include="block\specific\BrewingStand.h">
       <Filter>block\specific</Filter>
     </ClInclude>
@@ -342,12 +318,12 @@
     <ClInclude Include="util\CreativeCreator.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="block\BlocksLoaderPtr.h">
+      <Filter>block</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="block\Block.cpp">
-      <Filter>block</Filter>
-    </ClCompile>
-    <ClCompile Include="block\BlockRegistry.cpp">
       <Filter>block</Filter>
     </ClCompile>
     <ClCompile Include="block\BlockEntity.cpp">
@@ -512,15 +488,6 @@
     <ClCompile Include="util\Yggdrasil.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="assets\blocks\BlockFace.cpp">
-      <Filter>assets\blocks</Filter>
-    </ClCompile>
-    <ClCompile Include="assets\blocks\BlockModel.cpp">
-      <Filter>assets\blocks</Filter>
-    </ClCompile>
-    <ClCompile Include="assets\blocks\BlockState.cpp">
-      <Filter>assets\blocks</Filter>
-    </ClCompile>
     <ClCompile Include="block\specific\BrewingStand.cpp">
       <Filter>block\specific</Filter>
     </ClCompile>
@@ -568,6 +535,9 @@
     </ClCompile>
     <ClCompile Include="util\CreativeCreator.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="block\BlocksLoaderPtr.cpp">
+      <Filter>block</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

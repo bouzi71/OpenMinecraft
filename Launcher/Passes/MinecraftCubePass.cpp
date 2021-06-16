@@ -33,9 +33,10 @@ void CMinecraftCubePass::Render(RenderEventArgs & e)
 	//m_PerObjectShaderParameter->Bind();
 
 	CSceneMinecraft& sceneMinecraft = dynamic_cast<CSceneMinecraft&>(m_MinecraftScene);
-	auto meshGen = sceneMinecraft.GetMeshGen();
+	std::shared_ptr<AssetCache> assetCache = sceneMinecraft.GetAssetCache();
+	std::shared_ptr<CMinecraftChunkMeshGenerator> meshGen = sceneMinecraft.GetMeshGen();
 
-	g_AssetCache->GetTextures().GetTexture()->Bind(0, GetPipeline().GetPixelShaderPtr(), IShaderParameter::EType::Texture);
+	assetCache->GetTexturesLoader().GetTexture()->Bind(0, GetPipeline().GetPixelShaderPtr(), IShaderParameter::EType::Texture);
 
 	for (auto i = meshGen->begin(); i != meshGen->end(); i++)
 	{

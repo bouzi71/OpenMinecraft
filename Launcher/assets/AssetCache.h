@@ -1,18 +1,9 @@
-#ifndef TERRACOTTA_ASSETS_ASSETCACHE_H_
-#define TERRACOTTA_ASSETS_ASSETCACHE_H_
+#pragma once
 
-#include "TextureArray.h"
-
-#include <assets/blocks/BlockState.h>
-#include <assets/blocks/BlockModel.h>
-#include <assets/blocks/BlockVariant.h>
-
-#include <block/Block.h>
-
-namespace terra
-{
-
-class ZipArchive;
+#include "TexturesLoader.h"
+#include "ModelsLoader.h"
+#include "BlockstatesLoader.h"
+#include "BlocksLoader.h"
 
 class AssetCache
 {
@@ -20,31 +11,16 @@ public:
 	AssetCache(const IBaseManager& BaseManager);
 	virtual ~AssetCache();
 
-	TextureArray& GetTextures() { return m_TextureArray; }
-	TextureHandle AddTexture(const std::string& path, const std::string& data);
+	void Initialize();
 
-	void AddVariantModel(std::unique_ptr<BlockVariant> variant);
-	BlockVariant* GetVariant(const CMinecraftBlock* block);
-
-	std::vector<BlockModel*> GetBlockModels(const std::string& find);
-	BlockModel* GetBlockModel(const std::string& path);
-	void AddBlockModel(const std::string& path, std::unique_ptr<BlockModel> model);
+	CMinecraftTexturesLoader& GetTexturesLoader();
+	CMinecraftModelsLoader& GetModelsLoader();
+	CMinecraftBlockstatesLoader& GetBlockstatesLoader();
+	CMinecraftBlocksLoader& GetBlocksLoader();
 
 private:
-	// Maps block id to the BlockState
-	//std::vector<BlockVariant*> m_VariantCache;
-
-	// Maps model path to a BlockModel
-	std::unordered_map<std::string, std::unique_ptr<BlockModel>> m_BlockModels;
-
-	// Block name -> (list of Variants)
-	std::map<uint32, std::unique_ptr<BlockVariant>> m_BlockVariants;
-
-	TextureArray m_TextureArray;
+	CMinecraftTexturesLoader m_TexturesLoader;
+	CMinecraftModelsLoader m_ModelsLoader;
+	CMinecraftBlockstatesLoader m_BlockstatesLoader;
+	CMinecraftBlocksLoader m_BlocksLoader;
 };
-
-} // terra
-
-extern std::unique_ptr<terra::AssetCache> g_AssetCache;
-
-#endif

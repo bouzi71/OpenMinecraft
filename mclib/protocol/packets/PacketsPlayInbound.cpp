@@ -945,10 +945,10 @@ ChunkDataPacket::ChunkDataPacket()
 bool ChunkDataPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 {
 	ChunkColumnMetadata metadata;
-
 	data >> metadata.x;
 	data >> metadata.z;
 	data >> metadata.continuous;
+
 	CVarInt mask;
 	data >> mask;
 
@@ -960,12 +960,10 @@ bool ChunkDataPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 		metadata.skylight = true;
 
 	CVarInt size;
-
 	data >> size;
 
 	m_ChunkColumn = std::make_shared<ChunkColumn>(metadata);
-
-	data >> *m_ChunkColumn;
+	m_ChunkColumn->Load(data);
 
 	// Skip biome information
 	if (metadata.continuous)
@@ -979,12 +977,11 @@ bool ChunkDataPacket::Deserialize(DataBuffer& data, std::size_t packetLength)
 	for (int32 i = 0; i < entities.GetInt(); ++i)
 	{
 		NBT nbt;
-
 		data >> nbt;
 
 		BlockEntityPtr blockEntity = BlockEntity::CreateFromNBT(&nbt);
-
-		if (blockEntity == nullptr) continue;
+		if (blockEntity == nullptr) 
+			continue;
 
 		m_BlockEntities.push_back(blockEntity);
 		m_ChunkColumn->AddBlockEntity(blockEntity);

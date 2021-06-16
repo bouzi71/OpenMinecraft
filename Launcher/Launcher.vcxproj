@@ -12,8 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assets\AssetCache.cpp" />
-    <ClCompile Include="assets\AssetLoader.cpp" />
-    <ClCompile Include="assets\TextureArray.cpp" />
+    <ClCompile Include="assets\BlocksLoader.cpp" />
+    <ClCompile Include="assets\BlockstatesLoader.cpp" />
+    <ClCompile Include="assets\blocks\BlockFace.cpp" />
+    <ClCompile Include="assets\blocks\BlockModel.cpp" />
+    <ClCompile Include="assets\ModelsLoader.cpp" />
+    <ClCompile Include="assets\TexturesLoader.cpp" />
     <ClCompile Include="assets\zip\miniz.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -23,9 +27,10 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="FilesStorage\ZipArchiveStorage.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="main2.cpp" />
     <ClCompile Include="Passes\MinecraftCubePass.cpp" />
+    <ClCompile Include="Passes\MinecraftEntityPass.cpp" />
     <ClCompile Include="Passes\MinecraftMaterial.cpp" />
+    <ClCompile Include="Passes\MinecraftSelectionPass.cpp" />
     <ClCompile Include="render\ChunkMesh.cpp" />
     <ClCompile Include="render\ChunkMeshGenerator.cpp" />
     <ClCompile Include="SceneMinecraft.cpp" />
@@ -36,16 +41,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\AssetCache.h" />
-    <ClInclude Include="assets\AssetLoader.h" />
+    <ClInclude Include="assets\BlocksLoader.h" />
+    <ClInclude Include="assets\BlockstatesLoader.h" />
+    <ClInclude Include="assets\blocks\BlockElement.h" />
+    <ClInclude Include="assets\blocks\BlockFace.h" />
+    <ClInclude Include="assets\blocks\BlockModel.h" />
+    <ClInclude Include="assets\blocks\BlockVariant.h" />
+    <ClInclude Include="assets\ModelsLoader.h" />
     <ClInclude Include="assets\stb_image.h" />
-    <ClInclude Include="assets\TextureArray.h" />
+    <ClInclude Include="assets\TexturesLoader.h" />
     <ClInclude Include="assets\zip\miniz.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ChatWindow.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="FilesStorage\ZipArchiveStorage.h" />
     <ClInclude Include="Passes\MinecraftCubePass.h" />
+    <ClInclude Include="Passes\MinecraftEntityPass.h" />
     <ClInclude Include="Passes\MinecraftMaterial.h" />
+    <ClInclude Include="Passes\MinecraftSelectionPass.h" />
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="render\ChunkMesh.h" />
     <ClInclude Include="render\ChunkMeshGenerator.h" />

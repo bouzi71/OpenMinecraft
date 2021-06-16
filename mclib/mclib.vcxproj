@@ -11,12 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="assets\blocks\BlockElement.h" />
-    <ClInclude Include="assets\blocks\BlockFace.h" />
-    <ClInclude Include="assets\blocks\BlockModel.h" />
-    <ClInclude Include="assets\blocks\BlockState.h" />
-    <ClInclude Include="assets\blocks\BlockVariant.h" />
-    <ClInclude Include="block\BlockRegistry.h" />
+    <ClInclude Include="block\BlocksLoaderPtr.h" />
     <ClInclude Include="block\specific\Banner.h" />
     <ClInclude Include="block\specific\Beacon.h" />
     <ClInclude Include="block\specific\Bed.h" />
@@ -111,10 +106,7 @@
     <ClInclude Include="world\World.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="assets\blocks\BlockFace.cpp" />
-    <ClCompile Include="assets\blocks\BlockModel.cpp" />
-    <ClCompile Include="assets\blocks\BlockState.cpp" />
-    <ClCompile Include="block\BlockRegistry.cpp" />
+    <ClCompile Include="block\BlocksLoaderPtr.cpp" />
     <ClCompile Include="block\specific\Banner.cpp" />
     <ClCompile Include="block\specific\Beacon.cpp" />
     <ClCompile Include="block\specific\Bed.cpp" />

@@ -20,6 +20,7 @@ public:
 	glm::dvec3 GetNormal() const noexcept { return m_Normal; }
 };
 
+
 class CollisionDetector
 {
 public:

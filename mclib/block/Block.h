@@ -92,6 +92,7 @@ public:
 	virtual BoundingBox GetBoundingBox(glm::ivec3 at) const // at is the world position of this block. Used to get the world bounding box
 	{
 		glm::dvec3 atd = at;
+
 		BoundingBox bounds = m_BoundingBox;
 		bounds.setMin(bounds.getMin() + glm::vec3(atd));
 		bounds.setMax(bounds.getMax() + glm::vec3(atd));

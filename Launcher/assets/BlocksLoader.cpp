@@ -1,36 +1,28 @@
 #include "stdafx.h"
 
 // General
-#include "BlockRegistry.h"
+#include "BlocksLoader.h"
 
 // Additional
+#include "AssetCache.h"
+
 #include <common/Json.h>
 
-std::shared_ptr<BlockRegistry> registry;
 
-void BlockRegistry::CreateInstance(const IBaseManager& BaseManager)
-{
-	registry = MakeShared(BlockRegistry, BaseManager);
-}
+IMinecraftBlocksLoader * g_BlocksLoader = nullptr;
 
-BlockRegistry* BlockRegistry::GetInstance()
-{
-	return registry.get();
-}
-
-BlockRegistry::BlockRegistry(const IBaseManager& BaseManager)
+CMinecraftBlocksLoader::CMinecraftBlocksLoader(const IBaseManager & BaseManager, AssetCache & AssetCache)
 	: m_BaseManager(BaseManager)
+	, m_AssetCache(AssetCache)
 {
-
+	g_BlocksLoader = this;
+	SetBlocksLoader(this);
 }
 
-BlockRegistry::~BlockRegistry()
-{
-	ClearRegistry();
-}
+CMinecraftBlocksLoader::~CMinecraftBlocksLoader()
+{}
 
-
-const CMinecraftBlock* BlockRegistry::GetBlock(uint32 ID) const
+const CMinecraftBlock* CMinecraftBlocksLoader::GetBlock(uint32 ID) const
 {
 	//const auto& blocksIt = m_Blocks.find(ID);
 	//if (blocksIt == m_Blocks.end())
@@ -56,12 +48,12 @@ const CMinecraftBlock* BlockRegistry::GetBlock(uint32 ID) const
 	return blockMeta;
 }
 
-const CMinecraftBlock* BlockRegistry::GetBlock(uint16 type, uint16 meta) const
+const CMinecraftBlock* CMinecraftBlocksLoader::GetBlock(uint16 type, uint16 meta) const
 {
 	return GetBlock(type << 4 | (meta & 15));
 }
 
-void BlockRegistry::RegisterBlockInfos()
+void CMinecraftBlocksLoader::RegisterBlockInfos()
 {
 	auto blockInfosFile = m_BaseManager.GetManager<IFilesManager>()->Open("Blocks_info.json");
 	if (blockInfosFile == nullptr)
@@ -97,7 +89,7 @@ void BlockRegistry::RegisterBlockInfos()
 
 }
 
-void BlockRegistry::RegisterVanillaBlocks()
+void CMinecraftBlocksLoader::RegisterVanillaBlocks()
 {
 	const BoundingBox FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
 
@@ -121,8 +113,6 @@ void BlockRegistry::RegisterVanillaBlocks()
 	{
 		throw std::exception("Root item in 'Blocks.json' is not json array.");
 	}
-
-	BlockRegistry* registry = BlockRegistry::GetInstance();
 
 	for (const auto& blockJSONIt : root.items())
 	{
@@ -164,7 +154,7 @@ void BlockRegistry::RegisterVanillaBlocks()
 				uint32 metaID = metadataJSON.value("value", 0);
 				json variablesJSON = metadataJSON.value("variables", json());
 				std::string blockState = metadataJSON.value("blockstate", "");
-			
+
 				//std::string blockMetaName = "";
 				//if (false == blockState.empty())
 				//	blockMetaName = "minecraft:" + blockState;
@@ -197,7 +187,7 @@ void BlockRegistry::RegisterVanillaBlocks()
 			}
 		}
 
-		registry->RegisterBlock(block);
+		RegisterBlock(block);
 
 		BoundingBox bounds = block->GetBoundingBox();
 		if (block->IsSolid() && glm::length(bounds.getMax() - bounds.getMin()) == 0)
@@ -205,7 +195,7 @@ void BlockRegistry::RegisterVanillaBlocks()
 	}
 }
 
-void BlockRegistry::RegisterVanillaBlocks2()
+void CMinecraftBlocksLoader::RegisterVanillaBlocks2()
 {
 	const BoundingBox FullSolidBounds(glm::dvec3(0, 0, 0), glm::dvec3(1, 1, 1));
 
@@ -231,8 +221,6 @@ void BlockRegistry::RegisterVanillaBlocks2()
 	//{
 	//	throw std::exception("Root item in 'Blocks.json' is not json array.");
 	//}
-
-	BlockRegistry* registry = BlockRegistry::GetInstance();
 
 	for (const auto& blockJSONIt : root.items())
 	{
@@ -274,16 +262,16 @@ void BlockRegistry::RegisterVanillaBlocks2()
 
 					block->AddVariable(propertyJSONName + "=" + propertyJSONValue);
 				}
-			}		
+			}
 
-			registry->RegisterBlock(block);
+			RegisterBlock(block);
 
 			BoundingBox bounds = block->GetBoundingBox();
 			if (block->IsSolid() && glm::length(bounds.getMax() - bounds.getMin()) == 0)
 				block->SetBoundingBox(FullSolidBounds);
 		}
 
-		
+
 
 		/*json metadataArray = blockJSON.value("metadata", json());
 		if (metadataArray.is_array())
@@ -331,14 +319,14 @@ void BlockRegistry::RegisterVanillaBlocks2()
 	}
 }
 
-void BlockRegistry::ClearRegistry()
+void CMinecraftBlocksLoader::ClearRegistry()
 {
 	for (auto& pair : m_Blocks)
 		delete pair.second;
 	m_Blocks.clear();
 }
 
-const std::map<uint32, CMinecraftBlock*>& BlockRegistry::GetAllBlocks() const noexcept
+const std::map<uint32, CMinecraftBlock*>& CMinecraftBlocksLoader::GetAllBlocks() const noexcept
 {
 	return m_Blocks;
 }
@@ -348,7 +336,7 @@ const std::map<uint32, CMinecraftBlock*>& BlockRegistry::GetAllBlocks() const no
 //
 // Private
 //
-void BlockRegistry::RegisterBlock(CMinecraftBlock* block)
+void CMinecraftBlocksLoader::RegisterBlock(CMinecraftBlock* block)
 {
 	if (block == nullptr)
 		throw std::exception("BlockRegistry: CMinecraftBlock is nullptr.");
