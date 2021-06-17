@@ -10,7 +10,6 @@
 VersionFetcher::VersionFetcher(const std::string& host, uint16 port)
 	: m_Dispatcher(),
 	m_Version(Version::Minecraft_1_12_2),
-	m_Forge(&m_Dispatcher, nullptr),
 	m_Connection(nullptr),
 	m_Host(host),
 	m_Port(port),
@@ -21,6 +20,8 @@ VersionFetcher::VersionFetcher(const std::string& host, uint16 port)
 
 void VersionFetcher::OnPingResponse(const json& node)
 {
+	Log::Print("VersionFetcher::OnPingResponse.");
+
 	static const std::map<int32, Version> mapping = {
 		{ 340, Version::Minecraft_1_12_2 },
 	};
@@ -53,13 +54,13 @@ Version VersionFetcher::GetVersion()
 	if (m_Found) 
 		return m_Version;
 
-	CMinecraftClient m_Client(&m_Dispatcher);
+	CMinecraftClient client(&m_Dispatcher);
 
-	m_Connection = m_Client.GetConnection();
+	m_Connection = client.GetConnection();
 
-	m_Client.GetConnection()->RegisterListener(this);
-	m_Client.Ping(m_Host, m_Port, UpdateMethod::CMinecraftBlock);
-	m_Client.GetConnection()->UnregisterListener(this);
+	client.GetConnection()->RegisterListener(this);
+	client.Ping(m_Host, m_Port, UpdateMethod::CMinecraftBlock);
+	client.GetConnection()->UnregisterListener(this);
 
 	return m_Version;
 }

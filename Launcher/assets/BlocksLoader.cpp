@@ -190,7 +190,7 @@ void CMinecraftBlocksLoader::RegisterVanillaBlocks()
 		RegisterBlock(block);
 
 		BoundingBox bounds = block->GetBoundingBox();
-		if (block->IsSolid() && glm::length(bounds.getMax() - bounds.getMin()) == 0)
+		if (/*block->IsSolid() && */glm::length(bounds.getMax() - bounds.getMin()) == 0)
 			block->SetBoundingBox(FullSolidBounds);
 	}
 }

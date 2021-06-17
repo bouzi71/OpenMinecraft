@@ -73,7 +73,56 @@
 @CMinecraftTexturesLoader::LoadTexture: Unable to load texture 'assets/minecraft/textures/entity/shulker/shulker_green.png'. Size (64, 64, 4).
 @CMinecraftTexturesLoader::LoadTexture: Unable to load texture 'assets/minecraft/textures/entity/shulker/shulker_red.png'. Size (64, 64, 4).
 @CMinecraftTexturesLoader::LoadTexture: Unable to load texture 'assets/minecraft/textures/entity/shulker/shulker_black.png'. Size (64, 64, 4).
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x0
+ VersionFetcher::OnPingResponse.
  Logging in.
  Creating 7 mesh worker threads.
- Player position: 2043.039719, 82.000001, -11011.991920
- Player position 2: 2043.039719, 82.000001, -11011.991920
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x3
+~Connection::HandlePacket: SetCompressionPacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x2
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~PacketFactory::CreatePacket: Received vid = 0x18
+@ForgeHandler::HandlePacket PluginMessagePacket.
+~Connection::CreatePacket: Some data received.
+~Connection::CreatePacket: Some data received.

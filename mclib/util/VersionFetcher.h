@@ -3,7 +3,6 @@
 
 #include <common/JsonFwd.h>
 #include <core/Client.h>
-#include <util/Forge.h>
 
 class VersionFetcher 
 	: public ConnectionListener
@@ -16,12 +15,9 @@ public:
 	// ConnectionListener
 	MCLIB_API void OnPingResponse(const json& node) override;
 
-	ForgeHandler& GetForge() { return m_Forge; }
-
 private:
 	PacketDispatcher m_Dispatcher;
 	Version m_Version;
-	ForgeHandler m_Forge;
 	Connection* m_Connection;
 	std::string m_Host;
 	uint16 m_Port;

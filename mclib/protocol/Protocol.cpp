@@ -239,7 +239,10 @@ CMinecraftInboundPacket* Protocol::CreateInboundPacket(State state, int32 protoc
 	int32 agnosticId = 0;
 
 	if (false == GetAgnosticId(state, protocolId, agnosticId))
+	{
+		Log::Error("Protocol::CreateInboundPacket: Unable to GetAgnosticId for State = '%d' and ID = '%d'.", state, protocolId);
 		return nullptr;
+	}
 
 	auto stateMap = agnosticStateMap[state];
 	auto iter = stateMap.find(agnosticId);
@@ -253,6 +256,7 @@ CMinecraftInboundPacket* Protocol::CreateInboundPacket(State state, int32 protoc
 		}
 	}
 
+	Log::Error("Protocol::CreateInboundPacket: Unable to stateMap for State = '%d' and ID = '%d'.", state, protocolId);
 	return nullptr;
 }
 

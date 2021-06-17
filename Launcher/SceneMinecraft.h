@@ -15,6 +15,9 @@
 
 #include "assets/AssetCache.h"
 
+#include <util/Forge.h>
+#include <util/VersionFetcher.h>
+
 #include "render/ChunkMesh.h"
 #include "render/ChunkMeshGenerator.h"
 
@@ -94,6 +97,8 @@ private:
 private:
 	PacketDispatcher m_PacketDispatcher;
 	CMinecraftClient m_NetworkClient;
+	std::shared_ptr<VersionFetcher> m_VersionFetcher;
+	ForgeHandler m_ForgeHandler;
 
 	std::shared_ptr<AssetCache> m_AssetCahce;
 	std::shared_ptr<CMinecraftChunkMeshGenerator> m_MeshGen;

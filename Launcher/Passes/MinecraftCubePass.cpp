@@ -51,6 +51,8 @@ void CMinecraftCubePass::Render(RenderEventArgs & e)
 
 		i->second->GetGeometry().Render(GetPipeline().GetVertexShaderPtr());
 	}
+
+	assetCache->GetTexturesLoader().GetTexture()->UnBind(0, GetPipeline().GetPixelShaderPtr(), IShaderParameter::EType::Texture);
 }
 
 

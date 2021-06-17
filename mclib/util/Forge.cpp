@@ -190,6 +190,8 @@ bool ForgeHandler::HasModInfo() const
 
 void ForgeHandler::HandlePacket(status::in::ResponsePacket* packet)
 {
+	Log::Warn("ForgeHandler::HandlePacket ResponsePacket.");
+
 	std::string response = utf16to8(packet->GetResponse());
 
 	json data;
@@ -235,6 +237,8 @@ void ForgeHandler::HandlePacket(status::in::ResponsePacket* packet)
 
 void ForgeHandler::HandlePacket(in::PluginMessagePacket* packet)
 {
+	Log::Warn("ForgeHandler::HandlePacket PluginMessagePacket.");
+
 	std::wstring channel = packet->GetChannel();
 
 	auto iter = m_Handlers.find(channel);
@@ -251,7 +255,6 @@ void ForgeHandler::HandleData(const std::string& data)
 	if (data.empty()) return;
 
 	ForgePacket discriminator = (ForgePacket)data[0];
-
 	switch (discriminator)
 	{
 		case ForgePacket::ServerHello:

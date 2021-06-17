@@ -9,11 +9,12 @@
 #include "Passes/MinecraftSelectionPass.h"
 
 
+
 #include <core/Client.h>
 
 #include "world/PlayerController.h"
+#include "world/World.h"
 
-#include <core/Client.h>
 #include <util/Utility.h>
 
 #include "ChatWindow.h"
@@ -21,10 +22,7 @@
 #include "render/ChunkMesh.h"
 #include "render/ChunkMeshGenerator.h"
 
-
 #include <util/Utility.h>
-
-#include <world/World.h>
 
 #include <inventory/Inventory.h>
 #include <protocol/packets/Packet.h>
@@ -166,20 +164,23 @@ bool RayCast(World * world, glm::dvec3 from, glm::dvec3 direction, double range,
 	{
 		glm::dvec3 position = from + direction * i;
 
-		//for (int x = -1; x <= 2; x++)
+		for (int x = -1; x <= 2; x++)
 		{
-			//for (int y = -1; y <= 2; y++)
+			for (int y = -1; y <= 2; y++)
 			{
-				//for (int z = -1; z <= 2; z++)
+				for (int z = -1; z <= 2; z++)
 				{
-					glm::dvec3 checkPos = position /*+ glm::dvec3(x, y, z)*/;
+					glm::dvec3 checkPos = position + glm::dvec3(x, y, z);
 
 					const CMinecraftBlock* block = world->GetBlock(checkPos);
 					if (block == nullptr)
 						continue;
 
-					if (false == block->IsOpaque())
+					if (block->GetID() == 0)
 						continue;
+
+					//if (false == block->IsOpaque())
+					//	continue;
 
 					BoundingBox bounds = block->GetBoundingBox(checkPos);
 
@@ -303,6 +304,9 @@ CSceneMinecraft::CSceneMinecraft(IBaseManager& BaseManager, IRenderWindow& Rende
 	: SceneBase(BaseManager, RenderWindow)
 	, PacketHandler(&m_PacketDispatcher)
 	, m_NetworkClient(&m_PacketDispatcher, Version::Minecraft_1_12_2)
+
+	, m_ForgeHandler(&m_PacketDispatcher, nullptr /*m_NetworkClient.GetConnection()*/)
+
 	, m_Sprinting(false)
 	, m_LastPositionTime(0)
 
@@ -454,7 +458,7 @@ void CSceneMinecraft::Initialize()
 
 	m_SelectedBlockText = CreateUIControlTCast<IUIControlText>();
 	m_SelectedBlockText->SetLocalPosition(glm::vec2(5.0f, 150.0f));
-	m_SelectedBlockText->GetProperties()->GetPropertyT<std::string>("Text")->Set("");
+	m_SelectedBlockText->GetProperties()->GetPropertyT<std::string>("Text")->Set("Test");
 
 
 	std::string server = "127.0.0.1";
@@ -468,14 +472,16 @@ void CSceneMinecraft::Initialize()
 
 	try
 	{
+		m_VersionFetcher = MakeShared(VersionFetcher, server, port);
+
+		auto version = m_VersionFetcher->GetVersion();
+
 		Log::Print("Logging in.");
 		if (false == GetNetworkClient().Login(server, port, username, password, UpdateMethod::Manual))
 		{
 			Log::Error("Failed to login.");
 			return;
 		}
-
-		Sleep(1000);
 	}
 	catch (std::exception& e)
 	{
@@ -675,7 +681,7 @@ void CSceneMinecraft::Update(UpdateEventArgs& e)
 	m_Player->Update(m_DeltaTime);
 
 	glm::vec3 eye = glm::vec3(m_Player->GetTransform().position) + glm::vec3(0.0f, 1.6f, 0.0f);
-	//GetCameraController()->GetCamera()->SetPosition(eye);
+	GetCameraController()->GetCamera()->SetPosition(eye);
 
 	constexpr float kTickTime = 1000.0f / 20.0f / 1000.0f;
 
@@ -733,9 +739,14 @@ void CSceneMinecraft::UpdateSelectedBlock()
 		m_SelectedBlock = block;
 		m_SelectedBlockPosition = blockPosition;
 
+		const auto * blockVariant = m_AssetCahce->GetBlockstatesLoader().GetVariant(m_SelectedBlock);
+		glm::vec3 rotation = blockVariant->GetRotations();
 
-		std::string selectedBlockText = "BlockName: " + m_SelectedBlock->GetName() + "\nBlock pos: " + std::to_string(blockPosition.x) + ", " + std::to_string(blockPosition.y) + ", " + std::to_string(blockPosition.z);
-		m_SelectedBlockText->GetProperties()->GetPropertyT<std::string>("Text")->Set(selectedBlockText);
+		std::string selectedBlockText = "BlockName: " + m_SelectedBlock->GetName() + "\nTYPE: " + std::to_string(blockVariant->GetBlock()->GetType()) + "\nMETA: " + std::to_string(blockVariant->GetBlock()->GetMeta()) +
+			                            "\nBlock pos: " + std::to_string(blockPosition.x) + ", " + std::to_string(blockPosition.y) + ", " + std::to_string(blockPosition.z) +
+			                            "\nBlock rot: " + std::to_string(rotation.x) + ", " + std::to_string(rotation.y) + ", " + std::to_string(rotation.z);
+
+		m_SelectedBlockText->SetText(selectedBlockText);
 	}
 	else
 	{

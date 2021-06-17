@@ -195,12 +195,11 @@ void CMinecraftChunkMeshGenerator::ProcessChunks()
 		m_ChunkPushQueue.pop_front();
 
 		auto ctx = std::make_shared<CMinecraftChunkMeshBuildContext>();
-
 		ctx->world_position = chunk_base;
+
 		glm::ivec3 offset_y(0, chunk_base.y, 0);
 
 		std::shared_ptr<ChunkColumn> columns[3][3];
-
 		columns[1][1] = m_World->GetChunk(chunk_base);
 
 		// Cache the world data for this chunk so it can be pushed to another thread and built.
@@ -290,9 +289,6 @@ bool CMinecraftChunkMeshGenerator::IsOccluding(const BlockVariant* from_variant,
 	if (test_block == nullptr)
 		return false;
 
-	//if (from_variant->HasRotation()) 
-	//	return false;
-
 	const BlockModel* fromVariantModel = from_variant->GetModel();
 
 	for (const auto& element : from_variant->GetModel()->GetElements())
@@ -307,9 +303,6 @@ bool CMinecraftChunkMeshGenerator::IsOccluding(const BlockVariant* from_variant,
 	if (variant == nullptr)
 		return false;
 
-	//if (variant->HasRotation())
-	//	return false;
-
 	const BlockModel* model = variant->GetModel();
 	if (model == nullptr)
 		return false;
@@ -317,11 +310,10 @@ bool CMinecraftChunkMeshGenerator::IsOccluding(const BlockVariant* from_variant,
 	bool is_full = false;
 
 	BlockFace opposite = get_opposite_face(face);
-	const auto& textures = m_AssetCache.GetTexturesLoader();
 	for (auto& element : model->GetElements())
 	{
 		auto opposite_face = element.GetFace(opposite);
-		bool transparent = textures.IsTransparent(opposite_face.texture);
+		bool transparent = m_AssetCache.GetTexturesLoader().IsTransparent(opposite_face.texture);
 		bool full_extent = element.IsFullExtent();
 
 		if (full_extent && (false == transparent))
@@ -400,13 +392,13 @@ void RotateCube(std::vector<SFacePlusVertex>& Vector, const glm::vec3& Rotations
 	glm::quat quat(1.0f, 0.0f, 0.0f, 0.0f);
 
 	if (Rotations.z != 0)
-		quat = glm::rotate(quat, glm::radians(Rotations.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		quat = glm::rotate(quat, glm::radians( Rotations.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	if (Rotations.y != 0)
 		quat = glm::rotate(quat, glm::radians(-Rotations.y), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	if (Rotations.x != 0)
-		quat = glm::rotate(quat, glm::radians(Rotations.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		quat = glm::rotate(quat, glm::radians( Rotations.x), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	for (auto& it : Vector)
 	{
@@ -420,11 +412,10 @@ BlockFace GetFaceFromCoord(std::vector<SFacePlusVertex>& Vector, const glm::vec3
 		throw CException("Incorrect usage!");
 
 	const auto& faceIt = std::find_if(Vector.begin(), Vector.end(), [&Coord](const SFacePlusVertex& _Item) -> bool {
-		return glm::abs(_Item.Pos.x - Coord.x) < 0.1f && glm::abs(_Item.Pos.y - Coord.y) < 0.1f && glm::abs(_Item.Pos.z - Coord.z) < 0.1f;
+		return (glm::abs(_Item.Pos.x - Coord.x) < 0.1f) && (glm::abs(_Item.Pos.y - Coord.y) < 0.1f) && (glm::abs(_Item.Pos.z - Coord.z) < 0.1f);
 	});
 	if (faceIt == Vector.end())
 		throw CException("Incorrect usage!");
-
 
 	return faceIt->Face;
 }
@@ -516,7 +507,6 @@ void OB(const CMinecraftChunkMeshBuildContext& context, const glm::ivec3& BlockP
 	}
 	else if (Face == BlockFace::East)
 	{
-
 		*obl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(1, -1, 1));
 		*obr = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, -1, 0), BlockPosition + glm::ivec3(1, 0, -1), BlockPosition + glm::ivec3(1, -1, -1));
 		*otl = GetAmbientOcclusion(context, BlockPosition + glm::ivec3(1, 1, 0), BlockPosition + glm::ivec3(1, 0, 1), BlockPosition + glm::ivec3(1, 1, 1));
@@ -539,7 +529,6 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 		glm::vec3(0.22, 0.60, 0.21), // Leaves
 	};
 
-
 	int obl, obr, otl, otr;
 	OB(context, BlockPosition, nullptr, OriginalFace, &obl, &obr, &otl, &otr);
 
@@ -551,8 +540,6 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 			if (renderable.face != RotatedFace)
 				continue;
 
-			TextureHandle texture = renderable.texture;
-
 			const auto& from = element.GetFrom();
 			const auto& to = element.GetTo();
 
@@ -562,7 +549,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 			glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
 
 			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+			//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 			bottom_left += BlockPosition;
 			bottom_right += BlockPosition;
@@ -584,6 +571,8 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 				cotl = otl;
 				cotr = otr;
 			}
+
+			TextureHandle texture = renderable.texture;
 
 			Vertices.emplace_back(bottom_left, bl_uv, texture, tint, cobl);
 			Vertices.emplace_back(bottom_right, br_uv, texture, tint, cobr);
@@ -611,7 +600,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 			glm::vec3 top_right = glm::vec3(from.x, from.y, to.z);
 
 			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+			//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 			bottom_left += BlockPosition;
 			bottom_right += BlockPosition;
@@ -662,7 +651,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 			glm::vec3 top_right = glm::vec3(from.x, to.y, from.z);
 
 			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+			//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 			bottom_left += BlockPosition;
 			bottom_right += BlockPosition;
@@ -713,7 +702,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 			glm::vec3 top_right = glm::vec3(to.x, to.y, to.z);
 
 			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+			//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 			bottom_left += BlockPosition;
 			bottom_right += BlockPosition;
@@ -764,7 +753,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 			glm::vec3 top_right = glm::vec3(to.x, to.y, from.z);
 
 			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+			//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 			bottom_left += BlockPosition;
 			bottom_right += BlockPosition;
@@ -815,7 +804,7 @@ void FillVerticesForSide(std::vector<CMinecraftBlockVertex>& Vertices, const CMi
 			glm::vec3 top_right = glm::vec3(from.x, to.y, to.z);
 
 			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations());
-			ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
+			//ApplyRotations(bottom_left, bottom_right, top_left, top_right, BlockVariant->GetRotations(), element.GetRotation());
 
 			bottom_left += BlockPosition;
 			bottom_right += BlockPosition;
@@ -897,7 +886,6 @@ void CMinecraftChunkMeshGenerator::GenerateMesh(CMinecraftChunkMeshBuildContext&
 				std::vector<SFacePlusVertex> facePlusVertexRotated;
 				for (size_t i = 0; i < sizeof(verticesPlusFaces) / sizeof(SFacePlusVertex); i++)
 					facePlusVertexRotated.push_back(verticesPlusFaces[i]);
-
 				RotateCube(facePlusVertexRotated, currentVariant->GetRotations());
 
 				for (size_t i = 0; i < sizeof(verticesPlusFaces) / sizeof(SFacePlusVertex); i++)
