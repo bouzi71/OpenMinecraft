@@ -13,6 +13,7 @@ public:
 		, m_ID(ID)
 		, m_IsTransperent(IsTransperent)
 		, m_Solid(IsSolid)
+		, m_BoundingBox(glm::vec3(0.0f), glm::vec3(0.0f))
 	{
 		//_ASSERT(false == name.empty());
 	}
@@ -22,6 +23,7 @@ public:
 		, m_ID(Type << 4 | (Meta & 15))
 		, m_IsTransperent(IsTransperent)
 		, m_Solid(IsSolid)
+		, m_BoundingBox(glm::vec3(0.0f), glm::vec3(0.0f))
 	{
 		//_ASSERT(false == name.empty());
 	}

@@ -7,6 +7,10 @@
 
 struct Transform
 {
+	Transform()
+		: bounding_box(glm::vec3(0.0f), glm::vec3(0.0f))
+	{}
+
 	glm::dvec3 position;
 	glm::dvec3 velocity;
 	glm::dvec3 input_velocity;
